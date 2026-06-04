@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Тест · Разбор — RealtyPrep</title>
+<style>
+  body { margin: 0; background: #e9edec; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .tw { cursor: pointer; border-bottom: 1px dotted #c6cfcc; }
+  .hl { background: #d4f4e4; color: #047857; border-radius: 4px; padding: 0 1px; box-decoration-break: clone; -webkit-box-decoration-break: clone; border-bottom-color: transparent; }
+  .rw-on { background: #d4f4e4; color: #047857; border-radius: 4px; transition: background .08s; }
+  .read { background: #eafaf2 !important; border-color: #34D399 !important; }
+  .read-opt { box-shadow: 0 0 0 2px #34D399, 0 2px 12px rgba(52,211,153,.3) !important; }
+  .next-btn { transition: transform .08s ease, box-shadow .12s ease, background .15s ease; }
+  .next-btn:hover { background: #2bc48a !important; }
+  .next-btn:active { transform: translateY(1px) scale(.97); box-shadow: 0 2px 8px rgba(52,211,153,.3) !important; background: #2bc48a !important; }
+  .nav-btn { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform .08s ease, background .15s ease; flex-shrink: 0; }
+  .nav-btn:active { transform: scale(.9); }
+  .nav-back { border: 1.5px solid #d6dbe0; background: #fff; }
+  .nav-back:hover { background: #f5f7f9; }
+  .nav-next { border: none; background: #34D399; box-shadow: 0 4px 14px rgba(52,211,153,.32); }
+  .nav-next:hover { background: #2bc48a; }
+  .hdr-back { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; background: #f4f6f7; flex-shrink: 0; transition: background .15s, transform .08s; padding: 0; }
+  .hdr-back:hover { background: #e9edee; }
+  .hdr-back:active { transform: scale(.9); }
+  .wbtn { display: flex; flex-direction: row; align-items: center; gap: 3px; border: none; background: none; cursor: pointer; font-family: inherit; padding: 4px 7px; border-radius: 8px; }
+  .wbtn:hover { background: #f5f7f9; }
+  .wbtn span { font-size: 11.5px; color: #3a3a4a; font-weight: 600; white-space: nowrap; }
+  .wbtn.primary span { color: #047857; }
+  .wsep { width: 1px; height: 16px; background: #eef0f0; flex-shrink: 0; }
+</style>
+</head>
+<body>
+  <div style="width:320px; height:600px; overflow:hidden; border-radius:24px; background:#fff; position:relative; color:#1a1a2e; font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; box-shadow:0 12px 40px rgba(0,0,0,.12); display:flex; flex-direction:column;">
+
+    <!-- Header -->
+    <div id="appHeader" style="display:flex; align-items:center; gap:9px; padding:14px 16px 13px; flex-shrink:0; border-bottom:1px solid #eef0f0;">
+      <button class="hdr-back" title="Назад к темам" onclick="event.stopPropagation()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3a3a4a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <span style="line-height:1.2; flex:1; min-width:0;"><span style="display:block; font-size:14px; font-weight:700; color:#1a1a2e;">Contracts</span></span>
+      <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; justify-content:flex-end;">
+        <button id="parBtn" onclick="toggleParallel(event)" title="Параллельный перевод" style="display:flex; align-items:center; gap:4px; border:1.5px solid #34D399; background:#34D399; color:#fff; font-family:inherit; font-size:11px; font-weight:700; padding:0 9px; height:28px; border-radius:999px; cursor:pointer; white-space:nowrap;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="3" y1="12" x2="21" y2="12"></line><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"></path></svg>RU
+        </button>
+        <button id="autoBtn" onclick="toggleAuto(event)" title="Авто-озвучка" style="display:flex; align-items:center; justify-content:center; border:1.5px solid rgba(52,211,153,.55); background:#fff; color:#047857; font-family:inherit; width:28px; height:28px; border-radius:50%; cursor:pointer; padding:0; flex-shrink:0;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="#047857"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
+        </button>
+        <span style="width:1px; height:18px; background:#e3e7e9; flex-shrink:0;"></span>
+        <button id="saveBtn" onclick="toggleSave(event)" title="Сохранить вопрос" style="display:flex; align-items:center; justify-content:center; border:none; background:none; cursor:pointer; width:28px; height:28px; padding:0; flex-shrink:0;">
+          <span id="saveStar" style="font-size:19px; line-height:1; color:#c9ced2; transition:transform .16s, color .15s;">★</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Scrollable content -->
+    <div id="scrollArea" style="flex:1; min-height:0; overflow-y:auto;">
+    <!-- Question -->
+    <div style="padding:13px 18px 4px;">
+      <p id="qEN" style="margin:0; font-size:14px; font-weight:700; line-height:1.32;">A <span class="tw" data-ru="q-legal" onclick="tapWord(event,this)">legal</span> <span class="tw" data-ru="q-claim" onclick="tapWord(event,this)">claim</span> against a <span class="tw" data-ru="q-prop" onclick="tapWord(event,this)">property</span> that must be <span class="tw" data-ru="q-paid" onclick="tapWord(event,this)">paid off</span> when the <span class="tw" data-ru="" onclick="tapWord(event,this)">property</span> is <span class="tw" data-ru="q-sold" onclick="tapWord(event,this)">sold</span> is <span class="tw" data-ru="q-called" onclick="tapWord(event,this)">called</span> a…</p>
+      <p id="qRU" class="ru-line" style="margin:5px 0 0; font-size:11.5px; color:#6b7280; line-height:1.45;">
+        <span style="display:inline-block; vertical-align:1px; font-size:8.5px; font-weight:700; letter-spacing:.04em; color:#059669; background:rgba(52,211,153,.14); border-radius:4px; padding:1px 5px; margin-right:5px;">RU</span><span id="q-legal">Юридическое</span> <span id="q-claim">требование</span> к <span id="q-prop">объекту</span>, которое должно быть <span id="q-paid">погашено</span> при <span id="q-sold">продаже</span>, <span id="q-called">называется</span>…
+      </p>
+    </div>
+
+    <!-- Options -->
+    <div id="optsBox" style="padding:6px 18px 0; display:flex; flex-direction:column; gap:5px;">
+      <div id="opt0" class="opt" onclick="pickAnswer(0)" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 14px; border-radius:13px; border:1.5px solid #e8eaec; background:#fff; cursor:pointer;">
+        <span><span class="opt-en" style="display:block; font-size:13.5px; font-weight:500; color:#1a1a2e;">an easement</span><span class="ru-line opt-ru" style="display:block; font-size:10.5px; color:#9aa1a0; margin-top:1px;">сервитут</span></span>
+        <span class="opt-badge" style="display:none; width:19px; height:19px; border-radius:50%; color:#fff; font-size:11px; align-items:center; justify-content:center; flex-shrink:0;"></span>
+      </div>
+      <div id="opt1" class="opt" onclick="pickAnswer(1)" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 14px; border-radius:13px; border:1.5px solid #e8eaec; background:#fff; cursor:pointer;">
+        <span><span class="opt-en" style="display:block; font-size:13.5px; font-weight:500; color:#1a1a2e;">a lien</span><span class="ru-line opt-ru" style="display:block; font-size:10.5px; color:#9aa1a0; margin-top:1px;">залоговое удержание</span></span>
+        <span class="opt-badge" style="display:none; width:19px; height:19px; border-radius:50%; color:#fff; font-size:11px; align-items:center; justify-content:center; flex-shrink:0;"></span>
+      </div>
+      <div id="opt2" class="opt" onclick="pickAnswer(2)" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 14px; border-radius:13px; border:1.5px solid #e8eaec; background:#fff; cursor:pointer;">
+        <span><span class="opt-en" style="display:block; font-size:13.5px; font-weight:500; color:#1a1a2e;">an encumbrance</span><span class="ru-line opt-ru" style="display:block; font-size:10.5px; color:#9aa1a0; margin-top:1px;">обременение</span></span>
+        <span class="opt-badge" style="display:none; width:19px; height:19px; border-radius:50%; color:#fff; font-size:11px; align-items:center; justify-content:center; flex-shrink:0;"></span>
+      </div>
+      <div id="opt3" class="opt" onclick="pickAnswer(3)" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 14px; border-radius:13px; border:1.5px solid #e8eaec; background:#fff; cursor:pointer;">
+        <span><span class="opt-en" style="display:block; font-size:13.5px; font-weight:500; color:#1a1a2e;">a deed</span><span class="ru-line opt-ru" style="display:block; font-size:10.5px; color:#9aa1a0; margin-top:1px;">акт о передаче права</span></span>
+        <span class="opt-badge" style="display:none; width:19px; height:19px; border-radius:50%; color:#fff; font-size:11px; align-items:center; justify-content:center; flex-shrink:0;"></span>
+      </div>
+    </div>
+
+    <!-- Auto-mode pause label (between options and explanation) -->
+    <div id="pauseRow" style="display:none; margin:8px 18px 0; align-items:center; justify-content:center;">
+      <div id="pausePill" style="display:inline-flex; align-items:center; gap:8px; background:#f5f7f9; border:1px dashed #cdd6d3; border-radius:999px; padding:5px 6px 5px 13px;">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="#9aa1a0"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg>
+        <span id="pauseLabel" style="font-size:11px; font-weight:600; color:#6b7280; white-space:nowrap;">Think pause · 5s</span>
+        <button onclick="cyclePause(event)" title="Change pause" style="display:flex; align-items:center; justify-content:center; width:20px; height:20px; border:none; background:#fff; border-radius:50%; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,.1);">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Explanation -->
+    <div id="exBox" style="display:none; margin:11px 18px 0; padding:10px 14px; background:#f5f7f9; border-radius:12px;">
+      <p id="exEN" style="margin:0; font-size:12px; line-height:1.4; color:#1a1a2e;">
+        A <span class="tw" data-ru="ru-lien" onclick="tapWord(event,this)">lien</span> is a <span class="tw" data-ru="ru-legal" onclick="tapWord(event,this)">legal</span> <span class="tw" data-ru="ru-claim" onclick="tapWord(event,this)">claim</span> that <span class="tw" data-ru="ru-stays" onclick="tapWord(event,this)">stays</span> with the <span class="tw" data-ru="ru-prop" onclick="tapWord(event,this)">property</span> <span class="tw" data-ru="ru-until" onclick="tapWord(event,this)">until</span> the <span class="tw" data-ru="ru-debt" onclick="tapWord(event,this)">debt</span> is <span class="tw" data-ru="ru-paid" onclick="tapWord(event,this)">paid</span> — it must be <span class="tw" data-ru="ru-cleared" onclick="tapWord(event,this)">cleared</span> at <span class="tw" data-ru="ru-close" onclick="tapWord(event,this)">closing</span>.
+      </p>
+      <p id="exRU" class="ru-line" style="margin:4px 0 0; font-size:11px; color:#6b7280; line-height:1.4;">
+        <span id="ru-lien">Залоговое удержание</span> — это <span id="ru-legal">юридическое</span> <span id="ru-claim">требование</span>, которое <span id="ru-stays">остаётся</span> на <span id="ru-prop">объекте</span> <span id="ru-until">до</span> <span id="ru-paid">погашения</span> <span id="ru-debt">долга</span> и <span id="ru-cleared">снимается</span> при <span id="ru-close">сделке</span>.
+      </p>
+    </div>
+    </div><!-- /scrollArea -->
+
+    <!-- Bottom bar: ‹ back — page numbers — forward › -->
+    <div id="bottomBar" style="flex-shrink:0; display:flex; align-items:center; justify-content:space-between; padding:11px 18px 15px; border-top:1px solid #f0f2f3; background:#fff;">
+      <button class="nav-btn nav-back" title="Назад" onclick="event.stopPropagation()">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <span style="font-size:14px; font-weight:700; color:#6b7280; font-variant-numeric:tabular-nums; letter-spacing:.02em;">4 <span style="color:#c0c5c9; font-weight:600;">/ 20</span></span>
+      <button class="nav-btn nav-next" title="Дальше" onclick="event.stopPropagation()">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+    </div>
+
+    <!-- Floating word toolbar (pops above the tapped word) -->
+    <div id="wbar" style="display:none; position:absolute; z-index:30; background:#fff; border-radius:12px; box-shadow:0 8px 24px rgba(26,26,46,.2); border:1px solid #eef0f0; padding:5px 6px; align-items:center; gap:3px;">
+      <button class="wbtn" title="Pronounce" onclick="event.stopPropagation()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3a3a4a" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="#3a3a4a" stroke="none"></polygon><path d="M15.5 8.5a5 5 0 0 1 0 7"></path><path d="M19 5a10 10 0 0 1 0 14"></path></svg>
+      </button>
+      <span class="wsep"></span>
+      <button id="addBtn" class="wbtn" onclick="addWord(event)" title="Add to L7 Dictionary" style="position:relative;">
+        <span id="addPad" style="display:inline-flex; align-items:center; justify-content:center; padding:5px 7px; border-radius:8px; transition:background .18s;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path id="addBook" d="M5 5.5A1.5 1.5 0 0 1 6.5 4H18a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H6.5A1.5 1.5 0 0 0 5 20.5z" stroke="#3a3a4a" stroke-width="1.8" stroke-linejoin="round"></path><path id="addSpine" d="M5 20.5A1.5 1.5 0 0 1 6.5 19H19" stroke="#3a3a4a" stroke-width="1.8" stroke-linejoin="round"></path><text id="addA" x="11.7" y="14.6" font-size="9" font-weight="800" text-anchor="middle" fill="#3a3a4a" font-family="Inter,sans-serif">A</text></svg>
+        </span>
+        <span id="addPip" style="position:absolute; top:1px; right:1px; width:13px; height:13px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#aab0b4; box-shadow:0 0 0 1.5px #fff;">
+          <svg id="addPipIcon" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </span>
+      </button>
+      <span class="wsep"></span>
+      <button class="wbtn" title="Word card" onclick="openWordCard(event)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3a3a4a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"></rect><line x1="7" y1="9.5" x2="17" y2="9.5"></line><line x1="7" y1="13.5" x2="13" y2="13.5"></line></svg>
+      </button>
+      <span class="wsep"></span>
+      <button class="wbtn" title="Закрыть" onclick="closeBar(event)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aab0b4" stroke-width="2.2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+      </button>
+      <span id="warrow" style="position:absolute; top:100%; left:50%; transform:translateX(-50%); width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:6px solid #fff; filter:drop-shadow(0 2px 1px rgba(26,26,46,.08));"></span>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" style="position:absolute; left:50%; bottom:64px; transform:translateX(-50%) translateY(12px); opacity:0; transition:all .28s; display:flex; align-items:center; gap:7px; padding:9px 15px; background:#1a1a2e; color:#fff; font-size:12px; font-weight:600; border-radius:22px; pointer-events:none; z-index:40; white-space:nowrap;">
+      <span style="color:#34D399;">✓</span> Added to L7 Dictionary
+    </div>
+
+    <!-- Word card sheet -->
+    <div id="wcScrim" style="display:none; position:absolute; inset:0; background:rgba(26,26,46,.28); z-index:50;" onclick="closeWordCard(event)"></div>
+    <div id="wcSheet" style="position:absolute; left:0; right:0; top:600px; z-index:51; transition:top .32s cubic-bezier(.34,1.2,.5,1); background:#f3f5f7; border-radius:22px 22px 24px 24px; box-shadow:0 -8px 32px rgba(26,26,46,.18); padding:0 0 16px;">
+      <!-- white head -->
+      <div style="background:#fff; border-radius:22px; padding:16px 18px 16px; box-shadow:0 2px 10px rgba(26,26,46,.05);">
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
+          <div style="min-width:0;">
+            <div id="wcWord" style="font-size:27px; font-weight:800; color:#1a1a2e; line-height:1.05;">lien</div>
+            <div id="wcIpa" style="font-size:14px; color:#9aa1a0; margin-top:5px;">[liːn]</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+            <button onclick="event.stopPropagation()" title="Произношение" style="border:none; background:#f4f6f7; border-radius:50%; width:38px; height:38px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a2e" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="#1a1a2e" stroke="none"></polygon><path d="M15.5 8.5a5 5 0 0 1 0 7"></path><path d="M19 5a10 10 0 0 1 0 14"></path></svg>
+            </button>
+            <button onclick="closeWordCard(event)" title="Закрыть" style="border:none; background:#f4f6f7; border-radius:50%; width:38px; height:38px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2.3" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- PRO term: icon badge + RU term + EN definition (+ parallel RU, aligned) -->
+        <div id="wcPro" style="display:none; margin-top:14px;">
+          <span style="display:inline-flex; align-items:center; gap:6px; font-size:10.5px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; color:#047857; background:rgba(52,211,153,.14); border-radius:6px; padding:4px 10px 4px 8px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+            Real Estate Concept
+          </span>
+          <div id="wcTr" style="font-size:18px; font-weight:600; color:#1a1a2e; margin-top:10px;"></div>
+          <p id="wcDefEN" style="font-size:13.5px; color:#3a3a4a; line-height:1.5; margin:9px 0 0;"></p>
+          <p id="wcDefRU" style="display:none; font-size:12px; color:#6b7280; line-height:1.45; margin:7px 0 0;"></p>
+          <button id="wcRuToggle" onclick="toggleCardRu(event)" style="margin-top:11px; display:inline-flex; align-items:center; gap:5px; border:1.5px solid #d6dbe0; background:#fff; color:#3a3a4a; font-family:inherit; font-size:11.5px; font-weight:700; padding:5px 11px; border-radius:999px; cursor:pointer;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="3" y1="12" x2="21" y2="12"></line><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"></path></svg>RU перевод
+          </button>
+        </div>
+
+        <!-- COMMON word: meanings list -->
+        <div id="wcCommon" style="display:none; margin-top:12px;">
+          <div id="wcMeanings" style="font-size:16px; color:#1a1a2e; line-height:1.7;"></div>
+        </div>
+      </div>
+
+      <!-- single action (reflects saved state) -->
+      <div style="padding:14px 18px 0;">
+        <button id="wcAddBtn" onclick="cardAdd(event)" style="width:100%; border:none; background:linear-gradient(135deg,#4ade80,#22c55e); color:#fff; font-family:inherit; font-size:15px; font-weight:700; padding:14px 8px; border-radius:14px; cursor:pointer; box-shadow:0 4px 16px rgba(52,211,153,.32); display:flex; align-items:center; justify-content:center; gap:8px;">Add &amp; learn</button>
+      </div>
+    </div>
+
+  </div>
+<script>
+  function clearHl() {
+    document.querySelectorAll('.hl').forEach(function (e) { e.classList.remove('hl'); });
+    document.querySelectorAll('.rw-on').forEach(function (e) { e.classList.remove('rw-on'); });
+    document.querySelectorAll('.read-opt').forEach(function (e) { e.classList.remove('read-opt'); });
+  }
+  var CARD = document.querySelector('div[style*="600px"]');
+
+  // ── Interactive answer reveal ──
+  var CORRECT = 1, answered = false, currentWord = null;
+
+  // word data — type 'pro' (realtor term, big definition) or 'common' (translations)
+  var DICT = {
+    lien: { ipa: '[liːn]', type: 'pro', tr: 'залоговое удержание', seg: [
+      ['A lien is', 'Залоговое удержание —'],
+      ['a legal right of a creditor', 'юридическое право кредитора'],
+      ['to hold the debtor’s property', 'удерживать имущество должника'],
+      ['until the debt is paid.', 'до погашения долга.'],
+      ['It must be cleared', 'Оно снимается'],
+      ['when the property is sold.', 'при продаже объекта.']
+    ] },
+    easement: { ipa: '[ˈiːzmənt]', type: 'pro', tr: 'сервитут', seg: [
+      ['An easement is the right', 'Сервитут — это право'],
+      ['to use someone else’s land', 'пользоваться чужим участком'],
+      ['for a specific purpose,', 'в определённых целях,'],
+      ['such as access or utilities,', 'например для прохода или коммуникаций,'],
+      ['without owning it.', 'без права собственности на него.']
+    ] },
+    encumbrance: { ipa: '[ɪnˈkʌmbrəns]', type: 'pro', tr: 'обременение', seg: [
+      ['An encumbrance is any claim or right', 'Обременение — это любое требование или право'],
+      ['that a third party holds', 'третьих лиц'],
+      ['against a property,', 'на объект,'],
+      ['limiting its use or sale.', 'ограничивающее его использование или продажу.']
+    ] },
+    deed: { ipa: '[diːd]', type: 'pro', tr: 'акт о передаче права', seg: [
+      ['A deed is a legal document', 'Документ о передаче права — юридический акт,'],
+      ['that transfers ownership of real estate', 'передающий право собственности на недвижимость'],
+      ['from the seller to the buyer.', 'от продавца к покупателю.']
+    ] },
+    closing: { ipa: '[ˈkləʊzɪŋ]', type: 'pro', tr: 'закрытие сделки', seg: [
+      ['Closing is the final step of a deal,', 'Закрытие сделки — финальный этап,'],
+      ['when documents are signed,', 'когда подписываются документы,'],
+      ['ownership is transferred,', 'переходит право собственности'],
+      ['and payments are settled.', 'и производятся расчёты.']
+    ] },
+    property:   { ipa: '[ˈprɒpəti]', type: 'common', meanings: ['имущество, собственность', 'объект недвижимости', 'свойство, характеристика'] },
+    legal:      { ipa: '[ˈliːɡl̩]', type: 'common', meanings: ['юридический, правовой', 'законный, легальный'] },
+    claim:      { ipa: '[kleɪm]', type: 'common', meanings: ['требование, претензия', 'иск', 'утверждать, заявлять'] },
+    debt:       { ipa: '[det]', type: 'common', meanings: ['долг, задолженность'] },
+    paid:       { lemma: 'pay', ipa: '[peɪ]', type: 'common', meanings: ['платить, оплачивать'] },
+    sold:       { lemma: 'sell', ipa: '[sel]', type: 'common', meanings: ['продавать'] },
+    cleared:    { lemma: 'clear', ipa: '[klɪə]', type: 'common', meanings: ['снимать, погашать (долг)', 'очищать'] },
+    stays:      { lemma: 'stay', ipa: '[steɪ]', type: 'common', meanings: ['оставаться, сохраняться'] },
+    against:    { ipa: '[əˈɡenst]', type: 'common', meanings: ['против', 'в счёт, в обеспечение', 'на фоне'] },
+    until:      { ipa: '[ənˈtɪl]', type: 'common', meanings: ['до, до тех пор пока'] },
+    when:       { ipa: '[wen]', type: 'common', meanings: ['когда', 'в то время как'] },
+    called:     { lemma: 'call', ipa: '[kɔːl]', type: 'common', meanings: ['называть, именовать', 'звать, звонить'] },
+    with:       { ipa: '[wɪð]', type: 'common', meanings: ['с, вместе с', 'при помощи'] }
+  };
+
+  var cardRuOn = false;
+  function positionSheet() {
+    var sheet = document.getElementById('wcSheet');
+    sheet.style.top = (CARD.clientHeight - sheet.offsetHeight) + 'px';
+  }
+  function setCardRu(on) {
+    cardRuOn = on;
+    document.getElementById('wcDefRU').style.display = on ? 'block' : 'none';
+    var t = document.getElementById('wcRuToggle');
+    if (on) {
+      t.style.background = '#34D399'; t.style.borderColor = '#34D399'; t.style.color = '#fff';
+    } else {
+      t.style.background = '#fff'; t.style.borderColor = '#d6dbe0'; t.style.color = '#3a3a4a';
+      document.querySelectorAll('#wcPro .hl').forEach(function (e) { e.classList.remove('hl'); });
+    }
+    positionSheet();
+  }
+  function toggleCardRu(ev) {
+    if (ev) { ev.stopPropagation(); }
+    setCardRu(!cardRuOn);
+  }
+  function tapSeg(ev, el) {
+    ev.stopPropagation();
+    if (!cardRuOn) { setCardRu(true); }
+    document.querySelectorAll('#wcPro .hl').forEach(function (e) { e.classList.remove('hl'); });
+    el.classList.add('hl');
+    var i = el.getAttribute('data-i');
+    var ru = document.querySelector('#wcDefRU .cseg-ru[data-i="' + i + '"]');
+    if (ru) { ru.classList.add('hl'); }
+  }
+
+  var cardKey = '';
+  function syncCardBtn() {
+    var b = document.getElementById('wcAddBtn');
+    if (!b) { return; }
+    if (addedWords[cardKey]) {
+      b.style.background = '#fff';
+      b.style.color = '#047857';
+      b.style.border = '1.5px solid #34D399';
+      b.style.boxShadow = 'none';
+      b.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> In dictionary';
+    } else {
+      b.style.background = 'linear-gradient(135deg,#4ade80,#22c55e)';
+      b.style.color = '#fff';
+      b.style.border = 'none';
+      b.style.boxShadow = '0 4px 16px rgba(52,211,153,.32)';
+      b.innerHTML = 'Add &amp; learn';
+    }
+  }
+  function cardAdd(ev) {
+    ev.stopPropagation();
+    if (!cardKey) { return; }
+    var nowOn = !addedWords[cardKey];
+    if (nowOn) { addedWords[cardKey] = true; } else { delete addedWords[cardKey]; }
+    syncCardBtn();
+    if (nowOn) {
+      var t = document.getElementById('toast');
+      t.style.opacity = '1';
+      t.style.transform = 'translateX(-50%) translateY(0)';
+      setTimeout(function () {
+        t.style.opacity = '0';
+        t.style.transform = 'translateX(-50%) translateY(12px)';
+      }, 1400);
+    }
+  }
+
+  function openWordCard(ev) {
+    if (ev) { ev.stopPropagation(); }
+    var raw = currentWord ? currentWord.textContent.trim() : 'lien';
+    var key = raw.toLowerCase().replace(/[^a-z]/g, '');
+    cardKey = key;
+    var d = DICT[key] || { ipa: '', type: 'common', meanings: ['перевод'] };
+    document.getElementById('wcWord').textContent = d.lemma || key;
+    document.getElementById('wcIpa').textContent = d.ipa || '';
+    var pro = document.getElementById('wcPro');
+    var common = document.getElementById('wcCommon');
+    if (d.type === 'pro') {
+      pro.style.display = 'block';
+      common.style.display = 'none';
+      document.getElementById('wcTr').textContent = '— ' + (d.tr || '');
+      var seg = d.seg || [];
+      document.getElementById('wcDefEN').innerHTML = seg.map(function (s, i) {
+        return '<span class="tw cseg" data-i="' + i + '" onclick="tapSeg(event,this)">' + s[0] + '</span>';
+      }).join(' ');
+      document.getElementById('wcDefRU').innerHTML = seg.map(function (s, i) {
+        return '<span class="cseg-ru" data-i="' + i + '">' + s[1] + '</span>';
+      }).join(' ');
+      setCardRu(false);                 // English-first; tap a word or RU button to reveal
+    } else {
+      common.style.display = 'block';
+      pro.style.display = 'none';
+      document.getElementById('wcMeanings').innerHTML = (d.meanings || []).map(function (m) {
+        return '<div style="display:flex; gap:7px;"><span style="color:#9aa1a0;">—</span><span>' + m + '</span></div>';
+      }).join('');
+    }
+    syncCardBtn();
+    document.getElementById('wbar').style.display = 'none';
+    document.getElementById('wcScrim').style.display = 'block';
+    requestAnimationFrame(positionSheet);
+  }
+  function closeWordCard(ev) {
+    if (ev) { ev.stopPropagation(); }
+    document.getElementById('wcSheet').style.top = CARD.clientHeight + 'px';
+    document.getElementById('wcScrim').style.display = 'none';
+    clearHl();
+  }
+
+  function markOpt(i, kind) {
+    var el = document.getElementById('opt' + i);
+    var badge = el.querySelector('.opt-badge');
+    var en = el.querySelector('.opt-en');
+    var ru = el.querySelector('.opt-ru');
+    if (kind === 'correct') {
+      el.style.border = '2px solid #34D399';
+      el.style.background = 'rgba(52,211,153,.1)';
+      en.style.fontWeight = '700';
+      if (ru) { ru.style.color = '#059669'; }
+      badge.style.background = '#34D399'; badge.textContent = '✓'; badge.style.display = 'flex';
+    } else if (kind === 'wrong') {
+      el.style.border = '2px solid #d05656';
+      el.style.background = '#fdecec';
+      en.style.fontWeight = '600';
+      badge.style.background = '#d05656'; badge.textContent = '✕'; badge.style.display = 'flex';
+    }
+  }
+  function revealAnswer(chosen) {
+    answered = true;
+    markOpt(CORRECT, 'correct');
+    if (chosen !== null && chosen !== CORRECT) { markOpt(chosen, 'wrong'); }
+    document.getElementById('exBox').style.display = 'block';
+    if (!autoOn) { document.getElementById('bottomBar').style.display = 'flex'; }
+  }
+  function pickAnswer(i) {
+    if (answered || autoOn) { return; }
+    revealAnswer(i);
+  }
+
+  function tapWord(ev, el) {
+    ev.stopPropagation();
+    currentWord = el;
+    var ru = el.getAttribute('data-ru') ? document.getElementById(el.getAttribute('data-ru')) : null;
+    var bar = document.getElementById('wbar');
+    if (el.classList.contains('hl')) { clearHl(); bar.style.display = 'none'; return; }
+    clearHl();
+    el.classList.add('hl');
+    if (ru) { ru.classList.add('hl'); }
+    syncAddBtn();
+    // show then measure
+    bar.style.visibility = 'hidden';
+    bar.style.display = 'flex';
+    var cr = CARD.getBoundingClientRect();
+    var wr = el.getBoundingClientRect();
+    var bw = bar.offsetWidth, bh = bar.offsetHeight;
+    var wcx = wr.left - cr.left + wr.width / 2;          // word centre x within card
+    var arrow = document.getElementById('warrow');
+    var top = wr.top - cr.top - bh - 9;                  // above the word (preferred)
+    var below = false;
+    var MIN_TOP = 8;
+    if (top < MIN_TOP) {
+      // Not enough room directly above. Stay glued to the word:
+      // if the word's own bottom leaves room before the translation, drop just
+      // under the word; otherwise clamp to the top edge (overlaps header chrome
+      // briefly) — never fling the bar far away onto the options.
+      top = MIN_TOP;
+    }
+    var left = wcx - bw / 2;
+    left = Math.max(8, Math.min(left, CARD.clientWidth - bw - 8));    // clamp inside card
+    bar.style.left = left + 'px';
+    bar.style.top = top + 'px';
+    // arrow always points DOWN toward the word
+    arrow.style.bottom = 'auto'; arrow.style.top = '100%';
+    arrow.style.borderBottom = 'none';
+    arrow.style.borderTop = '6px solid #fff';
+    arrow.style.filter = 'drop-shadow(0 2px 1px rgba(26,26,46,.08))';
+    arrow.style.left = (wcx - left) + 'px';
+    bar.style.visibility = 'visible';
+  }
+  function closeBar(ev) {
+    if (ev) { ev.stopPropagation(); }
+    clearHl();
+    document.getElementById('wbar').style.display = 'none';
+  }
+  var addedWords = {};
+  function syncAddBtn() {
+    var w = currentWord ? currentWord.textContent.trim().toLowerCase() : '';
+    var on = !!addedWords[w];
+    var book = document.getElementById('addBook');
+    var spine = document.getElementById('addSpine');
+    var letter = document.getElementById('addA');
+    var pad = document.getElementById('addPad');
+    var pip = document.getElementById('addPip');
+    var pipIcon = document.getElementById('addPipIcon');
+    if (on) {
+      book.setAttribute('fill', '#34D399');
+      book.setAttribute('stroke', '#34D399');
+      spine.setAttribute('stroke', '#ffffff');
+      letter.setAttribute('fill', '#ffffff');
+      pad.style.background = 'rgba(52,211,153,.14)';
+      pip.style.background = '#34D399';
+      pipIcon.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>';   // check = saved
+    } else {
+      book.setAttribute('fill', 'none');
+      book.setAttribute('stroke', '#3a3a4a');
+      spine.setAttribute('stroke', '#3a3a4a');
+      letter.setAttribute('fill', '#3a3a4a');
+      pad.style.background = 'transparent';
+      pip.style.background = '#aab0b4';
+      pipIcon.innerHTML = '<line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>';  // plus = add
+    }
+  }
+  function addWord(ev) {
+    ev.stopPropagation();
+    var w = currentWord ? currentWord.textContent.trim().toLowerCase() : '';
+    if (!w) { return; }
+    var nowOn = !addedWords[w];          // toggle
+    if (nowOn) { addedWords[w] = true; } else { delete addedWords[w]; }
+    syncAddBtn();
+    if (nowOn) {                          // toast only when adding
+      var t = document.getElementById('toast');
+      t.style.opacity = '1';
+      t.style.transform = 'translateX(-50%) translateY(0)';
+      setTimeout(function () {
+        t.style.opacity = '0';
+        t.style.transform = 'translateX(-50%) translateY(12px)';
+      }, 1400);
+    }
+    // bar stays open so the user sees the green state / can toggle back off
+  }
+  document.addEventListener('click', function () { if (!autoOn) { closeBar(); } });
+
+  // ── Auto read-aloud: sentence/block level ──
+  var autoOn = false, autoTimer = null, autoSteps = [], autoIdx = -1;
+  var PAUSE_OPTS = [3, 5, 10, 0];   // 0 = off
+  var pauseSec = 5;
+
+  function pauseText() { return pauseSec === 0 ? 'Think pause · off' : 'Think pause · ' + pauseSec + 's'; }
+  function cyclePause(ev) {
+    if (ev) { ev.stopPropagation(); }
+    var i = PAUSE_OPTS.indexOf(pauseSec);
+    pauseSec = PAUSE_OPTS[(i + 1) % PAUSE_OPTS.length];
+    document.getElementById('pauseLabel').textContent = pauseText();
+  }
+
+  function setAutoBtn(on) {
+    var b = document.getElementById('autoBtn');
+    if (on) {
+      b.style.background = '#34D399'; b.style.borderColor = '#34D399';
+      b.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="#fff"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg>';
+    } else {
+      b.style.background = '#fff'; b.style.borderColor = 'rgba(52,211,153,.55)';
+      b.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="#047857"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>';
+    }
+  }
+
+  function speak(text, lang) {
+    if (!window.speechSynthesis) { return; }
+    try {
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = lang; u.rate = lang === 'ru-RU' ? 0.95 : 0.85;
+      window.speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+
+  function buildSteps() {
+    var $ = function (id) { return document.getElementById(id); };
+    return [
+      { el: $('qEN'), say: 'A legal claim against a property that must be paid off when the property is sold is called a', lang: 'en-US' },
+      { el: $('qRU'), say: 'Юридическое требование к объекту, которое должно быть погашено при продаже, называется', lang: 'ru-RU' },
+      { el: $('optsBox'), opt: true, say: 'Answer options', lang: 'en-US' },
+      { el: $('opt0'), opt: true, say: 'an easement', lang: 'en-US' },
+      { el: $('opt1'), opt: true, say: 'a lien', lang: 'en-US' },
+      { el: $('opt2'), opt: true, say: 'an encumbrance', lang: 'en-US' },
+      { el: $('opt3'), opt: true, say: 'a deed', lang: 'en-US' },
+      { pause: true },
+      { el: $('opt1'), opt: true, reveal: true, say: 'Correct answer. A lien.', lang: 'en-US' },
+      { el: $('exEN'), say: 'A lien is a legal claim that stays with the property until the debt is paid. It must be cleared at closing.', lang: 'en-US' },
+      { el: $('exRU'), say: 'Залоговое удержание — это юридическое требование, которое остаётся на объекте до погашения долга и снимается при сделке.', lang: 'ru-RU' }
+    ];
+  }
+
+  function startAuto() {
+    autoOn = true;
+    setAutoBtn(true);
+    document.getElementById('wbar').style.display = 'none';
+    document.getElementById('bottomBar').style.display = 'none';
+    var pr = document.getElementById('pauseRow');
+    pr.style.display = 'flex';
+    document.getElementById('pauseLabel').textContent = pauseText();
+    autoSteps = buildSteps();
+    autoIdx = -1;
+    autoStep();
+  }
+  function stopAuto() {
+    autoOn = false;
+    clearTimeout(autoTimer);
+    clearHl();
+    document.getElementById('pausePill').classList.remove('read');
+    if (window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch (e) {} }
+    setAutoBtn(false);
+    document.getElementById('pauseRow').style.display = 'none';
+    document.getElementById('bottomBar').style.display = 'flex';
+  }
+  function autoStep() {
+    if (!autoOn) { return; }
+    clearHl();
+    document.getElementById('pausePill').classList.remove('read');
+    autoIdx++;
+    if (autoIdx >= autoSteps.length) { stopAuto(); return; }
+    var s = autoSteps[autoIdx];
+
+    if (s.pause) {
+      if (pauseSec === 0) { autoStep(); return; }   // skip when off
+      var pill = document.getElementById('pausePill');
+      pill.classList.add('read');
+      var remain = pauseSec;
+      var lbl = document.getElementById('pauseLabel');
+      lbl.textContent = 'Think… ' + remain + 's';
+      var tick = setInterval(function () {
+        remain--;
+        if (remain <= 0 || !autoOn) {
+          clearInterval(tick);
+          lbl.textContent = pauseText();
+        } else {
+          lbl.textContent = 'Think… ' + remain + 's';
+        }
+      }, 1000);
+      autoTimer = setTimeout(autoStep, pauseSec * 1000);
+      return;
+    }
+
+    if (s.reveal && !answered) { revealAnswer(null); }
+    if (s.opt) {
+      s.el.classList.add('read-opt');
+      speak(s.say, s.lang);
+      autoTimer = setTimeout(autoStep, 480 + 42 * s.say.length);
+    } else {
+      runStep(s);   // running word-by-word highlight synced to speech
+    }
+  }
+
+  // wrap bare text-node words once so each word is its own span
+  function wordSpansOf(el) {
+    if (!el.getAttribute('data-rw')) {
+      Array.prototype.slice.call(el.childNodes).forEach(function (n) {
+        if (n.nodeType === 3 && /[A-Za-zА-Яа-яЁё]/.test(n.nodeValue)) {
+          var frag = document.createDocumentFragment();
+          n.nodeValue.split(/(\s+)/).forEach(function (tok) {
+            if (/[A-Za-zА-Яа-яЁё]/.test(tok)) {
+              var s = document.createElement('span'); s.className = 'rw'; s.textContent = tok; frag.appendChild(s);
+            } else { frag.appendChild(document.createTextNode(tok)); }
+          });
+          el.replaceChild(frag, n);
+        }
+      });
+      el.setAttribute('data-rw', '1');
+    }
+    return Array.prototype.slice.call(el.querySelectorAll('span')).filter(function (e) {
+      return !e.querySelector('span') && /[A-Za-zА-Яа-яЁё]/.test(e.textContent) && e.textContent.trim() !== 'RU';
+    });
+  }
+
+  function runStep(s) {
+    var spans = wordSpansOf(s.el);
+    speak(s.say, s.lang);
+    var total = 480 + 42 * s.say.length;
+    var per = Math.max(150, total / Math.max(1, spans.length));
+    var i = -1;
+    function adv() {
+      if (!autoOn) { return; }
+      if (i >= 0 && spans[i]) { spans[i].classList.remove('rw-on'); }
+      i++;
+      if (i >= spans.length) { autoTimer = setTimeout(autoStep, 240); return; }
+      spans[i].classList.add('rw-on');
+      autoTimer = setTimeout(adv, per);
+    }
+    adv();
+  }
+  function toggleAuto(ev) {
+    ev.stopPropagation();
+    if (autoOn) { stopAuto(); } else { startAuto(); }
+  }
+
+  // ── Parallel translation toggle ──
+  var saved = false;
+  function toggleSave(ev) {
+    if (ev) { ev.stopPropagation(); }
+    saved = !saved;
+    var star = document.getElementById('saveStar');
+    star.textContent = saved ? '★' : '★';
+    star.style.color = saved ? '#f5b301' : '#c9ced2';
+    star.style.transform = 'scale(1.25)';
+    setTimeout(function () { star.style.transform = 'scale(1)'; }, 160);
+  }
+  var parallelOn = true;
+  function toggleParallel(ev) {
+    if (ev) { ev.stopPropagation(); }
+    parallelOn = !parallelOn;
+    document.querySelectorAll('.ru-line').forEach(function (e) {
+      e.style.display = parallelOn ? '' : 'none';
+    });
+    if (!parallelOn) { clearHl(); document.getElementById('wbar').style.display = 'none'; }
+    var b = document.getElementById('parBtn');
+    if (parallelOn) {
+      b.style.background = '#34D399'; b.style.color = '#fff'; b.style.borderColor = '#34D399';
+    } else {
+      b.style.background = '#fff'; b.style.color = '#047857'; b.style.borderColor = 'rgba(52,211,153,.55)';
+    }
+  }
+
+  // Make EVERY English word tappable (wrap bare words; keep aligned ones intact)
+  function enableAllWords(id) {
+    var p = document.getElementById(id);
+    if (!p) { return; }
+    var nodes = Array.prototype.slice.call(p.childNodes);
+    nodes.forEach(function (node) {
+      if (node.nodeType !== 3) { return; }                 // only bare text nodes
+      var frag = document.createDocumentFragment();
+      // split keeping whitespace; wrap tokens that contain a letter
+      node.nodeValue.split(/(\s+)/).forEach(function (tok) {
+        if (/[A-Za-z]/.test(tok)) {
+          var core = tok.match(/^([^A-Za-z]*)([A-Za-z][A-Za-z'’-]*)([^A-Za-z]*)$/);
+          if (core) {
+            if (core[1]) { frag.appendChild(document.createTextNode(core[1])); }
+            var s = document.createElement('span');
+            s.className = 'tw';
+            s.textContent = core[2];
+            s.onclick = function (e) { tapWord(e, s); };
+            frag.appendChild(s);
+            if (core[3]) { frag.appendChild(document.createTextNode(core[3])); }
+          } else {
+            frag.appendChild(document.createTextNode(tok));
+          }
+        } else {
+          frag.appendChild(document.createTextNode(tok));
+        }
+      });
+      p.replaceChild(frag, node);
+    });
+  }
+  enableAllWords('qEN');
+  enableAllWords('exEN');
+</script>
+</body>
+</html>
