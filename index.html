@@ -53,10 +53,15 @@
         <span></span><span></span><span></span>
       </button>
       <div class="header__right header__right--desktop">
-        <a href="#" class="btn btn--primary header__cta" data-open-download>Попробовать бесплатно</a>
-      </div>
-      <div class="header__right header__right--mobile">
-        <a href="#" class="btn btn--primary header__cta header__cta--sm" data-open-download>Попробовать</a>
+        <div class="lang-switch" id="langSwitch">
+          <button class="lang-switch__btn" id="langSwitchBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Язык сайта">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="3" y1="12" x2="21" y2="12"></line><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"></path></svg>
+            <span class="lang-switch__code" id="langSwitchCode">ES</span>
+            <span class="lang-switch__chev">▾</span>
+          </button>
+          <div class="lang-switch__menu" id="langSwitchMenu" role="menu"></div>
+        </div>
+        <a href="#" class="header__login" data-login>Войти</a>
       </div>
     </div>
   </header>
@@ -67,6 +72,15 @@
     <a href="#states" class="mobile-menu__link">Штаты</a>
     <a href="#reviews" class="mobile-menu__link">Отзывы</a>
     <a href="#faq" class="mobile-menu__link">FAQ</a>
+    <a href="#" class="mobile-menu__link mobile-menu__login" data-login>Войти</a>
+    <div class="lang-switch lang-switch--menu" id="langSwitchMWrap">
+      <button class="lang-switch__btn" id="langSwitchBtnM" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Язык сайта">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="3" y1="12" x2="21" y2="12"></line><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"></path></svg>
+        <span class="lang-switch__code" id="langSwitchCodeM">ES</span>
+        <span class="lang-switch__chev">▾</span>
+      </button>
+      <div class="lang-switch__menu" id="langSwitchMenuM" role="menu"></div>
+    </div>
   </div>
 
   <!-- 1. Hero -->
@@ -79,24 +93,14 @@
       <div class="hero__content">
         <h1 class="hero__title">Сдайте экзамен на&nbsp;лицензию риелтора во&nbsp;Флориде <span class="hero__accent">с&nbsp;первого&nbsp;раза</span></h1>
         <p class="hero__subtitle"><strong class="hero__hl">Учите на своём языке</strong>, чтобы уверенно сдать на английском.<br><strong class="hero__hl">Вы сразу понимаете суть</strong>, а адаптивный тренажёр отрабатывает решение экзаменационных вопросов до&nbsp;автоматизма.</p>
-        <a href="#" class="btn btn--primary hero__cta" data-open-download>Попробовать бесплатно</a>
-        <p class="hero__trust">Все 50 штатов &bull; Перевод на 10 языков</p>
-        <div class="hero__pills hero__pills--desktop">
-          <div class="hero__pill-group">
-            <span class="hero__pill-label">Готовитесь</span>
-            <span class="pill pill--prep">Интерактивный учебник</span>
-            <span class="pill pill--prep">Адаптивный подбор тестов</span>
-            <span class="pill pill--prep">Карточки терминов</span>
-            <span class="pill pill--prep">Математика</span>
-          </div>
-          <div class="hero__pill-group">
-            <span class="hero__pill-label hero__pill-label--lang">+ язык L7</span>
-            <span class="pill">Параллельное чтение</span>
-            <span class="pill">Автотест с озвучкой</span>
-            <span class="pill">Словарь + повторение</span>
-            <span class="pill">Упражнения</span>
-          </div>
-        </div>
+        <a href="#" class="btn btn--primary hero__cta" data-open-download>Начать подготовку</a>
+        <p class="hero__guarantee">🛡️ Возврат денег в течение 7&nbsp;дней</p>
+        <ul class="hero__checklist">
+          <li>Интерактивный учебник</li>
+          <li>Адаптивный подбор тестов</li>
+          <li>Интервальное повторение</li>
+          <li>Понятная математика</li>
+        </ul>
       </div>
       <div class="hero__showcase">
         <!-- Feature deck: возможности «вылетают» сюда по ходу демо -->
@@ -114,26 +118,6 @@
         <div class="hero__speech-bubble">
           <p>Учите на своём языке, сдавайте на английском. Перевод, озвучка и словарь — в каждом материале, а умная программа доводит до сдачи.</p>
           <span class="hero__speech-trust">Все 50 штатов &bull; Перевод на 10 языков</span>
-        </div>
-      </div>
-      <div class="hero__pills hero__pills--mobile">
-        <div class="hero__pills-track">
-          <span class="pill pill--prep">Интерактивный учебник</span>
-          <span class="pill pill--prep">Адаптивный подбор тестов</span>
-          <span class="pill pill--prep">Карточки терминов</span>
-          <span class="pill pill--prep">Математика</span>
-          <span class="pill">Параллельное чтение</span>
-          <span class="pill">Автотест с озвучкой</span>
-          <span class="pill">Словарь + повторение</span>
-          <span class="pill">Упражнения</span>
-          <span class="pill pill--prep">Интерактивный учебник</span>
-          <span class="pill pill--prep">Адаптивный подбор тестов</span>
-          <span class="pill pill--prep">Карточки терминов</span>
-          <span class="pill pill--prep">Математика</span>
-          <span class="pill">Параллельное чтение</span>
-          <span class="pill">Автотест с озвучкой</span>
-          <span class="pill">Словарь + повторение</span>
-          <span class="pill">Упражнения</span>
         </div>
       </div>
     </div>
@@ -939,7 +923,7 @@
     <div class="container final-cta__inner">
       <h2 class="final-cta__title">Учите на своём языке — сдавайте на&nbsp;английском</h2>
       <p class="final-cta__text">Попробуйте бесплатно и почувствуйте, как язык перестаёт мешать: понимаете глубже, готовитесь быстрее, а программа доводит до сдачи.</p>
-      <a href="#" class="btn btn--primary final-cta__btn" data-open-download>Попробовать бесплатно</a>
+      <a href="#" class="btn btn--primary final-cta__btn" data-open-download>Начать подготовку</a>
       <div class="final-cta__perks">
         <span>Все 50 штатов</span>
         <span>Национальный + штат</span>
@@ -987,7 +971,7 @@
 
   <!-- Sticky CTA (mobile) -->
   <div class="sticky-cta" id="stickyCta">
-    <a href="#" class="btn btn--primary btn--full" data-open-download>Бесплатный пробный тест</a>
+    <a href="#" class="btn btn--primary btn--full" data-open-download>Начать подготовку</a>
   </div>
 
   <script>
@@ -1038,6 +1022,58 @@
         mobileMenu.classList.remove('is-open');
       });
     });
+  </script>
+
+  <script>
+    // Header language switcher (desktop + mobile) — sets ?lang and reloads
+    (function () {
+      var HLANGS = [
+        { code: 'es', label: 'ES', native: 'Español' },
+        { code: 'pt', label: 'PT', native: 'Português' },
+        { code: 'ht', label: 'HT', native: 'Kreyòl Ayisyen' },
+        { code: 'ru', label: 'RU', native: 'Русский' },
+        { code: 'fr', label: 'FR', native: 'Français' },
+        { code: 'de', label: 'DE', native: 'Deutsch' },
+        { code: 'it', label: 'IT', native: 'Italiano' },
+        { code: 'zh', label: '中文', native: '中文（普通话）' },
+        { code: 'ar', label: 'AR', native: 'العربية' },
+        { code: 'tl', label: 'TL', native: 'Tagalog' }
+      ];
+      var byCode = {};
+      HLANGS.forEach(function (l) { byCode[l.code] = l; });
+      var urlLang = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
+      var htmlLang = (document.documentElement.getAttribute('lang') || '').toLowerCase().split('-')[0];
+      var cur = byCode[urlLang] ? urlLang
+              : (byCode[htmlLang] && htmlLang !== 'ru') ? htmlLang
+              : 'es';
+      function pick(code) { location.href = location.pathname + '?lang=' + code + location.hash; }
+      function setup(btnId, codeId, menuId) {
+        var btn = document.getElementById(btnId), codeEl = document.getElementById(codeId), menu = document.getElementById(menuId);
+        if (!btn || !menu) { return; }
+        if (codeEl) { codeEl.textContent = byCode[cur].label; }
+        menu.innerHTML = '';
+        HLANGS.forEach(function (l) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'lang-switch__opt' + (l.code === cur ? ' is-active' : '');
+          if (l.code === 'ar') { b.setAttribute('dir', 'rtl'); }
+          b.innerHTML = '<span>' + l.native + '</span>' + (l.code === cur ? '<span class="lang-switch__tick">✓</span>' : '');
+          b.addEventListener('click', function (e) { e.stopPropagation(); pick(l.code); });
+          menu.appendChild(b);
+        });
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          var open = menu.classList.toggle('is-open');
+          btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+          document.querySelectorAll('.lang-switch__menu.is-open').forEach(function (m) { if (m !== menu) { m.classList.remove('is-open'); } });
+        });
+      }
+      setup('langSwitchBtn', 'langSwitchCode', 'langSwitchMenu');
+      setup('langSwitchBtnM', 'langSwitchCodeM', 'langSwitchMenuM');
+      document.addEventListener('click', function () {
+        document.querySelectorAll('.lang-switch__menu.is-open').forEach(function (m) { m.classList.remove('is-open'); });
+      });
+    })();
   </script>
 
   <script>
@@ -1252,6 +1288,8 @@
     };
     var shown = {};
     function clearDeck() { if (deck) { deck.innerHTML = ''; } shown = {}; }
+    // Карусель: на экране видно окно последних N плашек (десктоп — 3, мобайл — 1).
+    // Приходит новая → встаёт снизу, самая старая уезжает вверх, ряд сдвигается.
     function addBadge(id) {
       if (!deck || !BADGES[id] || shown[id]) { return; }
       shown[id] = true;
@@ -1263,6 +1301,14 @@
       requestAnimationFrame(function () {
         requestAnimationFrame(function () { el.classList.add('is-in'); });
       });
+      // окно = 1 плашка: предыдущая уезжает кросс-фейдом, новая встаёт на её место
+      var live = deck.querySelectorAll('.feat-chip:not(.is-out)');
+      for (var i = 0; i < live.length - 1; i++) {
+        (function (p) {
+          p.classList.add('is-out');
+          setTimeout(function () { if (p.parentNode) { p.parentNode.removeChild(p); } }, 460);
+        })(live[i]);
+      }
     }
 
     function load(which) {
