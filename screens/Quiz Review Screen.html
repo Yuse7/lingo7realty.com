@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Тест · Разбор — RealtyPrep</title>
+<title>Test · Review — Lingo7</title>
 <style>
   body { margin: 0; background: #e9edec; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
   .tw { cursor: pointer; border-bottom: 1px dotted #c6cfcc; }
@@ -11,9 +11,6 @@
   .rw-on { background: #d4f4e4; color: #047857; border-radius: 4px; transition: background .08s; }
   .read { background: #eafaf2 !important; border-color: #34D399 !important; }
   .read-opt { box-shadow: 0 0 0 2px #34D399, 0 2px 12px rgba(52,211,153,.3) !important; }
-  .next-btn { transition: transform .08s ease, box-shadow .12s ease, background .15s ease; }
-  .next-btn:hover { background: #2bc48a !important; }
-  .next-btn:active { transform: translateY(1px) scale(.97); box-shadow: 0 2px 8px rgba(52,211,153,.3) !important; background: #2bc48a !important; }
   .nav-btn { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform .08s ease, background .15s ease; flex-shrink: 0; }
   .nav-btn:active { transform: scale(.9); }
   .nav-back { border: 1.5px solid #d6dbe0; background: #fff; }
@@ -26,8 +23,10 @@
   .wbtn { display: flex; flex-direction: row; align-items: center; gap: 3px; border: none; background: none; cursor: pointer; font-family: inherit; padding: 4px 7px; border-radius: 8px; }
   .wbtn:hover { background: #f5f7f9; }
   .wbtn span { font-size: 11.5px; color: #3a3a4a; font-weight: 600; white-space: nowrap; }
-  .wbtn.primary span { color: #047857; }
   .wsep { width: 1px; height: 16px; background: #eef0f0; flex-shrink: 0; }
+  .langOpt { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; border: none; background: none; cursor: pointer; font-family: inherit; font-size: 12.5px; font-weight: 600; color: #1a1a2e; padding: 8px 10px; border-radius: 9px; text-align: left; }
+  .langOpt:hover { background: #f3f5f7; }
+  #langMenu::-webkit-scrollbar { width: 0; }
 </style>
 </head>
 <body>
@@ -35,19 +34,24 @@
 
     <!-- Header -->
     <div id="appHeader" style="display:flex; align-items:center; gap:9px; padding:14px 16px 13px; flex-shrink:0; border-bottom:1px solid #eef0f0;">
-      <button class="hdr-back" title="Назад к темам" onclick="event.stopPropagation()">
+      <button class="hdr-back" title="Back to topics" onclick="event.stopPropagation()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3a3a4a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
       </button>
       <span style="line-height:1.2; flex:1; min-width:0;"><span style="display:block; font-size:14px; font-weight:700; color:#1a1a2e;">Contracts</span></span>
       <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; justify-content:flex-end;">
-        <button id="parBtn" onclick="toggleParallel(event)" title="Параллельный перевод" style="display:flex; align-items:center; gap:4px; border:1.5px solid #34D399; background:#34D399; color:#fff; font-family:inherit; font-size:11px; font-weight:700; padding:0 9px; height:28px; border-radius:999px; cursor:pointer; white-space:nowrap;">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="3" y1="12" x2="21" y2="12"></line><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"></path></svg>RU
-        </button>
-        <button id="autoBtn" onclick="toggleAuto(event)" title="Авто-озвучка" style="display:flex; align-items:center; justify-content:center; border:1.5px solid rgba(52,211,153,.55); background:#fff; color:#047857; font-family:inherit; width:28px; height:28px; border-radius:50%; cursor:pointer; padding:0; flex-shrink:0;">
+        <!-- Language selector -->
+        <div style="position:relative; flex-shrink:0;">
+          <button id="langChip" onclick="toggleLangMenu(event)" title="Translation language" style="display:flex; align-items:center; gap:4px; border:1.5px solid #34D399; background:#34D399; color:#fff; font-family:inherit; font-size:11px; font-weight:700; padding:0 8px; height:28px; border-radius:999px; cursor:pointer; white-space:nowrap;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="3" y1="12" x2="21" y2="12"></line><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"></path></svg>
+            <span id="langLabel">RU</span><span style="font-size:8px;">▾</span>
+          </button>
+          <div id="langMenu" style="display:none; position:absolute; top:calc(100% + 6px); right:0; background:#fff; border:1px solid #eef0f0; border-radius:13px; box-shadow:0 8px 26px rgba(26,26,46,.18); padding:5px; min-width:170px; max-height:340px; overflow-y:auto; z-index:60;" onclick="event.stopPropagation()"></div>
+        </div>
+        <button id="autoBtn" onclick="toggleAuto(event)" title="Read aloud" style="display:flex; align-items:center; justify-content:center; border:1.5px solid rgba(52,211,153,.55); background:#fff; color:#047857; font-family:inherit; width:28px; height:28px; border-radius:50%; cursor:pointer; padding:0; flex-shrink:0;">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="#047857"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
         </button>
         <span style="width:1px; height:18px; background:#e3e7e9; flex-shrink:0;"></span>
-        <button id="saveBtn" onclick="toggleSave(event)" title="Сохранить вопрос" style="display:flex; align-items:center; justify-content:center; border:none; background:none; cursor:pointer; width:28px; height:28px; padding:0; flex-shrink:0;">
+        <button id="saveBtn" onclick="toggleSave(event)" title="Save question" style="display:flex; align-items:center; justify-content:center; border:none; background:none; cursor:pointer; width:28px; height:28px; padding:0; flex-shrink:0;">
           <span id="saveStar" style="font-size:19px; line-height:1; color:#c9ced2; transition:transform .16s, color .15s;">★</span>
         </button>
       </div>
@@ -58,32 +62,30 @@
     <!-- Question -->
     <div style="padding:13px 18px 4px;">
       <p id="qEN" style="margin:0; font-size:14px; font-weight:700; line-height:1.32;">A <span class="tw" data-ru="q-legal" onclick="tapWord(event,this)">legal</span> <span class="tw" data-ru="q-claim" onclick="tapWord(event,this)">claim</span> against a <span class="tw" data-ru="q-prop" onclick="tapWord(event,this)">property</span> that must be <span class="tw" data-ru="q-paid" onclick="tapWord(event,this)">paid off</span> when the <span class="tw" data-ru="" onclick="tapWord(event,this)">property</span> is <span class="tw" data-ru="q-sold" onclick="tapWord(event,this)">sold</span> is <span class="tw" data-ru="q-called" onclick="tapWord(event,this)">called</span> a…</p>
-      <p id="qRU" class="ru-line" style="margin:5px 0 0; font-size:11.5px; color:#6b7280; line-height:1.45;">
-        <span style="display:inline-block; vertical-align:1px; font-size:8.5px; font-weight:700; letter-spacing:.04em; color:#059669; background:rgba(52,211,153,.14); border-radius:4px; padding:1px 5px; margin-right:5px;">RU</span><span id="q-legal">Юридическое</span> <span id="q-claim">требование</span> к <span id="q-prop">объекту</span>, которое должно быть <span id="q-paid">погашено</span> при <span id="q-sold">продаже</span>, <span id="q-called">называется</span>…
-      </p>
+      <p id="qRU" class="ru-line" style="margin:5px 0 0; font-size:11.5px; color:#6b7280; line-height:1.45;"><span id="lngBadge" style="display:inline-block; vertical-align:1px; font-size:8.5px; font-weight:700; letter-spacing:.04em; color:#059669; background:rgba(52,211,153,.14); border-radius:4px; padding:1px 5px; margin-right:5px;">RU</span><span id="qTrans"></span></p>
     </div>
 
     <!-- Options -->
     <div id="optsBox" style="padding:6px 18px 0; display:flex; flex-direction:column; gap:5px;">
       <div id="opt0" class="opt" onclick="pickAnswer(0)" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 14px; border-radius:13px; border:1.5px solid #e8eaec; background:#fff; cursor:pointer;">
-        <span><span class="opt-en" style="display:block; font-size:13.5px; font-weight:500; color:#1a1a2e;">an easement</span><span class="ru-line opt-ru" style="display:block; font-size:10.5px; color:#9aa1a0; margin-top:1px;">сервитут</span></span>
+        <span style="min-width:0;"><span class="opt-en" style="display:block; font-size:13.5px; font-weight:500; color:#1a1a2e;">an easement</span><span class="ru-line opt-ru" style="display:block; font-size:10.5px; color:#9aa1a0; margin-top:1px;"></span></span>
         <span class="opt-badge" style="display:none; width:19px; height:19px; border-radius:50%; color:#fff; font-size:11px; align-items:center; justify-content:center; flex-shrink:0;"></span>
       </div>
       <div id="opt1" class="opt" onclick="pickAnswer(1)" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 14px; border-radius:13px; border:1.5px solid #e8eaec; background:#fff; cursor:pointer;">
-        <span><span class="opt-en" style="display:block; font-size:13.5px; font-weight:500; color:#1a1a2e;">a lien</span><span class="ru-line opt-ru" style="display:block; font-size:10.5px; color:#9aa1a0; margin-top:1px;">залоговое удержание</span></span>
+        <span style="min-width:0;"><span class="opt-en" style="display:block; font-size:13.5px; font-weight:500; color:#1a1a2e;">a lien</span><span class="ru-line opt-ru" style="display:block; font-size:10.5px; color:#9aa1a0; margin-top:1px;"></span></span>
         <span class="opt-badge" style="display:none; width:19px; height:19px; border-radius:50%; color:#fff; font-size:11px; align-items:center; justify-content:center; flex-shrink:0;"></span>
       </div>
       <div id="opt2" class="opt" onclick="pickAnswer(2)" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 14px; border-radius:13px; border:1.5px solid #e8eaec; background:#fff; cursor:pointer;">
-        <span><span class="opt-en" style="display:block; font-size:13.5px; font-weight:500; color:#1a1a2e;">an encumbrance</span><span class="ru-line opt-ru" style="display:block; font-size:10.5px; color:#9aa1a0; margin-top:1px;">обременение</span></span>
+        <span style="min-width:0;"><span class="opt-en" style="display:block; font-size:13.5px; font-weight:500; color:#1a1a2e;">an encumbrance</span><span class="ru-line opt-ru" style="display:block; font-size:10.5px; color:#9aa1a0; margin-top:1px;"></span></span>
         <span class="opt-badge" style="display:none; width:19px; height:19px; border-radius:50%; color:#fff; font-size:11px; align-items:center; justify-content:center; flex-shrink:0;"></span>
       </div>
       <div id="opt3" class="opt" onclick="pickAnswer(3)" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 14px; border-radius:13px; border:1.5px solid #e8eaec; background:#fff; cursor:pointer;">
-        <span><span class="opt-en" style="display:block; font-size:13.5px; font-weight:500; color:#1a1a2e;">a deed</span><span class="ru-line opt-ru" style="display:block; font-size:10.5px; color:#9aa1a0; margin-top:1px;">акт о передаче права</span></span>
+        <span style="min-width:0;"><span class="opt-en" style="display:block; font-size:13.5px; font-weight:500; color:#1a1a2e;">a deed</span><span class="ru-line opt-ru" style="display:block; font-size:10.5px; color:#9aa1a0; margin-top:1px;"></span></span>
         <span class="opt-badge" style="display:none; width:19px; height:19px; border-radius:50%; color:#fff; font-size:11px; align-items:center; justify-content:center; flex-shrink:0;"></span>
       </div>
     </div>
 
-    <!-- Auto-mode pause label (between options and explanation) -->
+    <!-- Auto-mode pause label -->
     <div id="pauseRow" style="display:none; margin:8px 18px 0; align-items:center; justify-content:center;">
       <div id="pausePill" style="display:inline-flex; align-items:center; gap:8px; background:#f5f7f9; border:1px dashed #cdd6d3; border-radius:999px; padding:5px 6px 5px 13px;">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="#9aa1a0"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg>
@@ -99,24 +101,22 @@
       <p id="exEN" style="margin:0; font-size:12px; line-height:1.4; color:#1a1a2e;">
         A <span class="tw" data-ru="ru-lien" onclick="tapWord(event,this)">lien</span> is a <span class="tw" data-ru="ru-legal" onclick="tapWord(event,this)">legal</span> <span class="tw" data-ru="ru-claim" onclick="tapWord(event,this)">claim</span> that <span class="tw" data-ru="ru-stays" onclick="tapWord(event,this)">stays</span> with the <span class="tw" data-ru="ru-prop" onclick="tapWord(event,this)">property</span> <span class="tw" data-ru="ru-until" onclick="tapWord(event,this)">until</span> the <span class="tw" data-ru="ru-debt" onclick="tapWord(event,this)">debt</span> is <span class="tw" data-ru="ru-paid" onclick="tapWord(event,this)">paid</span> — it must be <span class="tw" data-ru="ru-cleared" onclick="tapWord(event,this)">cleared</span> at <span class="tw" data-ru="ru-close" onclick="tapWord(event,this)">closing</span>.
       </p>
-      <p id="exRU" class="ru-line" style="margin:4px 0 0; font-size:11px; color:#6b7280; line-height:1.4;">
-        <span id="ru-lien">Залоговое удержание</span> — это <span id="ru-legal">юридическое</span> <span id="ru-claim">требование</span>, которое <span id="ru-stays">остаётся</span> на <span id="ru-prop">объекте</span> <span id="ru-until">до</span> <span id="ru-paid">погашения</span> <span id="ru-debt">долга</span> и <span id="ru-cleared">снимается</span> при <span id="ru-close">сделке</span>.
-      </p>
+      <p id="exRU" class="ru-line" style="margin:4px 0 0; font-size:11px; color:#6b7280; line-height:1.4;"><span id="exTrans"></span></p>
     </div>
     </div><!-- /scrollArea -->
 
-    <!-- Bottom bar: ‹ back — page numbers — forward › -->
+    <!-- Bottom bar -->
     <div id="bottomBar" style="flex-shrink:0; display:flex; align-items:center; justify-content:space-between; padding:11px 18px 15px; border-top:1px solid #f0f2f3; background:#fff;">
-      <button class="nav-btn nav-back" title="Назад" onclick="event.stopPropagation()">
+      <button class="nav-btn nav-back" title="Previous" onclick="event.stopPropagation()">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
       </button>
       <span style="font-size:14px; font-weight:700; color:#6b7280; font-variant-numeric:tabular-nums; letter-spacing:.02em;">4 <span style="color:#c0c5c9; font-weight:600;">/ 20</span></span>
-      <button class="nav-btn nav-next" title="Дальше" onclick="event.stopPropagation()">
+      <button class="nav-btn nav-next" title="Next" onclick="event.stopPropagation()">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
       </button>
     </div>
 
-    <!-- Floating word toolbar (pops above the tapped word) -->
+    <!-- Floating word toolbar -->
     <div id="wbar" style="display:none; position:absolute; z-index:30; background:#fff; border-radius:12px; box-shadow:0 8px 24px rgba(26,26,46,.2); border:1px solid #eef0f0; padding:5px 6px; align-items:center; gap:3px;">
       <button class="wbtn" title="Pronounce" onclick="event.stopPropagation()">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3a3a4a" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="#3a3a4a" stroke="none"></polygon><path d="M15.5 8.5a5 5 0 0 1 0 7"></path><path d="M19 5a10 10 0 0 1 0 14"></path></svg>
@@ -135,7 +135,7 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3a3a4a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"></rect><line x1="7" y1="9.5" x2="17" y2="9.5"></line><line x1="7" y1="13.5" x2="13" y2="13.5"></line></svg>
       </button>
       <span class="wsep"></span>
-      <button class="wbtn" title="Закрыть" onclick="closeBar(event)">
+      <button class="wbtn" title="Close" onclick="closeBar(event)">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aab0b4" stroke-width="2.2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
       </button>
       <span id="warrow" style="position:absolute; top:100%; left:50%; transform:translateX(-50%); width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:6px solid #fff; filter:drop-shadow(0 2px 1px rgba(26,26,46,.08));"></span>
@@ -149,7 +149,6 @@
     <!-- Word card sheet -->
     <div id="wcScrim" style="display:none; position:absolute; inset:0; background:rgba(26,26,46,.28); z-index:50;" onclick="closeWordCard(event)"></div>
     <div id="wcSheet" style="position:absolute; left:0; right:0; top:600px; z-index:51; transition:top .32s cubic-bezier(.34,1.2,.5,1); background:#f3f5f7; border-radius:22px 22px 24px 24px; box-shadow:0 -8px 32px rgba(26,26,46,.18); padding:0 0 16px;">
-      <!-- white head -->
       <div style="background:#fff; border-radius:22px; padding:16px 18px 16px; box-shadow:0 2px 10px rgba(26,26,46,.05);">
         <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
           <div style="min-width:0;">
@@ -157,16 +156,16 @@
             <div id="wcIpa" style="font-size:14px; color:#9aa1a0; margin-top:5px;">[liːn]</div>
           </div>
           <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
-            <button onclick="event.stopPropagation()" title="Произношение" style="border:none; background:#f4f6f7; border-radius:50%; width:38px; height:38px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <button onclick="event.stopPropagation()" title="Pronounce" style="border:none; background:#f4f6f7; border-radius:50%; width:38px; height:38px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a2e" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="#1a1a2e" stroke="none"></polygon><path d="M15.5 8.5a5 5 0 0 1 0 7"></path><path d="M19 5a10 10 0 0 1 0 14"></path></svg>
             </button>
-            <button onclick="closeWordCard(event)" title="Закрыть" style="border:none; background:#f4f6f7; border-radius:50%; width:38px; height:38px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <button onclick="closeWordCard(event)" title="Close" style="border:none; background:#f4f6f7; border-radius:50%; width:38px; height:38px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2.3" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
             </button>
           </div>
         </div>
 
-        <!-- PRO term: icon badge + RU term + EN definition (+ parallel RU, aligned) -->
+        <!-- PRO term -->
         <div id="wcPro" style="display:none; margin-top:14px;">
           <span style="display:inline-flex; align-items:center; gap:6px; font-size:10.5px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; color:#047857; background:rgba(52,211,153,.14); border-radius:6px; padding:4px 10px 4px 8px;">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
@@ -176,17 +175,16 @@
           <p id="wcDefEN" style="font-size:13.5px; color:#3a3a4a; line-height:1.5; margin:9px 0 0;"></p>
           <p id="wcDefRU" style="display:none; font-size:12px; color:#6b7280; line-height:1.45; margin:7px 0 0;"></p>
           <button id="wcRuToggle" onclick="toggleCardRu(event)" style="margin-top:11px; display:inline-flex; align-items:center; gap:5px; border:1.5px solid #d6dbe0; background:#fff; color:#3a3a4a; font-family:inherit; font-size:11.5px; font-weight:700; padding:5px 11px; border-radius:999px; cursor:pointer;">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="3" y1="12" x2="21" y2="12"></line><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"></path></svg>RU перевод
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="3" y1="12" x2="21" y2="12"></line><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"></path></svg><span id="wcToggleLabel">RU translation</span>
           </button>
         </div>
 
-        <!-- COMMON word: meanings list -->
+        <!-- COMMON word -->
         <div id="wcCommon" style="display:none; margin-top:12px;">
           <div id="wcMeanings" style="font-size:16px; color:#1a1a2e; line-height:1.7;"></div>
         </div>
       </div>
 
-      <!-- single action (reflects saved state) -->
       <div style="padding:14px 18px 0;">
         <button id="wcAddBtn" onclick="cardAdd(event)" style="width:100%; border:none; background:linear-gradient(135deg,#4ade80,#22c55e); color:#fff; font-family:inherit; font-size:15px; font-weight:700; padding:14px 8px; border-radius:14px; cursor:pointer; box-shadow:0 4px 16px rgba(52,211,153,.32); display:flex; align-items:center; justify-content:center; gap:8px;">Add &amp; learn</button>
       </div>
@@ -194,186 +192,281 @@
 
   </div>
 <script>
+  // ════════════ Language model ════════════
+  var LMETA = {
+    off: { label: 'Translate', native: 'English only', tts: 'en-US', dir: 'ltr' },
+    es:  { label: 'ES', native: 'Español', tts: 'es-ES', dir: 'ltr' },
+    pt:  { label: 'PT', native: 'Português', tts: 'pt-BR', dir: 'ltr' },
+    ht:  { label: 'HT', native: 'Kreyòl Ayisyen', tts: 'fr-FR', dir: 'ltr' },
+    ru:  { label: 'RU', native: 'Русский', tts: 'ru-RU', dir: 'ltr' },
+    fr:  { label: 'FR', native: 'Français', tts: 'fr-FR', dir: 'ltr' },
+    de:  { label: 'DE', native: 'Deutsch', tts: 'de-DE', dir: 'ltr' },
+    it:  { label: 'IT', native: 'Italiano', tts: 'it-IT', dir: 'ltr' },
+    zh:  { label: '中文', native: '中文（普通话）', tts: 'zh-CN', dir: 'ltr' },
+    ar:  { label: 'AR', native: 'العربية', tts: 'ar-SA', dir: 'rtl' },
+    tl:  { label: 'TL', native: 'Tagalog', tts: 'fil-PH', dir: 'ltr' }
+  };
+  var LANG_ORDER = ['off', 'es', 'pt', 'ht', 'ru', 'fr', 'de', 'it', 'zh', 'ar', 'tl'];
+
+  // Each block = array of (string | [anchorId, text]).
+  var I18N = {
+    es: {
+      q: ["Una ", ["q-claim","reclamación"], " ", ["q-legal","legal"], " sobre una ", ["q-prop","propiedad"], " que debe ", ["q-paid","saldarse"], " cuando se ", ["q-sold","vende"], " la propiedad se ", ["q-called","llama"], "…"],
+      opt: ["servidumbre", "gravamen", "carga", "escritura"],
+      ex: ["Un ", ["ru-lien","gravamen"], " es una ", ["ru-claim","reclamación"], " ", ["ru-legal","legal"], " que ", ["ru-stays","permanece"], " sobre la ", ["ru-prop","propiedad"], " ", ["ru-until","hasta"], " que se ", ["ru-paid","paga"], " la ", ["ru-debt","deuda"], "; debe ", ["ru-cleared","cancelarse"], " en el ", ["ru-close","cierre"], "."]
+    },
+    pt: {
+      q: ["Uma ", ["q-claim","reivindicação"], " ", ["q-legal","legal"], " sobre um ", ["q-prop","imóvel"], " que deve ser ", ["q-paid","quitada"], " quando o imóvel é ", ["q-sold","vendido"], " é ", ["q-called","chamada"], " de…"],
+      opt: ["servidão", "ônus", "encargo", "escritura"],
+      ex: ["Um ", ["ru-lien","ônus"], " é uma ", ["ru-claim","reivindicação"], " ", ["ru-legal","legal"], " que ", ["ru-stays","permanece"], " sobre o ", ["ru-prop","imóvel"], " ", ["ru-until","até"], " que a ", ["ru-debt","dívida"], " seja ", ["ru-paid","paga"], "; deve ser ", ["ru-cleared","quitado"], " no ", ["ru-close","fechamento"], "."]
+    },
+    ht: {
+      q: ["Yon ", ["q-claim","reklamasyon"], " ", ["q-legal","legal"], " sou yon ", ["q-prop","pwopriyete"], " ki dwe ", ["q-paid","peye"], " lè yo ", ["q-sold","vann"], " pwopriyete a ", ["q-called","rele"], " yon…"],
+      opt: ["sèvitid", "privilèj", "chaj sou pwopriyete", "ak pwopriyete"],
+      ex: ["Yon ", ["ru-lien","privilèj"], " se yon ", ["ru-claim","reklamasyon"], " ", ["ru-legal","legal"], " ki ", ["ru-stays","rete"], " sou ", ["ru-prop","pwopriyete"], " a ", ["ru-until","jiskaske"], " ", ["ru-debt","dèt"], " la ", ["ru-paid","peye"], "; li dwe ", ["ru-cleared","retire"], " nan ", ["ru-close","fèmti"], " a."]
+    },
+    ru: {
+      q: [["q-legal","Юридическое"], " ", ["q-claim","требование"], " к ", ["q-prop","объекту"], ", которое должно быть ", ["q-paid","погашено"], " при ", ["q-sold","продаже"], ", ", ["q-called","называется"], "…"],
+      opt: ["сервитут", "залоговое удержание", "обременение", "акт о передаче права"],
+      ex: [["ru-lien","Залоговое удержание"], " — это ", ["ru-legal","юридическое"], " ", ["ru-claim","требование"], ", которое ", ["ru-stays","остаётся"], " на ", ["ru-prop","объекте"], " ", ["ru-until","до"], " ", ["ru-paid","погашения"], " ", ["ru-debt","долга"], " и ", ["ru-cleared","снимается"], " при ", ["ru-close","сделке"], "."]
+    },
+    fr: {
+      q: ["Une ", ["q-claim","créance"], " ", ["q-legal","légale"], " sur un ", ["q-prop","bien"], " qui doit être ", ["q-paid","réglée"], " lors de la ", ["q-sold","vente"], " du bien ", ["q-called","s’appelle"], "…"],
+      opt: ["servitude", "privilège", "charge", "acte de propriété"],
+      ex: ["Un ", ["ru-lien","privilège"], " est une ", ["ru-claim","créance"], " ", ["ru-legal","légale"], " qui ", ["ru-stays","reste"], " attachée au ", ["ru-prop","bien"], " ", ["ru-until","jusqu’à"], " ce que la ", ["ru-debt","dette"], " soit ", ["ru-paid","payée"], "; il doit être ", ["ru-cleared","levé"], " à la ", ["ru-close","clôture"], "."]
+    },
+    de: {
+      q: ["Ein ", ["q-legal","rechtlicher"], " ", ["q-claim","Anspruch"], " auf eine ", ["q-prop","Immobilie"], ", der beim ", ["q-sold","Verkauf"], " der Immobilie ", ["q-paid","beglichen"], " werden muss, ", ["q-called","heißt"], "…"],
+      opt: ["Dienstbarkeit", "Pfandrecht", "Belastung", "Urkunde"],
+      ex: ["Ein ", ["ru-lien","Pfandrecht"], " ist ein ", ["ru-legal","rechtlicher"], " ", ["ru-claim","Anspruch"], ", der auf der ", ["ru-prop","Immobilie"], " ", ["ru-stays","bleibt"], ", ", ["ru-until","bis"], " die ", ["ru-debt","Schuld"], " ", ["ru-paid","bezahlt"], " ist; es muss beim ", ["ru-close","Abschluss"], " ", ["ru-cleared","gelöscht"], " werden."]
+    },
+    it: {
+      q: ["Un ", ["q-claim","diritto"], " ", ["q-legal","legale"], " su un ", ["q-prop","immobile"], " che deve essere ", ["q-paid","estinto"], " quando l’immobile viene ", ["q-sold","venduto"], " si ", ["q-called","chiama"], "…"],
+      opt: ["servitù", "vincolo", "gravame", "atto di proprietà"],
+      ex: ["Un ", ["ru-lien","vincolo"], " è un ", ["ru-claim","diritto"], " ", ["ru-legal","legale"], " che ", ["ru-stays","resta"], " sull’", ["ru-prop","immobile"], " ", ["ru-until","finché"], " il ", ["ru-debt","debito"], " non è ", ["ru-paid","pagato"], "; deve essere ", ["ru-cleared","estinto"], " al ", ["ru-close","rogito"], "."]
+    },
+    zh: {
+      q: ["对", ["q-prop","房产"], "的、在房产", ["q-sold","出售"], "时必须", ["q-paid","清偿"], "的", ["q-legal","合法"], ["q-claim","债权"], "，", ["q-called","称为"], "…"],
+      opt: ["地役权", "留置权", "产权负担", "房地产契据"],
+      ex: [["ru-lien","留置权"], "是一种", ["ru-stays","附着"], "在", ["ru-prop","房产"], "上的", ["ru-legal","合法"], ["ru-claim","债权"], "，", ["ru-until","直到"], ["ru-debt","债务"], ["ru-paid","清偿"], "为止；必须在", ["ru-close","交割"], "时", ["ru-cleared","解除"], "。"]
+    },
+    ar: {
+      q: [["q-claim","المطالبة"], " ", ["q-legal","القانونية"], " على ", ["q-prop","عقار"], " والتي يجب ", ["q-paid","سدادها"], " عند ", ["q-sold","بيع"], " العقار ", ["q-called","تسمى"], "…"],
+      opt: ["حق ارتفاق", "امتياز", "التزام عقاري", "سند ملكية"],
+      ex: [["ru-lien","الامتياز"], " هو ", ["ru-claim","مطالبة"], " ", ["ru-legal","قانونية"], " ", ["ru-stays","تبقى"], " على ", ["ru-prop","العقار"], " ", ["ru-until","حتى"], " ", ["ru-paid","سداد"], " ", ["ru-debt","الدين"], "؛ ويجب ", ["ru-cleared","إزالته"], " عند ", ["ru-close","الإغلاق"], "."]
+    },
+    tl: {
+      q: ["Ang ", ["q-legal","legal"], " na ", ["q-claim","paghahabol"], " sa isang ", ["q-prop","ari-arian"], " na dapat ", ["q-paid","bayaran"], " kapag ito ay ", ["q-sold","naibenta"], " ay ", ["q-called","tinatawag"], " na…"],
+      opt: ["easement (karapatang-daanan)", "lien", "encumbrance (pasanin)", "titulo / kasulatan"],
+      ex: ["Ang ", ["ru-lien","lien"], " ay isang ", ["ru-legal","legal"], " na ", ["ru-claim","paghahabol"], " na ", ["ru-stays","nananatili"], " sa ", ["ru-prop","ari-arian"], " ", ["ru-until","hanggang"], " sa ", ["ru-paid","mabayaran"], " ang ", ["ru-debt","utang"], "; dapat itong ", ["ru-cleared","maalis"], " sa ", ["ru-close","closing"], "."]
+    }
+  };
+
+  // ════════════ Word-card data ════════════
+  // language-independent
+  var DICT = {
+    lien:        { type: 'pro', ipa: '[liːn]' },
+    easement:    { type: 'pro', ipa: '[ˈiːzmənt]' },
+    encumbrance: { type: 'pro', ipa: '[ɪnˈkʌmbrəns]' },
+    deed:        { type: 'pro', ipa: '[diːd]' },
+    closing:     { type: 'pro', ipa: '[ˈkləʊzɪŋ]' },
+    property: { type: 'common', ipa: '[ˈprɒpəti]' },
+    legal:    { type: 'common', ipa: '[ˈliːɡl̩]' },
+    claim:    { type: 'common', ipa: '[kleɪm]' },
+    debt:     { type: 'common', ipa: '[det]' },
+    paid:     { type: 'common', ipa: '[peɪ]', lemma: 'pay' },
+    sold:     { type: 'common', ipa: '[sel]', lemma: 'sell' },
+    cleared:  { type: 'common', ipa: '[klɪə]', lemma: 'clear' },
+    stays:    { type: 'common', ipa: '[steɪ]', lemma: 'stay' },
+    against:  { type: 'common', ipa: '[əˈɡenst]' },
+    until:    { type: 'common', ipa: '[ənˈtɪl]' },
+    when:     { type: 'common', ipa: '[wen]' },
+    called:   { type: 'common', ipa: '[kɔːl]', lemma: 'call' },
+    with:     { type: 'common', ipa: '[wɪð]' }
+  };
+  var EN_DEF = {
+    lien: 'A lien is a legal right of a creditor to hold the debtor’s property until a debt is paid. It must be cleared when the property is sold.',
+    easement: 'An easement is the right to use someone else’s land for a specific purpose, such as access or utilities, without owning it.',
+    encumbrance: 'An encumbrance is any claim or right that a third party holds against a property, limiting its use or sale.',
+    deed: 'A deed is a legal document that transfers ownership of real estate from the seller to the buyer.',
+    closing: 'Closing is the final step of a deal, when documents are signed, ownership is transferred, and payments are settled.'
+  };
+  // pro term: { tr, def } per language ; common: "meaning; meaning"
+  var CARD = {
+    es: { pro: {
+      lien: { tr: 'gravamen', def: 'Un gravamen es el derecho legal de un acreedor a retener el bien del deudor hasta que se pague la deuda; debe cancelarse al vender la propiedad.' },
+      easement: { tr: 'servidumbre', def: 'Una servidumbre es el derecho a usar el terreno de otra persona para un fin concreto, como acceso o servicios, sin ser su dueño.' },
+      encumbrance: { tr: 'carga / gravamen', def: 'Una carga es cualquier derecho o reclamación de un tercero sobre una propiedad que limita su uso o su venta.' },
+      deed: { tr: 'escritura', def: 'Una escritura es un documento legal que transfiere la propiedad de un inmueble del vendedor al comprador.' },
+      closing: { tr: 'cierre', def: 'El cierre es la etapa final de la operación, cuando se firman los documentos, se transfiere la propiedad y se liquidan los pagos.' }
+    }, common: {
+      property: 'propiedad; inmueble; característica', legal: 'legal; jurídico', claim: 'reclamación; derecho; demanda', debt: 'deuda', paid: 'pagar; abonar', sold: 'vender', cleared: 'cancelar; saldar; despejar', stays: 'permanecer; quedarse', against: 'contra; sobre; en garantía de', until: 'hasta; hasta que', when: 'cuando', called: 'llamar; denominar', with: 'con; mediante'
+    } },
+    pt: { pro: {
+      lien: { tr: 'ônus / garantia real', def: 'Um ônus é o direito legal de um credor de reter o bem do devedor até a dívida ser paga; deve ser quitado na venda do imóvel.' },
+      easement: { tr: 'servidão', def: 'Uma servidão é o direito de usar o terreno de outra pessoa para um fim específico, como acesso ou utilidades, sem ser o dono.' },
+      encumbrance: { tr: 'encargo / ônus', def: 'Um ônus é qualquer direito ou reivindicação de terceiros sobre um imóvel que limita seu uso ou venda.' },
+      deed: { tr: 'escritura', def: 'Uma escritura é um documento legal que transfere a propriedade de um imóvel do vendedor para o comprador.' },
+      closing: { tr: 'fechamento', def: 'O fechamento é a etapa final do negócio, quando os documentos são assinados, a propriedade é transferida e os pagamentos são liquidados.' }
+    }, common: {
+      property: 'propriedade; imóvel; característica', legal: 'legal; jurídico', claim: 'reivindicação; direito; alegação', debt: 'dívida', paid: 'pagar', sold: 'vender', cleared: 'quitar; liquidar; limpar', stays: 'permanecer; ficar', against: 'contra; sobre; em garantia de', until: 'até; até que', when: 'quando', called: 'chamar; denominar', with: 'com; mediante'
+    } },
+    ht: { pro: {
+      lien: { tr: 'privilèj', def: 'Yon privilèj se dwa legal yon kreyansye genyen pou kenbe byen debitè a jiskaske dèt la peye; li dwe retire lè yo vann pwopriyete a.' },
+      easement: { tr: 'sèvitid', def: 'Yon sèvitid se dwa pou itilize tè yon lòt moun pou yon rezon presi, tankou pasaj oswa sèvis, san ou pa mèt li.' },
+      encumbrance: { tr: 'chaj sou pwopriyete', def: 'Yon chaj se nenpòt dwa oswa reklamasyon yon twazyèm pati genyen sou yon pwopriyete ki limite itilizasyon oswa vant li.' },
+      deed: { tr: 'ak pwopriyete', def: 'Yon ak se yon dokiman legal ki transfere pwopriyete yon byen imobilye soti nan men vandè a bay achtè a.' },
+      closing: { tr: 'fèmti', def: 'Fèmti se dènye etap nan yon tranzaksyon, lè yo siyen dokiman yo, pwopriyete a transfere, epi peman yo regle.' }
+    }, common: {
+      property: 'pwopriyete; byen imobilye; karakteristik', legal: 'legal; jiridik', claim: 'reklamasyon; dwa; demand', debt: 'dèt', paid: 'peye', sold: 'vann', cleared: 'retire; efase; klè', stays: 'rete', against: 'kont; sou', until: 'jiskaske', when: 'lè', called: 'rele', with: 'ak; avèk'
+    } },
+    ru: { pro: {
+      lien: { tr: 'залоговое удержание', def: 'Залоговое удержание — право кредитора удерживать имущество должника до погашения долга; снимается при продаже объекта.' },
+      easement: { tr: 'сервитут', def: 'Сервитут — право пользоваться чужим участком в определённых целях, например для прохода или коммуникаций, без права собственности.' },
+      encumbrance: { tr: 'обременение', def: 'Обременение — любое право или требование третьих лиц на объект, ограничивающее его использование или продажу.' },
+      deed: { tr: 'акт о передаче права', def: 'Документ о передаче права — юридический акт, передающий право собственности на недвижимость от продавца к покупателю.' },
+      closing: { tr: 'закрытие сделки', def: 'Закрытие сделки — финальный этап, когда подписываются документы, переходит право собственности и производятся расчёты.' }
+    }, common: {
+      property: 'имущество, собственность; объект недвижимости; свойство', legal: 'юридический, правовой; законный', claim: 'требование, претензия; иск; заявлять', debt: 'долг, задолженность', paid: 'платить, оплачивать', sold: 'продавать', cleared: 'снимать, погашать (долг); очищать', stays: 'оставаться, сохраняться', against: 'против; в счёт, в обеспечение', until: 'до, до тех пор пока', when: 'когда; в то время как', called: 'называть; звать, звонить', with: 'с, вместе с; при помощи'
+    } },
+    fr: { pro: {
+      lien: { tr: 'privilège / sûreté', def: 'Un privilège est le droit légal d’un créancier de retenir le bien du débiteur jusqu’au paiement de la dette; il doit être levé lors de la vente.' },
+      easement: { tr: 'servitude', def: 'Une servitude est le droit d’utiliser le terrain d’autrui dans un but précis, comme l’accès ou les réseaux, sans en être propriétaire.' },
+      encumbrance: { tr: 'charge', def: 'Une charge est tout droit ou créance qu’un tiers détient sur un bien et qui en limite l’usage ou la vente.' },
+      deed: { tr: 'acte de propriété', def: 'Un acte est un document légal qui transfère la propriété d’un bien immobilier du vendeur à l’acheteur.' },
+      closing: { tr: 'clôture', def: 'La clôture est l’étape finale de la transaction, lorsque les documents sont signés, la propriété transférée et les paiements réglés.' }
+    }, common: {
+      property: 'propriété; bien; caractéristique', legal: 'légal; juridique', claim: 'créance; revendication; réclamation', debt: 'dette', paid: 'payer; régler', sold: 'vendre', cleared: 'lever; apurer; dégager', stays: 'rester; demeurer', against: 'contre; sur; en garantie de', until: 'jusqu’à; jusqu’à ce que', when: 'quand; lorsque', called: 'appeler; nommer', with: 'avec; au moyen de'
+    } },
+    de: { pro: {
+      lien: { tr: 'Pfandrecht', def: 'Ein Pfandrecht ist das gesetzliche Recht eines Gläubigers, das Eigentum des Schuldners bis zur Zahlung der Schuld zu belasten; es muss beim Verkauf gelöscht werden.' },
+      easement: { tr: 'Dienstbarkeit', def: 'Eine Dienstbarkeit ist das Recht, fremdes Land für einen bestimmten Zweck wie Zugang oder Versorgung zu nutzen, ohne es zu besitzen.' },
+      encumbrance: { tr: 'Belastung', def: 'Eine Belastung ist jedes Recht oder jeder Anspruch eines Dritten an einer Immobilie, der ihre Nutzung oder ihren Verkauf einschränkt.' },
+      deed: { tr: 'Urkunde', def: 'Eine Urkunde ist ein rechtliches Dokument, das das Eigentum an einer Immobilie vom Verkäufer auf den Käufer überträgt.' },
+      closing: { tr: 'Abschluss', def: 'Der Abschluss ist der letzte Schritt eines Geschäfts, bei dem Dokumente unterzeichnet, das Eigentum übertragen und Zahlungen abgewickelt werden.' }
+    }, common: {
+      property: 'Eigentum; Immobilie; Eigenschaft', legal: 'rechtlich; gesetzlich', claim: 'Anspruch; Forderung', debt: 'Schuld; Verbindlichkeit', paid: 'zahlen; bezahlen', sold: 'verkaufen', cleared: 'tilgen; löschen; klären', stays: 'bleiben', against: 'gegen; auf', until: 'bis', when: 'wenn; als', called: 'nennen; heißen', with: 'mit'
+    } },
+    it: { pro: {
+      lien: { tr: 'vincolo / privilegio', def: 'Un vincolo è il diritto legale di un creditore di trattenere il bene del debitore finché il debito non è pagato; deve essere estinto alla vendita.' },
+      easement: { tr: 'servitù', def: 'Una servitù è il diritto di usare il terreno altrui per uno scopo specifico, come accesso o utenze, senza possederlo.' },
+      encumbrance: { tr: 'gravame', def: 'Un gravame è qualsiasi diritto o pretesa di terzi su un immobile che ne limita l’uso o la vendita.' },
+      deed: { tr: 'atto di proprietà', def: 'Un atto è un documento legale che trasferisce la proprietà di un immobile dal venditore all’acquirente.' },
+      closing: { tr: 'rogito', def: 'Il rogito è la fase finale dell’operazione, quando si firmano i documenti, si trasferisce la proprietà e si regolano i pagamenti.' }
+    }, common: {
+      property: 'proprietà; immobile; caratteristica', legal: 'legale; giuridico', claim: 'diritto; pretesa; rivendicazione', debt: 'debito', paid: 'pagare', sold: 'vendere', cleared: 'estinguere; saldare; liberare', stays: 'restare; rimanere', against: 'contro; su; a garanzia di', until: 'finché; fino a', when: 'quando', called: 'chiamare; denominare', with: 'con; mediante'
+    } },
+    zh: { pro: {
+      lien: { tr: '留置权', def: '留置权是债权人在债务清偿前对债务人财产享有的合法权利；房产出售时必须解除。' },
+      easement: { tr: '地役权', def: '地役权是为特定目的（如通行或公共设施）使用他人土地的权利，但不拥有该土地。' },
+      encumbrance: { tr: '产权负担', def: '产权负担是第三方对房产享有的任何权利或主张，会限制其使用或出售。' },
+      deed: { tr: '房地产契据', def: '房地产契据是将不动产所有权从卖方转移给买方的法律文件。' },
+      closing: { tr: '交割', def: '交割是交易的最后一步，此时签署文件、转移所有权并结清款项。' }
+    }, common: {
+      property: '财产；房产；属性', legal: '合法的；法律的', claim: '债权；主张；索赔', debt: '债务；欠款', paid: '支付；偿还', sold: '出售；卖', cleared: '清除；偿清', stays: '保持；留存', against: '针对；以…为担保', until: '直到', when: '当…时', called: '称为；叫做', with: '与；用'
+    } },
+    ar: { pro: {
+      lien: { tr: 'امتياز / حق حجز', def: 'الامتياز هو حق قانوني للدائن في الاحتفاظ بعقار المدين حتى سداد الدين، ويجب إزالته عند بيع العقار.' },
+      easement: { tr: 'حق ارتفاق', def: 'حق الارتفاق هو حق استخدام أرض شخص آخر لغرض محدد، مثل المرور أو المرافق، دون امتلاكها.' },
+      encumbrance: { tr: 'التزام عقاري', def: 'الالتزام العقاري هو أي حق أو مطالبة لطرف ثالث على العقار تحدّ من استخدامه أو بيعه.' },
+      deed: { tr: 'سند ملكية', def: 'سند الملكية وثيقة قانونية تنقل ملكية العقار من البائع إلى المشتري.' },
+      closing: { tr: 'إغلاق الصفقة', def: 'الإغلاق هو الخطوة الأخيرة في الصفقة، حيث تُوقَّع المستندات وتُنقَل الملكية وتُسوَّى المدفوعات.' }
+    }, common: {
+      property: 'ملكية؛ عقار؛ خاصية', legal: 'قانوني؛ شرعي', claim: 'مطالبة؛ دعوى؛ ادعاء', debt: 'دين؛ مديونية', paid: 'يدفع؛ يسدد', sold: 'يبيع', cleared: 'يزيل؛ يسدد', stays: 'يبقى؛ يظل', against: 'ضد؛ على؛ مقابل', until: 'حتى', when: 'عندما', called: 'يسمى؛ يدعى', with: 'مع؛ بواسطة'
+    } },
+    tl: { pro: {
+      lien: { tr: 'lien (pananagutan sa ari-arian)', def: 'Ang lien ay legal na karapatan ng pinagkakautangan na hawakan ang ari-arian ng may utang hanggang mabayaran ito; dapat itong maalis kapag naibenta ang ari-arian.' },
+      easement: { tr: 'easement (karapatang gamitin)', def: 'Ang easement ay karapatang gamitin ang lupa ng iba para sa tiyak na layunin, gaya ng daanan o utilidad, nang hindi ito pag-aari.' },
+      encumbrance: { tr: 'encumbrance (pasanin)', def: 'Ang encumbrance ay anumang karapatan o paghahabol ng ikatlong partido sa ari-arian na naglilimita sa paggamit o pagbebenta nito.' },
+      deed: { tr: 'titulo / kasulatan', def: 'Ang deed ay legal na dokumento na naglilipat ng pagmamay-ari ng ari-arian mula sa nagbebenta patungo sa bumibili.' },
+      closing: { tr: 'closing (pagtatapos)', def: 'Ang closing ay ang huling hakbang ng transaksiyon, kung saan pinipirmahan ang mga dokumento, inililipat ang pagmamay-ari, at inaayos ang mga bayad.' }
+    }, common: {
+      property: 'ari-arian; pag-aari; katangian', legal: 'legal; ayon sa batas', claim: 'paghahabol; karapatan; angkin', debt: 'utang', paid: 'magbayad', sold: 'magbenta', cleared: 'alisin; bayaran nang lubos', stays: 'manatili', against: 'laban sa; sa', until: 'hanggang', when: 'kapag; kailan', called: 'tawagin', with: 'kasama; gamit'
+    } }
+  };
+
+  // ════════════ State ════════════
+  var curLang = 'ru';        // active translation language (for card + lines)
+  var parallelOn = true;     // are parallel lines shown
+  var CARD_EL = document.querySelector('div[style*="600px"]');
+
+  function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+  function renderSegs(arr) {
+    return arr.map(function (s) {
+      return typeof s === 'string' ? esc(s) : '<span id="' + s[0] + '">' + esc(s[1]) + '</span>';
+    }).join('');
+  }
+  function plainSegs(arr) {
+    return arr.map(function (s) { return typeof s === 'string' ? s : s[1]; }).join('');
+  }
+
   function clearHl() {
     document.querySelectorAll('.hl').forEach(function (e) { e.classList.remove('hl'); });
     document.querySelectorAll('.rw-on').forEach(function (e) { e.classList.remove('rw-on'); });
     document.querySelectorAll('.read-opt').forEach(function (e) { e.classList.remove('read-opt'); });
   }
-  var CARD = document.querySelector('div[style*="600px"]');
 
-  // ── Interactive answer reveal ──
+  // ════════════ Language application ════════════
+  function applyLang() {
+    var L = I18N[curLang], dir = LMETA[curLang].dir;
+    document.getElementById('lngBadge').textContent = LMETA[curLang].label;
+    var qt = document.getElementById('qTrans');
+    qt.innerHTML = renderSegs(L.q); qt.setAttribute('dir', dir);
+    var xt = document.getElementById('exTrans');
+    xt.innerHTML = renderSegs(L.ex); xt.setAttribute('dir', dir);
+    for (var i = 0; i < 4; i++) {
+      var o = document.querySelector('#opt' + i + ' .opt-ru');
+      o.textContent = L.opt[i]; o.setAttribute('dir', dir);
+    }
+    document.querySelectorAll('.ru-line').forEach(function (e) { e.style.display = parallelOn ? '' : 'none'; });
+  }
+
+  function buildLangMenu() {
+    var menu = document.getElementById('langMenu');
+    menu.innerHTML = '';
+    LANG_ORDER.forEach(function (code) {
+      var m = LMETA[code];
+      var b = document.createElement('button');
+      b.className = 'langOpt';
+      if (code === 'ar') { b.setAttribute('dir', 'rtl'); }
+      var active = (code === 'off') ? !parallelOn : (parallelOn && curLang === code);
+      b.innerHTML = '<span>' + m.native + '</span><span class="langTick" style="color:#34D399; font-weight:800; display:' + (active ? 'inline' : 'none') + ';">✓</span>';
+      b.onclick = function (e) { e.stopPropagation(); pickLang(code); };
+      menu.appendChild(b);
+    });
+  }
+  function toggleLangMenu(e) {
+    e.stopPropagation();
+    var m = document.getElementById('langMenu');
+    if (m.style.display === 'block') { m.style.display = 'none'; return; }
+    buildLangMenu();
+    m.style.display = 'block';
+  }
+  function pickLang(code) {
+    if (code === 'off') { parallelOn = false; }
+    else { parallelOn = true; curLang = code; }
+    applyLang();
+    var chip = document.getElementById('langChip');
+    document.getElementById('langLabel').textContent = parallelOn ? LMETA[curLang].label : 'Translate';
+    if (parallelOn) { chip.style.background = '#34D399'; chip.style.color = '#fff'; chip.style.borderColor = '#34D399'; }
+    else { chip.style.background = '#fff'; chip.style.color = '#047857'; chip.style.borderColor = 'rgba(52,211,153,.55)'; }
+    if (!parallelOn) { clearHl(); document.getElementById('wbar').style.display = 'none'; }
+    document.getElementById('langMenu').style.display = 'none';
+  }
+
+  // ════════════ Answer reveal ════════════
   var CORRECT = 1, answered = false, currentWord = null;
-
-  // word data — type 'pro' (realtor term, big definition) or 'common' (translations)
-  var DICT = {
-    lien: { ipa: '[liːn]', type: 'pro', tr: 'залоговое удержание', seg: [
-      ['A lien is', 'Залоговое удержание —'],
-      ['a legal right of a creditor', 'юридическое право кредитора'],
-      ['to hold the debtor’s property', 'удерживать имущество должника'],
-      ['until the debt is paid.', 'до погашения долга.'],
-      ['It must be cleared', 'Оно снимается'],
-      ['when the property is sold.', 'при продаже объекта.']
-    ] },
-    easement: { ipa: '[ˈiːzmənt]', type: 'pro', tr: 'сервитут', seg: [
-      ['An easement is the right', 'Сервитут — это право'],
-      ['to use someone else’s land', 'пользоваться чужим участком'],
-      ['for a specific purpose,', 'в определённых целях,'],
-      ['such as access or utilities,', 'например для прохода или коммуникаций,'],
-      ['without owning it.', 'без права собственности на него.']
-    ] },
-    encumbrance: { ipa: '[ɪnˈkʌmbrəns]', type: 'pro', tr: 'обременение', seg: [
-      ['An encumbrance is any claim or right', 'Обременение — это любое требование или право'],
-      ['that a third party holds', 'третьих лиц'],
-      ['against a property,', 'на объект,'],
-      ['limiting its use or sale.', 'ограничивающее его использование или продажу.']
-    ] },
-    deed: { ipa: '[diːd]', type: 'pro', tr: 'акт о передаче права', seg: [
-      ['A deed is a legal document', 'Документ о передаче права — юридический акт,'],
-      ['that transfers ownership of real estate', 'передающий право собственности на недвижимость'],
-      ['from the seller to the buyer.', 'от продавца к покупателю.']
-    ] },
-    closing: { ipa: '[ˈkləʊzɪŋ]', type: 'pro', tr: 'закрытие сделки', seg: [
-      ['Closing is the final step of a deal,', 'Закрытие сделки — финальный этап,'],
-      ['when documents are signed,', 'когда подписываются документы,'],
-      ['ownership is transferred,', 'переходит право собственности'],
-      ['and payments are settled.', 'и производятся расчёты.']
-    ] },
-    property:   { ipa: '[ˈprɒpəti]', type: 'common', meanings: ['имущество, собственность', 'объект недвижимости', 'свойство, характеристика'] },
-    legal:      { ipa: '[ˈliːɡl̩]', type: 'common', meanings: ['юридический, правовой', 'законный, легальный'] },
-    claim:      { ipa: '[kleɪm]', type: 'common', meanings: ['требование, претензия', 'иск', 'утверждать, заявлять'] },
-    debt:       { ipa: '[det]', type: 'common', meanings: ['долг, задолженность'] },
-    paid:       { lemma: 'pay', ipa: '[peɪ]', type: 'common', meanings: ['платить, оплачивать'] },
-    sold:       { lemma: 'sell', ipa: '[sel]', type: 'common', meanings: ['продавать'] },
-    cleared:    { lemma: 'clear', ipa: '[klɪə]', type: 'common', meanings: ['снимать, погашать (долг)', 'очищать'] },
-    stays:      { lemma: 'stay', ipa: '[steɪ]', type: 'common', meanings: ['оставаться, сохраняться'] },
-    against:    { ipa: '[əˈɡenst]', type: 'common', meanings: ['против', 'в счёт, в обеспечение', 'на фоне'] },
-    until:      { ipa: '[ənˈtɪl]', type: 'common', meanings: ['до, до тех пор пока'] },
-    when:       { ipa: '[wen]', type: 'common', meanings: ['когда', 'в то время как'] },
-    called:     { lemma: 'call', ipa: '[kɔːl]', type: 'common', meanings: ['называть, именовать', 'звать, звонить'] },
-    with:       { ipa: '[wɪð]', type: 'common', meanings: ['с, вместе с', 'при помощи'] }
-  };
-
-  var cardRuOn = false;
-  function positionSheet() {
-    var sheet = document.getElementById('wcSheet');
-    sheet.style.top = (CARD.clientHeight - sheet.offsetHeight) + 'px';
-  }
-  function setCardRu(on) {
-    cardRuOn = on;
-    document.getElementById('wcDefRU').style.display = on ? 'block' : 'none';
-    var t = document.getElementById('wcRuToggle');
-    if (on) {
-      t.style.background = '#34D399'; t.style.borderColor = '#34D399'; t.style.color = '#fff';
-    } else {
-      t.style.background = '#fff'; t.style.borderColor = '#d6dbe0'; t.style.color = '#3a3a4a';
-      document.querySelectorAll('#wcPro .hl').forEach(function (e) { e.classList.remove('hl'); });
-    }
-    positionSheet();
-  }
-  function toggleCardRu(ev) {
-    if (ev) { ev.stopPropagation(); }
-    setCardRu(!cardRuOn);
-  }
-  function tapSeg(ev, el) {
-    ev.stopPropagation();
-    if (!cardRuOn) { setCardRu(true); }
-    document.querySelectorAll('#wcPro .hl').forEach(function (e) { e.classList.remove('hl'); });
-    el.classList.add('hl');
-    var i = el.getAttribute('data-i');
-    var ru = document.querySelector('#wcDefRU .cseg-ru[data-i="' + i + '"]');
-    if (ru) { ru.classList.add('hl'); }
-  }
-
-  var cardKey = '';
-  function syncCardBtn() {
-    var b = document.getElementById('wcAddBtn');
-    if (!b) { return; }
-    if (addedWords[cardKey]) {
-      b.style.background = '#fff';
-      b.style.color = '#047857';
-      b.style.border = '1.5px solid #34D399';
-      b.style.boxShadow = 'none';
-      b.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> In dictionary';
-    } else {
-      b.style.background = 'linear-gradient(135deg,#4ade80,#22c55e)';
-      b.style.color = '#fff';
-      b.style.border = 'none';
-      b.style.boxShadow = '0 4px 16px rgba(52,211,153,.32)';
-      b.innerHTML = 'Add &amp; learn';
-    }
-  }
-  function cardAdd(ev) {
-    ev.stopPropagation();
-    if (!cardKey) { return; }
-    var nowOn = !addedWords[cardKey];
-    if (nowOn) { addedWords[cardKey] = true; } else { delete addedWords[cardKey]; }
-    syncCardBtn();
-    if (nowOn) {
-      var t = document.getElementById('toast');
-      t.style.opacity = '1';
-      t.style.transform = 'translateX(-50%) translateY(0)';
-      setTimeout(function () {
-        t.style.opacity = '0';
-        t.style.transform = 'translateX(-50%) translateY(12px)';
-      }, 1400);
-    }
-  }
-
-  function openWordCard(ev) {
-    if (ev) { ev.stopPropagation(); }
-    var raw = currentWord ? currentWord.textContent.trim() : 'lien';
-    var key = raw.toLowerCase().replace(/[^a-z]/g, '');
-    cardKey = key;
-    var d = DICT[key] || { ipa: '', type: 'common', meanings: ['перевод'] };
-    document.getElementById('wcWord').textContent = d.lemma || key;
-    document.getElementById('wcIpa').textContent = d.ipa || '';
-    var pro = document.getElementById('wcPro');
-    var common = document.getElementById('wcCommon');
-    if (d.type === 'pro') {
-      pro.style.display = 'block';
-      common.style.display = 'none';
-      document.getElementById('wcTr').textContent = '— ' + (d.tr || '');
-      var seg = d.seg || [];
-      document.getElementById('wcDefEN').innerHTML = seg.map(function (s, i) {
-        return '<span class="tw cseg" data-i="' + i + '" onclick="tapSeg(event,this)">' + s[0] + '</span>';
-      }).join(' ');
-      document.getElementById('wcDefRU').innerHTML = seg.map(function (s, i) {
-        return '<span class="cseg-ru" data-i="' + i + '">' + s[1] + '</span>';
-      }).join(' ');
-      setCardRu(false);                 // English-first; tap a word or RU button to reveal
-    } else {
-      common.style.display = 'block';
-      pro.style.display = 'none';
-      document.getElementById('wcMeanings').innerHTML = (d.meanings || []).map(function (m) {
-        return '<div style="display:flex; gap:7px;"><span style="color:#9aa1a0;">—</span><span>' + m + '</span></div>';
-      }).join('');
-    }
-    syncCardBtn();
-    document.getElementById('wbar').style.display = 'none';
-    document.getElementById('wcScrim').style.display = 'block';
-    requestAnimationFrame(positionSheet);
-  }
-  function closeWordCard(ev) {
-    if (ev) { ev.stopPropagation(); }
-    document.getElementById('wcSheet').style.top = CARD.clientHeight + 'px';
-    document.getElementById('wcScrim').style.display = 'none';
-    clearHl();
-  }
-
   function markOpt(i, kind) {
     var el = document.getElementById('opt' + i);
     var badge = el.querySelector('.opt-badge');
     var en = el.querySelector('.opt-en');
     var ru = el.querySelector('.opt-ru');
     if (kind === 'correct') {
-      el.style.border = '2px solid #34D399';
-      el.style.background = 'rgba(52,211,153,.1)';
-      en.style.fontWeight = '700';
-      if (ru) { ru.style.color = '#059669'; }
+      el.style.border = '2px solid #34D399'; el.style.background = 'rgba(52,211,153,.1)';
+      en.style.fontWeight = '700'; if (ru) { ru.style.color = '#059669'; }
       badge.style.background = '#34D399'; badge.textContent = '✓'; badge.style.display = 'flex';
     } else if (kind === 'wrong') {
-      el.style.border = '2px solid #d05656';
-      el.style.background = '#fdecec';
+      el.style.border = '2px solid #d05656'; el.style.background = '#fdecec';
       en.style.fontWeight = '600';
       badge.style.background = '#d05656'; badge.textContent = '✕'; badge.style.display = 'flex';
     }
@@ -385,109 +478,161 @@
     document.getElementById('exBox').style.display = 'block';
     if (!autoOn) { document.getElementById('bottomBar').style.display = 'flex'; }
   }
-  function pickAnswer(i) {
-    if (answered || autoOn) { return; }
-    revealAnswer(i);
+  function pickAnswer(i) { if (answered || autoOn) { return; } revealAnswer(i); }
+
+  // ════════════ Word card ════════════
+  var cardRuOn = false, cardKey = '', addedWords = {};
+  function positionSheet() {
+    var sheet = document.getElementById('wcSheet');
+    sheet.style.top = (CARD_EL.clientHeight - sheet.offsetHeight) + 'px';
+  }
+  function setCardRu(on) {
+    cardRuOn = on;
+    document.getElementById('wcDefRU').style.display = on ? 'block' : 'none';
+    var t = document.getElementById('wcRuToggle');
+    if (on) { t.style.background = '#34D399'; t.style.borderColor = '#34D399'; t.style.color = '#fff'; }
+    else { t.style.background = '#fff'; t.style.borderColor = '#d6dbe0'; t.style.color = '#3a3a4a'; }
+    positionSheet();
+  }
+  function toggleCardRu(ev) { if (ev) { ev.stopPropagation(); } setCardRu(!cardRuOn); }
+
+  function syncCardBtn() {
+    var b = document.getElementById('wcAddBtn');
+    if (!b) { return; }
+    if (addedWords[cardKey]) {
+      b.style.background = '#fff'; b.style.color = '#047857'; b.style.border = '1.5px solid #34D399'; b.style.boxShadow = 'none';
+      b.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> In dictionary';
+    } else {
+      b.style.background = 'linear-gradient(135deg,#4ade80,#22c55e)'; b.style.color = '#fff'; b.style.border = 'none'; b.style.boxShadow = '0 4px 16px rgba(52,211,153,.32)';
+      b.innerHTML = 'Add &amp; learn';
+    }
+  }
+  function cardAdd(ev) {
+    ev.stopPropagation();
+    if (!cardKey) { return; }
+    var nowOn = !addedWords[cardKey];
+    if (nowOn) { addedWords[cardKey] = true; } else { delete addedWords[cardKey]; }
+    syncCardBtn();
+    if (nowOn) { showToast(); }
+  }
+  function openWordCard(ev) {
+    if (ev) { ev.stopPropagation(); }
+    var raw = currentWord ? currentWord.textContent.trim() : 'lien';
+    var key = raw.toLowerCase().replace(/[^a-z]/g, '');
+    cardKey = key;
+    var d = DICT[key] || { type: 'common', ipa: '' };
+    var lc = CARD[curLang] || CARD.ru;
+    var dir = LMETA[curLang].dir;
+    document.getElementById('wcWord').textContent = d.lemma || key;
+    document.getElementById('wcIpa').textContent = d.ipa || '';
+    var pro = document.getElementById('wcPro'), common = document.getElementById('wcCommon');
+    if (d.type === 'pro') {
+      pro.style.display = 'block'; common.style.display = 'none';
+      var pdata = (lc.pro && lc.pro[key]) ? lc.pro[key] : { tr: '', def: '' };
+      var tr = document.getElementById('wcTr');
+      tr.textContent = '— ' + (pdata.tr || ''); tr.setAttribute('dir', dir);
+      document.getElementById('wcDefEN').textContent = EN_DEF[key] || '';
+      var dru = document.getElementById('wcDefRU');
+      dru.textContent = pdata.def || ''; dru.setAttribute('dir', dir);
+      document.getElementById('wcToggleLabel').textContent = LMETA[curLang].label + ' translation';
+      setCardRu(false);
+    } else {
+      common.style.display = 'block'; pro.style.display = 'none';
+      var raw2 = (lc.common && lc.common[key]) ? lc.common[key] : (d.lemma || key);
+      var list = raw2.split(';').map(function (s) { return s.trim(); }).filter(Boolean);
+      var mEl = document.getElementById('wcMeanings');
+      mEl.setAttribute('dir', dir);
+      mEl.innerHTML = list.map(function (m) {
+        return '<div style="display:flex; gap:7px;"><span style="color:#9aa1a0;">—</span><span>' + esc(m) + '</span></div>';
+      }).join('');
+    }
+    syncCardBtn();
+    document.getElementById('wbar').style.display = 'none';
+    document.getElementById('wcScrim').style.display = 'block';
+    requestAnimationFrame(positionSheet);
+  }
+  function closeWordCard(ev) {
+    if (ev) { ev.stopPropagation(); }
+    document.getElementById('wcSheet').style.top = CARD_EL.clientHeight + 'px';
+    document.getElementById('wcScrim').style.display = 'none';
+    clearHl();
   }
 
+  // ════════════ Tap a word ════════════
   function tapWord(ev, el) {
     ev.stopPropagation();
     currentWord = el;
-    var ru = el.getAttribute('data-ru') ? document.getElementById(el.getAttribute('data-ru')) : null;
+    var anchor = el.getAttribute('data-ru');
+    var ru = (anchor && parallelOn) ? document.getElementById(anchor) : null;
     var bar = document.getElementById('wbar');
     if (el.classList.contains('hl')) { clearHl(); bar.style.display = 'none'; return; }
     clearHl();
     el.classList.add('hl');
     if (ru) { ru.classList.add('hl'); }
     syncAddBtn();
-    // show then measure
-    bar.style.visibility = 'hidden';
-    bar.style.display = 'flex';
-    var cr = CARD.getBoundingClientRect();
+    bar.style.visibility = 'hidden'; bar.style.display = 'flex';
+    var cr = CARD_EL.getBoundingClientRect();
     var wr = el.getBoundingClientRect();
     var bw = bar.offsetWidth, bh = bar.offsetHeight;
-    var wcx = wr.left - cr.left + wr.width / 2;          // word centre x within card
+    var wcx = wr.left - cr.left + wr.width / 2;
     var arrow = document.getElementById('warrow');
-    var top = wr.top - cr.top - bh - 9;                  // above the word (preferred)
-    var below = false;
-    var MIN_TOP = 8;
-    if (top < MIN_TOP) {
-      // Not enough room directly above. Stay glued to the word:
-      // if the word's own bottom leaves room before the translation, drop just
-      // under the word; otherwise clamp to the top edge (overlaps header chrome
-      // briefly) — never fling the bar far away onto the options.
-      top = MIN_TOP;
-    }
-    var left = wcx - bw / 2;
-    left = Math.max(8, Math.min(left, CARD.clientWidth - bw - 8));    // clamp inside card
-    bar.style.left = left + 'px';
-    bar.style.top = top + 'px';
-    // arrow always points DOWN toward the word
-    arrow.style.bottom = 'auto'; arrow.style.top = '100%';
-    arrow.style.borderBottom = 'none';
-    arrow.style.borderTop = '6px solid #fff';
-    arrow.style.filter = 'drop-shadow(0 2px 1px rgba(26,26,46,.08))';
+    var top = wr.top - cr.top - bh - 9;
+    if (top < 8) { top = 8; }
+    var left = Math.max(8, Math.min(wcx - bw / 2, CARD_EL.clientWidth - bw - 8));
+    bar.style.left = left + 'px'; bar.style.top = top + 'px';
     arrow.style.left = (wcx - left) + 'px';
     bar.style.visibility = 'visible';
   }
-  function closeBar(ev) {
-    if (ev) { ev.stopPropagation(); }
-    clearHl();
-    document.getElementById('wbar').style.display = 'none';
-  }
-  var addedWords = {};
+  function closeBar(ev) { if (ev) { ev.stopPropagation(); } clearHl(); document.getElementById('wbar').style.display = 'none'; }
   function syncAddBtn() {
     var w = currentWord ? currentWord.textContent.trim().toLowerCase() : '';
-    var on = !!addedWords[w];
-    var book = document.getElementById('addBook');
-    var spine = document.getElementById('addSpine');
-    var letter = document.getElementById('addA');
-    var pad = document.getElementById('addPad');
-    var pip = document.getElementById('addPip');
-    var pipIcon = document.getElementById('addPipIcon');
+    var on = !!addedWords[w.replace(/[^a-z]/g, '')];
+    var book = document.getElementById('addBook'), spine = document.getElementById('addSpine'), letter = document.getElementById('addA');
+    var pad = document.getElementById('addPad'), pip = document.getElementById('addPip'), pipIcon = document.getElementById('addPipIcon');
     if (on) {
-      book.setAttribute('fill', '#34D399');
-      book.setAttribute('stroke', '#34D399');
-      spine.setAttribute('stroke', '#ffffff');
-      letter.setAttribute('fill', '#ffffff');
-      pad.style.background = 'rgba(52,211,153,.14)';
-      pip.style.background = '#34D399';
-      pipIcon.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>';   // check = saved
+      book.setAttribute('fill', '#34D399'); book.setAttribute('stroke', '#34D399'); spine.setAttribute('stroke', '#ffffff'); letter.setAttribute('fill', '#ffffff');
+      pad.style.background = 'rgba(52,211,153,.14)'; pip.style.background = '#34D399';
+      pipIcon.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>';
     } else {
-      book.setAttribute('fill', 'none');
-      book.setAttribute('stroke', '#3a3a4a');
-      spine.setAttribute('stroke', '#3a3a4a');
-      letter.setAttribute('fill', '#3a3a4a');
-      pad.style.background = 'transparent';
-      pip.style.background = '#aab0b4';
-      pipIcon.innerHTML = '<line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>';  // plus = add
+      book.setAttribute('fill', 'none'); book.setAttribute('stroke', '#3a3a4a'); spine.setAttribute('stroke', '#3a3a4a'); letter.setAttribute('fill', '#3a3a4a');
+      pad.style.background = 'transparent'; pip.style.background = '#aab0b4';
+      pipIcon.innerHTML = '<line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>';
     }
+  }
+  function showToast() {
+    var t = document.getElementById('toast');
+    t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)';
+    setTimeout(function () { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(12px)'; }, 1400);
   }
   function addWord(ev) {
     ev.stopPropagation();
-    var w = currentWord ? currentWord.textContent.trim().toLowerCase() : '';
+    var w = currentWord ? currentWord.textContent.trim().toLowerCase().replace(/[^a-z]/g, '') : '';
     if (!w) { return; }
-    var nowOn = !addedWords[w];          // toggle
+    var nowOn = !addedWords[w];
     if (nowOn) { addedWords[w] = true; } else { delete addedWords[w]; }
     syncAddBtn();
-    if (nowOn) {                          // toast only when adding
-      var t = document.getElementById('toast');
-      t.style.opacity = '1';
-      t.style.transform = 'translateX(-50%) translateY(0)';
-      setTimeout(function () {
-        t.style.opacity = '0';
-        t.style.transform = 'translateX(-50%) translateY(12px)';
-      }, 1400);
-    }
-    // bar stays open so the user sees the green state / can toggle back off
+    if (nowOn) { showToast(); }
   }
-  document.addEventListener('click', function () { if (!autoOn) { closeBar(); } });
+  document.addEventListener('click', function () {
+    if (!autoOn) { closeBar(); }
+    document.getElementById('langMenu').style.display = 'none';
+  });
 
-  // ── Auto read-aloud: sentence/block level ──
+  // ════════════ Save star ════════════
+  var saved = false;
+  function toggleSave(ev) {
+    if (ev) { ev.stopPropagation(); }
+    saved = !saved;
+    var star = document.getElementById('saveStar');
+    star.style.color = saved ? '#f5b301' : '#c9ced2';
+    star.style.transform = 'scale(1.25)';
+    setTimeout(function () { star.style.transform = 'scale(1)'; }, 160);
+  }
+
+  // ════════════ Auto read-aloud ════════════
   var autoOn = false, autoTimer = null, autoSteps = [], autoIdx = -1;
-  var PAUSE_OPTS = [3, 5, 10, 0];   // 0 = off
-  var pauseSec = 5;
-
+  var PAUSE_OPTS = [3, 5, 10, 0], pauseSec = 5;
+  var LETTER = /[A-Za-zА-Яа-яЁё\u0600-\u06FF\u4e00-\u9fff]/;
   function pauseText() { return pauseSec === 0 ? 'Think pause · off' : 'Think pause · ' + pauseSec + 's'; }
   function cyclePause(ev) {
     if (ev) { ev.stopPropagation(); }
@@ -495,61 +640,48 @@
     pauseSec = PAUSE_OPTS[(i + 1) % PAUSE_OPTS.length];
     document.getElementById('pauseLabel').textContent = pauseText();
   }
-
   function setAutoBtn(on) {
     var b = document.getElementById('autoBtn');
-    if (on) {
-      b.style.background = '#34D399'; b.style.borderColor = '#34D399';
-      b.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="#fff"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg>';
-    } else {
-      b.style.background = '#fff'; b.style.borderColor = 'rgba(52,211,153,.55)';
-      b.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="#047857"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>';
-    }
+    if (on) { b.style.background = '#34D399'; b.style.borderColor = '#34D399';
+      b.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="#fff"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg>'; }
+    else { b.style.background = '#fff'; b.style.borderColor = 'rgba(52,211,153,.55)';
+      b.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="#047857"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>'; }
   }
-
   function speak(text, lang) {
     if (!window.speechSynthesis) { return; }
-    try {
-      window.speechSynthesis.cancel();
-      var u = new SpeechSynthesisUtterance(text);
-      u.lang = lang; u.rate = lang === 'ru-RU' ? 0.95 : 0.85;
+    try { window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text); u.lang = lang; u.rate = (lang === 'en-US') ? 0.85 : 0.95;
       window.speechSynthesis.speak(u);
     } catch (e) {}
   }
-
   function buildSteps() {
     var $ = function (id) { return document.getElementById(id); };
-    return [
-      { el: $('qEN'), say: 'A legal claim against a property that must be paid off when the property is sold is called a', lang: 'en-US' },
-      { el: $('qRU'), say: 'Юридическое требование к объекту, которое должно быть погашено при продаже, называется', lang: 'ru-RU' },
-      { el: $('optsBox'), opt: true, say: 'Answer options', lang: 'en-US' },
-      { el: $('opt0'), opt: true, say: 'an easement', lang: 'en-US' },
-      { el: $('opt1'), opt: true, say: 'a lien', lang: 'en-US' },
-      { el: $('opt2'), opt: true, say: 'an encumbrance', lang: 'en-US' },
-      { el: $('opt3'), opt: true, say: 'a deed', lang: 'en-US' },
-      { pause: true },
-      { el: $('opt1'), opt: true, reveal: true, say: 'Correct answer. A lien.', lang: 'en-US' },
-      { el: $('exEN'), say: 'A lien is a legal claim that stays with the property until the debt is paid. It must be cleared at closing.', lang: 'en-US' },
-      { el: $('exRU'), say: 'Залоговое удержание — это юридическое требование, которое остаётся на объекте до погашения долга и снимается при сделке.', lang: 'ru-RU' }
+    var tl = LMETA[curLang].tts;
+    var steps = [
+      { el: $('qEN'), say: 'A legal claim against a property that must be paid off when the property is sold is called a', lang: 'en-US' }
     ];
+    if (parallelOn) { steps.push({ el: $('qTrans'), say: plainSegs(I18N[curLang].q), lang: tl }); }
+    steps.push({ el: $('optsBox'), opt: true, say: 'Answer options', lang: 'en-US' });
+    steps.push({ el: $('opt0'), opt: true, say: 'an easement', lang: 'en-US' });
+    steps.push({ el: $('opt1'), opt: true, say: 'a lien', lang: 'en-US' });
+    steps.push({ el: $('opt2'), opt: true, say: 'an encumbrance', lang: 'en-US' });
+    steps.push({ el: $('opt3'), opt: true, say: 'a deed', lang: 'en-US' });
+    steps.push({ pause: true });
+    steps.push({ el: $('opt1'), opt: true, reveal: true, say: 'Correct answer. A lien.', lang: 'en-US' });
+    steps.push({ el: $('exEN'), say: 'A lien is a legal claim that stays with the property until the debt is paid. It must be cleared at closing.', lang: 'en-US' });
+    if (parallelOn) { steps.push({ el: $('exTrans'), say: plainSegs(I18N[curLang].ex), lang: tl }); }
+    return steps;
   }
-
   function startAuto() {
-    autoOn = true;
-    setAutoBtn(true);
+    autoOn = true; setAutoBtn(true);
     document.getElementById('wbar').style.display = 'none';
     document.getElementById('bottomBar').style.display = 'none';
-    var pr = document.getElementById('pauseRow');
-    pr.style.display = 'flex';
+    var pr = document.getElementById('pauseRow'); pr.style.display = 'flex';
     document.getElementById('pauseLabel').textContent = pauseText();
-    autoSteps = buildSteps();
-    autoIdx = -1;
-    autoStep();
+    autoSteps = buildSteps(); autoIdx = -1; autoStep();
   }
   function stopAuto() {
-    autoOn = false;
-    clearTimeout(autoTimer);
-    clearHl();
+    autoOn = false; clearTimeout(autoTimer); clearHl();
     document.getElementById('pausePill').classList.remove('read');
     if (window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch (e) {} }
     setAutoBtn(false);
@@ -558,52 +690,34 @@
   }
   function autoStep() {
     if (!autoOn) { return; }
-    clearHl();
-    document.getElementById('pausePill').classList.remove('read');
+    clearHl(); document.getElementById('pausePill').classList.remove('read');
     autoIdx++;
     if (autoIdx >= autoSteps.length) { stopAuto(); return; }
     var s = autoSteps[autoIdx];
-
     if (s.pause) {
-      if (pauseSec === 0) { autoStep(); return; }   // skip when off
-      var pill = document.getElementById('pausePill');
-      pill.classList.add('read');
-      var remain = pauseSec;
-      var lbl = document.getElementById('pauseLabel');
+      if (pauseSec === 0) { autoStep(); return; }
+      var pill = document.getElementById('pausePill'); pill.classList.add('read');
+      var remain = pauseSec, lbl = document.getElementById('pauseLabel');
       lbl.textContent = 'Think… ' + remain + 's';
       var tick = setInterval(function () {
         remain--;
-        if (remain <= 0 || !autoOn) {
-          clearInterval(tick);
-          lbl.textContent = pauseText();
-        } else {
-          lbl.textContent = 'Think… ' + remain + 's';
-        }
+        if (remain <= 0 || !autoOn) { clearInterval(tick); lbl.textContent = pauseText(); }
+        else { lbl.textContent = 'Think… ' + remain + 's'; }
       }, 1000);
-      autoTimer = setTimeout(autoStep, pauseSec * 1000);
-      return;
+      autoTimer = setTimeout(autoStep, pauseSec * 1000); return;
     }
-
     if (s.reveal && !answered) { revealAnswer(null); }
-    if (s.opt) {
-      s.el.classList.add('read-opt');
-      speak(s.say, s.lang);
-      autoTimer = setTimeout(autoStep, 480 + 42 * s.say.length);
-    } else {
-      runStep(s);   // running word-by-word highlight synced to speech
-    }
+    if (s.opt) { s.el.classList.add('read-opt'); speak(s.say, s.lang); autoTimer = setTimeout(autoStep, 480 + 42 * s.say.length); }
+    else { runStep(s); }
   }
-
-  // wrap bare text-node words once so each word is its own span
   function wordSpansOf(el) {
     if (!el.getAttribute('data-rw')) {
       Array.prototype.slice.call(el.childNodes).forEach(function (n) {
-        if (n.nodeType === 3 && /[A-Za-zА-Яа-яЁё]/.test(n.nodeValue)) {
+        if (n.nodeType === 3 && LETTER.test(n.nodeValue)) {
           var frag = document.createDocumentFragment();
           n.nodeValue.split(/(\s+)/).forEach(function (tok) {
-            if (/[A-Za-zА-Яа-яЁё]/.test(tok)) {
-              var s = document.createElement('span'); s.className = 'rw'; s.textContent = tok; frag.appendChild(s);
-            } else { frag.appendChild(document.createTextNode(tok)); }
+            if (LETTER.test(tok)) { var s = document.createElement('span'); s.className = 'rw'; s.textContent = tok; frag.appendChild(s); }
+            else { frag.appendChild(document.createTextNode(tok)); }
           });
           el.replaceChild(frag, n);
         }
@@ -611,10 +725,9 @@
       el.setAttribute('data-rw', '1');
     }
     return Array.prototype.slice.call(el.querySelectorAll('span')).filter(function (e) {
-      return !e.querySelector('span') && /[A-Za-zА-Яа-яЁё]/.test(e.textContent) && e.textContent.trim() !== 'RU';
+      return !e.querySelector('span') && LETTER.test(e.textContent);
     });
   }
-
   function runStep(s) {
     var spans = wordSpansOf(s.el);
     speak(s.say, s.lang);
@@ -631,70 +744,155 @@
     }
     adv();
   }
-  function toggleAuto(ev) {
-    ev.stopPropagation();
-    if (autoOn) { stopAuto(); } else { startAuto(); }
-  }
+  function toggleAuto(ev) { ev.stopPropagation(); if (autoOn) { stopAuto(); } else { startAuto(); } }
 
-  // ── Parallel translation toggle ──
-  var saved = false;
-  function toggleSave(ev) {
-    if (ev) { ev.stopPropagation(); }
-    saved = !saved;
-    var star = document.getElementById('saveStar');
-    star.textContent = saved ? '★' : '★';
-    star.style.color = saved ? '#f5b301' : '#c9ced2';
-    star.style.transform = 'scale(1.25)';
-    setTimeout(function () { star.style.transform = 'scale(1)'; }, 160);
-  }
-  var parallelOn = true;
-  function toggleParallel(ev) {
-    if (ev) { ev.stopPropagation(); }
-    parallelOn = !parallelOn;
-    document.querySelectorAll('.ru-line').forEach(function (e) {
-      e.style.display = parallelOn ? '' : 'none';
-    });
-    if (!parallelOn) { clearHl(); document.getElementById('wbar').style.display = 'none'; }
-    var b = document.getElementById('parBtn');
-    if (parallelOn) {
-      b.style.background = '#34D399'; b.style.color = '#fff'; b.style.borderColor = '#34D399';
-    } else {
-      b.style.background = '#fff'; b.style.color = '#047857'; b.style.borderColor = 'rgba(52,211,153,.55)';
-    }
-  }
-
-  // Make EVERY English word tappable (wrap bare words; keep aligned ones intact)
+  // ════════════ Make every English word tappable ════════════
   function enableAllWords(id) {
     var p = document.getElementById(id);
     if (!p) { return; }
-    var nodes = Array.prototype.slice.call(p.childNodes);
-    nodes.forEach(function (node) {
-      if (node.nodeType !== 3) { return; }                 // only bare text nodes
+    Array.prototype.slice.call(p.childNodes).forEach(function (node) {
+      if (node.nodeType !== 3) { return; }
       var frag = document.createDocumentFragment();
-      // split keeping whitespace; wrap tokens that contain a letter
       node.nodeValue.split(/(\s+)/).forEach(function (tok) {
-        if (/[A-Za-z]/.test(tok)) {
-          var core = tok.match(/^([^A-Za-z]*)([A-Za-z][A-Za-z'’-]*)([^A-Za-z]*)$/);
-          if (core) {
-            if (core[1]) { frag.appendChild(document.createTextNode(core[1])); }
-            var s = document.createElement('span');
-            s.className = 'tw';
-            s.textContent = core[2];
-            s.onclick = function (e) { tapWord(e, s); };
-            frag.appendChild(s);
-            if (core[3]) { frag.appendChild(document.createTextNode(core[3])); }
-          } else {
-            frag.appendChild(document.createTextNode(tok));
-          }
-        } else {
-          frag.appendChild(document.createTextNode(tok));
-        }
+        var core = /[A-Za-z]/.test(tok) ? tok.match(/^([^A-Za-z]*)([A-Za-z][A-Za-z'’-]*)([^A-Za-z]*)$/) : null;
+        if (core) {
+          if (core[1]) { frag.appendChild(document.createTextNode(core[1])); }
+          var s = document.createElement('span'); s.className = 'tw'; s.textContent = core[2]; s.onclick = function (e) { tapWord(e, s); };
+          frag.appendChild(s);
+          if (core[3]) { frag.appendChild(document.createTextNode(core[3])); }
+        } else { frag.appendChild(document.createTextNode(tok)); }
       });
       p.replaceChild(frag, node);
     });
   }
   enableAllWords('qEN');
   enableAllWords('exEN');
+
+  // init
+  applyLang();
+</script>
+
+<!-- ═══ Lingo7 hero-demo autoplay (Quiz Review) ═══ -->
+<script>
+(function () {
+  var params = new URLSearchParams(location.search);
+  var lang = params.get('lang') || 'ru';
+  // switch the screen to the site language
+  try {
+    if (lang !== 'off' && window.LMETA && LMETA[lang] && lang !== curLang) { pickLang(lang); }
+  } catch (e) {}
+
+  // hero loops silently — keep the auto-read VISUAL (word karaoke), but mute its TTS
+  try {
+    var _ss = window.speechSynthesis;
+    if (_ss) {
+      _ss.speak = function () {};
+      var _p = Object.getPrototypeOf(_ss);
+      if (_p) { _p.speak = function () {}; }
+    }
+  } catch (e) {}
+
+  var frame = document.querySelector('div[style*="600px"]');
+  if (!frame) { return; }
+
+  var finger = document.createElement('div');
+  finger.setAttribute('aria-hidden', 'true');
+  finger.style.cssText = 'position:absolute; left:50%; top:55%; width:30px; height:30px; border-radius:50%; background:radial-gradient(circle at 50% 38%, rgba(52,211,153,.62), rgba(52,211,153,.22)); border:2px solid rgba(255,255,255,.92); box-shadow:0 3px 12px rgba(26,26,46,.35); transform:translate(-50%,-50%) scale(1); transition:left .55s cubic-bezier(.4,.1,.25,1), top .55s cubic-bezier(.4,.1,.25,1), transform .16s ease, opacity .3s ease; opacity:0; pointer-events:none; z-index:9999;';
+  frame.appendChild(finger);
+
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  function centerOf(el) {
+    var fr = frame.getBoundingClientRect(), r = el.getBoundingClientRect();
+    return { x: r.left - fr.left + r.width / 2, y: r.top - fr.top + r.height / 2 };
+  }
+  function scrollInto(el) {
+    var sa = document.getElementById('scrollArea');
+    if (!sa || !el) { return; }
+    var top = el.getBoundingClientRect().top - sa.getBoundingClientRect().top + sa.scrollTop;
+    sa.scrollTop = Math.max(0, top - sa.clientHeight / 2 + 18);
+  }
+  async function moveTo(el) {
+    var c = centerOf(el);
+    finger.style.left = c.x + 'px'; finger.style.top = c.y + 'px';
+    await sleep(580);
+  }
+  async function press() {
+    finger.style.transform = 'translate(-50%,-50%) scale(.72)';
+    await sleep(150);
+    finger.style.transform = 'translate(-50%,-50%) scale(1)';
+  }
+  async function tap(el, dwell) {
+    if (!el) { await sleep(dwell || 600); return; }
+    await moveTo(el);
+    await press();
+    try { el.click(); } catch (e) {}
+    await sleep(dwell || 600);
+  }
+
+  function q(sel) { return document.querySelector(sel); }
+  function badge(id) { try { window.parent.postMessage({ __l7demo: true, action: 'badge', id: id }, '*'); } catch (e) {} }
+
+  async function run() {
+    await sleep(620);
+    finger.style.opacity = '1';
+    await sleep(280);
+
+    // двуязычный вопрос на экране → плашка «Параллельный перевод»
+    badge('translate');
+    await sleep(700);
+
+    // 1. tap the word "claim" → word toolbar
+    await tap(q('#qEN .tw[data-ru="q-claim"]'), 900);
+
+    // 2. add it to the L7 dictionary → toast + плашка «Словарь + повторение»
+    await tap(document.getElementById('addBtn'), 400);
+    badge('dict');
+    await sleep(1000);
+
+    // 3. close the toolbar
+    await tap(q('#wbar button[title="Close"]'), 520);
+
+    // 4. choose answer "a deed" → reveal explanation + плашка «Разбор на вашем языке»
+    await tap(document.getElementById('opt3'), 500);
+    badge('explain');
+    await sleep(1100);
+
+    // 5. tap the key term "lien" in the explanation → toolbar
+    var lien = q('#exEN .tw[data-ru="ru-lien"]');
+    scrollInto(lien);
+    await sleep(360);
+    await tap(lien, 900);
+
+    // 6. open the word card + плашка «Карточка термина»
+    await tap(q('#wbar button[title="Word card"]'), 550);
+    badge('card');
+    await sleep(800);
+
+    // 7. reveal the translation inside the card
+    await tap(document.getElementById('wcRuToggle'), 1550);
+
+    // 8. close the word card
+    await tap(q('#wcSheet button[title="Close"]'), 720);
+
+    // 9. scroll back to the question, then tap "play" → auto-read karaokes EN → site language (~5s, TTS muted)
+    var sa = document.getElementById('scrollArea');
+    if (sa) { sa.scrollTop = 0; }
+    await sleep(320);
+    await tap(document.getElementById('autoBtn'), 600);
+    badge('audio');
+    await sleep(4400);
+
+    // 10. back arrow → return to the home menu (loops the demo)
+    await tap(q('.hdr-back'), 480);
+
+    finger.style.opacity = '0';
+    await sleep(260);
+    try { window.parent.postMessage({ __l7demo: true, action: 'toHome', lang: lang }, '*'); } catch (e) {}
+  }
+
+  if (document.readyState === 'complete') { run(); }
+  else { window.addEventListener('load', run); }
+})();
 </script>
 </body>
 </html>

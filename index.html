@@ -77,8 +77,8 @@
     </div>
     <div class="container hero__inner">
       <div class="hero__content">
-        <h1 class="hero__title">Сдайте экзамен на&nbsp;лицензию риелтора в&nbsp;США</h1>
-        <p class="hero__subtitle"><strong>Учите на своём языке, сдавайте на английском</strong> — понимаете глубже и готовитесь быстрее. А умная программа доводит до сдачи.</p>
+        <h1 class="hero__title">Сдайте экзамен на&nbsp;лицензию риелтора во&nbsp;Флориде <span class="hero__accent">с&nbsp;первого&nbsp;раза</span></h1>
+        <p class="hero__subtitle"><strong class="hero__hl">Учите на своём языке</strong>, чтобы уверенно сдать на английском.<br><strong class="hero__hl">Вы сразу понимаете суть</strong>, а адаптивный тренажёр отрабатывает решение экзаменационных вопросов до&nbsp;автоматизма.</p>
         <a href="#" class="btn btn--primary hero__cta" data-open-download>Попробовать бесплатно</a>
         <p class="hero__trust">Все 50 штатов &bull; Перевод на 10 языков</p>
         <div class="hero__pills hero__pills--desktop">
@@ -99,39 +99,13 @@
         </div>
       </div>
       <div class="hero__showcase">
-        <!-- Vocabulary deck above phone -->
-        <div class="vocab-deck" id="vocabRow">
-          <div class="vocab-card">
-            <span class="vocab-card__en">Title</span>
-            <span class="vocab-card__divider"></span>
-            <span class="vocab-card__ru">Титул</span>
-          </div>
-          <div class="vocab-card">
-            <span class="vocab-card__en">Deed</span>
-            <span class="vocab-card__divider"></span>
-            <span class="vocab-card__ru">Акт</span>
-          </div>
-          <div class="vocab-card">
-            <span class="vocab-card__en">Agent</span>
-            <span class="vocab-card__divider"></span>
-            <span class="vocab-card__ru">Агент</span>
-          </div>
-          <div class="vocab-card" id="vocabNew">
-            <span class="vocab-card__en">Lien</span>
-            <span class="vocab-card__divider"></span>
-            <span class="vocab-card__ru">Обременение</span>
-          </div>
-          <div class="vocab-card" id="vocabNew2">
-            <span class="vocab-card__en">Escrow</span>
-            <span class="vocab-card__divider"></span>
-            <span class="vocab-card__ru">Эскроу</span>
-          </div>
-        </div>
+        <!-- Feature deck: возможности «вылетают» сюда по ходу демо -->
+        <div class="vocab-deck feat-deck" id="featDeck" aria-hidden="true"></div>
         <div class="hero__phone-wrap">
           <img src="pics/green2.png" alt="" class="hero__mascot">
           <img src="pics/phone-clean.svg" alt="" class="phone__shell">
           <div class="phone__frame phone__frame--hero">
-            <iframe src="screens/Quiz%20Review%20Screen.html" title="Демо: тест с переводом и Автотестом" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
+            <iframe id="heroDemo" src="screens/Home%20Menu%20Screen.html" title="Демо: подготовка к экзамену с переводом" style="width:100%; height:100%; border:none; display:block; transition:opacity .25s ease; pointer-events:none;" scrolling="no"></iframe>
           </div>
         </div>
       </div>
@@ -1246,6 +1220,69 @@
     });
 
 
+  </script>
+
+  <!-- Hero demo orchestrator: swaps the two generated screens, passes site language -->
+  <script>
+  (function () {
+    var frame = document.getElementById('heroDemo');
+    if (!frame) { return; }
+    var HOME = 'screens/Home%20Menu%20Screen.html';
+    var QUIZ = 'screens/Quiz%20Review%20Screen.html';
+    // Язык демо в телефоне. Дефолт — испанский (главная позиционируется как испанская версия).
+    // Приоритет: ?lang=xx в адресе → <html lang> (если это реальная локаль, не русский шаблон) → DEMO_DEFAULT.
+    // Русскую подстановку посмотреть: index.html?lang=ru
+    var DEMO_LANGS = ['es', 'pt', 'ht', 'ru', 'fr', 'de', 'it', 'zh', 'ar', 'tl'];
+    var DEMO_DEFAULT = 'es';
+    var urlLang = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
+    var htmlLang = (document.documentElement.getAttribute('lang') || '').toLowerCase().split('-')[0];
+    var lang = DEMO_LANGS.indexOf(urlLang) >= 0 ? urlLang
+             : (DEMO_LANGS.indexOf(htmlLang) >= 0 && htmlLang !== 'ru') ? htmlLang
+             : DEMO_DEFAULT;
+
+    // ── Дека возможностей: плашки прилетают по событиям из экранов ──
+    var deck = document.getElementById('featDeck');
+    var BADGES = {
+      native:    { icon: '📖', label: 'Готовьтесь на своём языке', kind: 'l7' },
+      translate: { icon: '🌐', label: 'Параллельный перевод', kind: 'l7' },
+      dict:      { icon: '🔁', label: 'Словарь + повторение', kind: 'l7' },
+      explain:   { icon: '💡', label: 'Разбор на вашем языке', kind: 'exam' },
+      card:      { icon: '🗂️', label: 'Карточка термина', kind: 'exam' },
+      audio:     { icon: '🎧', label: 'Слушай тесты на двух языках', kind: 'l7' }
+    };
+    var shown = {};
+    function clearDeck() { if (deck) { deck.innerHTML = ''; } shown = {}; }
+    function addBadge(id) {
+      if (!deck || !BADGES[id] || shown[id]) { return; }
+      shown[id] = true;
+      var b = BADGES[id];
+      var el = document.createElement('span');
+      el.className = 'feat-chip feat-chip--' + b.kind;
+      el.innerHTML = '<span class="feat-chip__icon">' + b.icon + '</span>' + b.label;
+      deck.appendChild(el);
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { el.classList.add('is-in'); });
+      });
+    }
+
+    function load(which) {
+      if (which === HOME) { clearDeck(); }   // новый цикл — дека пустеет
+      frame.style.opacity = '0';
+      setTimeout(function () { frame.src = which + '?lang=' + lang; }, 170);
+    }
+    frame.addEventListener('load', function () { frame.style.opacity = '1'; });
+
+    window.addEventListener('message', function (e) {
+      var d = e.data;
+      if (!d || d.__l7demo !== true) { return; }
+      if (d.action === 'toQuiz') { load(QUIZ); }
+      else if (d.action === 'toHome') { load(HOME); }
+      else if (d.action === 'badge') { addBadge(d.id); }
+    });
+
+    // первичная загрузка с нужным языком (overrides статический src)
+    load(HOME);
+  })();
   </script>
 
 </body>
