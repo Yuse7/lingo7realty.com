@@ -49,6 +49,14 @@
         <a href="#reviews" class="nav__link">Отзывы</a>
         <a href="#faq" class="nav__link">FAQ</a>
       </nav>
+      <div class="lang-switch lang-switch--mhdr" id="langSwitchMWrap">
+        <button class="lang-switch__btn" id="langSwitchBtnM" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Язык сайта">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="3" y1="12" x2="21" y2="12"></line><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"></path></svg>
+          <span class="lang-switch__code" id="langSwitchCodeM">ES</span>
+          <span class="lang-switch__chev">▾</span>
+        </button>
+        <div class="lang-switch__menu" id="langSwitchMenuM" role="menu"></div>
+      </div>
       <button class="burger" id="burger" aria-label="Меню">
         <span></span><span></span><span></span>
       </button>
@@ -73,14 +81,6 @@
     <a href="#reviews" class="mobile-menu__link">Отзывы</a>
     <a href="#faq" class="mobile-menu__link">FAQ</a>
     <a href="#" class="mobile-menu__link mobile-menu__login" data-login>Войти</a>
-    <div class="lang-switch lang-switch--menu" id="langSwitchMWrap">
-      <button class="lang-switch__btn" id="langSwitchBtnM" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Язык сайта">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="3" y1="12" x2="21" y2="12"></line><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"></path></svg>
-        <span class="lang-switch__code" id="langSwitchCodeM">ES</span>
-        <span class="lang-switch__chev">▾</span>
-      </button>
-      <div class="lang-switch__menu" id="langSwitchMenuM" role="menu"></div>
-    </div>
   </div>
 
   <!-- 1. Hero -->
@@ -94,17 +94,11 @@
         <h1 class="hero__title">Сдайте экзамен на&nbsp;лицензию риелтора во&nbsp;Флориде <span class="hero__accent">с&nbsp;первого&nbsp;раза</span></h1>
         <p class="hero__subtitle"><strong class="hero__hl">Учите на своём языке</strong>, чтобы уверенно сдать на английском.<br><strong class="hero__hl">Вы сразу понимаете суть</strong>, а адаптивный тренажёр отрабатывает решение экзаменационных вопросов до&nbsp;автоматизма.</p>
         <a href="#" class="btn btn--primary hero__cta" data-open-download>Начать подготовку</a>
-        <p class="hero__guarantee">🛡️ Возврат денег в течение 7&nbsp;дней</p>
-        <ul class="hero__checklist">
-          <li>Интерактивный учебник</li>
-          <li>Адаптивный подбор тестов</li>
-          <li>Интервальное повторение</li>
-          <li>Понятная математика</li>
-        </ul>
+        <p class="hero__guarantee">🛡️ Гарантия возврата — 7&nbsp;дней</p>
       </div>
       <div class="hero__showcase">
         <!-- Feature deck: возможности «вылетают» сюда по ходу демо -->
-        <div class="vocab-deck feat-deck" id="featDeck" aria-hidden="true"></div>
+        <div class="vocab-deck feat-deck" id="featDeck" aria-hidden="true"><span class="feat-default">Больше, чем эффективная система подготовки к&nbsp;экзамену</span></div>
         <div class="hero__phone-wrap">
           <img src="pics/green2.png" alt="" class="hero__mascot">
           <img src="pics/phone-clean.svg" alt="" class="phone__shell">
@@ -116,8 +110,7 @@
       <div class="hero__speech">
         <img src="pics/green2.png" alt="" class="hero__speech-mascot">
         <div class="hero__speech-bubble">
-          <p>Учите на своём языке, сдавайте на английском. Перевод, озвучка и словарь — в каждом материале, а умная программа доводит до сдачи.</p>
-          <span class="hero__speech-trust">Все 50 штатов &bull; Перевод на 10 языков</span>
+          <p><strong class="hero__hl">Учите на своём языке</strong>, чтобы уверенно сдать на английском. <strong class="hero__hl">Вы сразу понимаете суть</strong>, а адаптивный тренажёр отрабатывает решение экзаменационных вопросов до&nbsp;автоматизма.</p>
         </div>
       </div>
     </div>
@@ -128,23 +121,23 @@
     <div class="container trust__inner">
       <div class="trust__card">
         <svg class="trust__icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-        <strong>Учебник, тесты и термины</strong>
-        <span>Тот же материал, что у носителей — все 50 штатов + национальный</span>
+        <strong>Интерактивный учебник</strong>
+        <span>Материал экзамена с параллельным переводом и озвучкой — на 10 языках</span>
       </div>
       <div class="trust__card">
-        <svg class="trust__icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-        <strong>Поддержка 10 языков</strong>
-        <span>Создано для тех, кому английский не родной</span>
+        <svg class="trust__icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="2" x2="12" y2="4.5"/><line x1="12" y1="19.5" x2="12" y2="22"/><line x1="2" y1="12" x2="4.5" y2="12"/><line x1="19.5" y1="12" x2="22" y2="12"/></svg>
+        <strong>Адаптивный подбор тестов</strong>
+        <span>Движок видит пробелы и строит кратчайший путь к проходному баллу</span>
       </div>
       <div class="trust__card">
-        <svg class="trust__icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
-        <strong>Языковой барьер снят в материале</strong>
-        <span>Параллельный перевод, выравнивание и озвучка — в учебнике и тестах</span>
+        <svg class="trust__icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        <strong>Интервальное повторение</strong>
+        <span>Незнакомые слова и термины закрепляются по алгоритму, а не зубрёжкой</span>
       </div>
       <div class="trust__card">
-        <svg class="trust__icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-        <strong>Адаптивный движок</strong>
-        <span>Знает, что и когда учить — строит персональный путь к баллу</span>
+        <svg class="trust__icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+        <strong>Понятная математика</strong>
+        <span>Проценты, комиссии, площади — по шагам и с переводом условий</span>
       </div>
     </div>
   </section>
@@ -1279,25 +1272,36 @@
     // ── Дека возможностей: плашки прилетают по событиям из экранов ──
     var deck = document.getElementById('featDeck');
     var BADGES = {
-      native:    { icon: '📖', label: 'Готовьтесь на своём языке', kind: 'l7' },
-      translate: { icon: '🌐', label: 'Параллельный перевод', kind: 'l7' },
-      dict:      { icon: '🔁', label: 'Словарь + повторение', kind: 'l7' },
-      explain:   { icon: '💡', label: 'Разбор на вашем языке', kind: 'exam' },
-      card:      { icon: '🗂️', label: 'Карточка термина', kind: 'exam' },
-      audio:     { icon: '🎧', label: 'Слушай тесты на двух языках', kind: 'l7' }
+      native:    { icon: '📖', label: 'Готовьтесь на своём языке',   sub: 'Интерактивный учебник и тесты с переводом' },
+      translate: { icon: '🌐', label: 'Параллельный перевод',        sub: 'Читайте на английском как на своём' },
+      dict:      { icon: '🔁', label: 'Словарь L7',                  sub: 'Интервальное повторение под капотом' },
+      explain:   { icon: '💡', label: 'Разбор на вашем языке',       sub: 'Вы сразу понимаете суть' },
+      card:      { icon: '🗂️', label: 'Умные флеш-карточки',         sub: 'Быстрое запоминание терминов по карточкам' },
+      audio:     { icon: '🎧', label: 'Слушай тесты на двух языках',  sub: 'Учитесь на ходу или за рулём — слушайте вопросы и переводы фоном' }
     };
     var shown = {};
-    function clearDeck() { if (deck) { deck.innerHTML = ''; } shown = {}; }
-    // Карусель: на экране видно окно последних N плашек (десктоп — 3, мобайл — 1).
-    // Приходит новая → встаёт снизу, самая старая уезжает вверх, ряд сдвигается.
+    function clearDeck() {
+      if (deck) {
+        Array.prototype.forEach.call(deck.querySelectorAll('.feat-chip'), function (c) {
+          if (c.parentNode) { c.parentNode.removeChild(c); }
+        });
+        deck.classList.remove('has-badge');   // снова показать титульную заглушку
+      }
+      shown = {};
+    }
+    // Карусель: в слоте видна одна плашка, новая сменяет предыдущую кросс-фейдом.
+    // Пока плашек нет — в слоте титульная строка (.feat-default).
     function addBadge(id) {
       if (!deck || !BADGES[id] || shown[id]) { return; }
       shown[id] = true;
       var b = BADGES[id];
       var el = document.createElement('span');
-      el.className = 'feat-chip feat-chip--' + b.kind;
-      el.innerHTML = '<span class="feat-chip__icon">' + b.icon + '</span>' + b.label;
+      el.className = 'feat-chip';
+      el.innerHTML = '<span class="feat-chip__icon">' + b.icon + '</span>' +
+        '<span class="feat-chip__body"><span class="feat-chip__label">' + b.label + '</span>' +
+        '<span class="feat-chip__sub">' + b.sub + '</span></span>';
       deck.appendChild(el);
+      deck.classList.add('has-badge');         // спрятать титульную заглушку
       requestAnimationFrame(function () {
         requestAnimationFrame(function () { el.classList.add('is-in'); });
       });
