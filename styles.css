@@ -1557,17 +1557,24 @@ a { text-decoration: none; color: inherit; }
   color: #fff;
 }
 
-.library__panel {
-  display: none;
+.library__panels {
+  display: flex;
+  flex-direction: column;
+  gap: 88px;
 }
 
-.library__panel.is-active {
+.library__panel {
   display: flex;
   align-items: center;
   gap: 60px;
-  max-width: 900px;
+  max-width: 960px;
   margin: 0 auto;
-  animation: fade-up 0.3s ease;
+  width: 100%;
+}
+
+/* Зигзаг: чётные строки переворачиваем (телефон ↔ текст) */
+.library__panel:nth-child(even) {
+  flex-direction: row-reverse;
 }
 
 .library__panel-content {
@@ -2796,20 +2803,19 @@ a { text-decoration: none; color: inherit; }
   .library__tab { padding: 8px 14px; font-size: 13px; }
 
   .library__panels {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
   }
 
-  .library__panel {
-    display: none !important;
+  /* На мобиле зигзаг разворачиваем в колонку: телефон сверху, текст снизу */
+  .library__panel,
+  .library__panel:nth-child(even) {
+    display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 20px;
-    animation: none !important;
-  }
-
-  .library__panel.is-active {
-    display: flex !important;
+    gap: 22px;
   }
 
   .library__panel-content { order: 2; }
@@ -3392,11 +3398,21 @@ a { text-decoration: none; color: inherit; }
 
 /* ===== Work-english bonus band ===== */
 .workenglish { padding: 80px 0; background: #fff; text-align: center; }
+.workenglish__inner {
+  width: min(820px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 46px 48px;
+  border: 1.5px solid rgba(52, 211, 153, .32);
+  border-radius: 24px;
+  background: #f7faf9;
+  box-shadow: 0 10px 34px rgba(5, 150, 105, .07);
+  box-sizing: border-box;
+}
 .workenglish__title { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; color: #1a1a2e; margin-bottom: 14px; }
 .workenglish__text { font-size: 17px; color: #555; line-height: 1.6; max-width: 660px; margin: 0 auto 28px; }
 .workenglish__points { display: flex; justify-content: center; flex-wrap: wrap; gap: 14px; }
 .workenglish__point { display: flex; align-items: center; gap: 8px; background: #f7faf9; border: 1px solid #eef0f0; border-radius: 14px; padding: 12px 18px; font-size: 15px; font-weight: 600; color: #1a1a2e; }
-@media (max-width: 600px) { .workenglish__title { font-size: 25px; } .workenglish__text { font-size: 15px; } }
+@media (max-width: 600px) { .workenglish__inner { padding: 32px 22px; } .workenglish__title { font-size: 25px; } .workenglish__text { font-size: 15px; } }
 
 
 /* ===== Hero pills: two-world grouping (prep vs L7) ===== */

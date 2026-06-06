@@ -425,6 +425,13 @@
   // ════════════ State ════════════
   var curLang = 'ru';
   var parallelOn = true;
+  (function () {
+    var l = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
+    if (l === 'off') { parallelOn = false; } else if (LMETA[l]) { curLang = l; }
+    var lbl = document.getElementById('langLabel');
+    if (lbl) { lbl.textContent = parallelOn ? LMETA[curLang].label : 'Translate'; }
+    if (!parallelOn) { var ch = document.getElementById('langChip'); if (ch) { ch.style.background = '#fff'; ch.style.color = '#047857'; ch.style.borderColor = 'rgba(52,211,153,.55)'; } }
+  })();
   var CARD_EL = document.querySelector('.book');
 
   function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
@@ -750,6 +757,95 @@
 
   // init
   applyLang();
+
+  // ════════════ Авто-демо (?demo=1): экран некликабельный, «палец» проигрывает сценарий по циклу ════════════
+  (function () {
+    if (new URLSearchParams(location.search).get('demo') !== '1') { return; }
+    var stage = CARD_EL;
+    stage.style.pointerEvents = 'none';                 // глушим пользовательское взаимодействие
+    var sa = document.getElementById('scrollArea');
+
+    var dot = document.createElement('div');
+    dot.setAttribute('aria-hidden', 'true');
+    dot.style.cssText = 'position:absolute; left:-60px; top:-60px; width:24px; height:24px; border-radius:50%; background:rgba(26,26,46,.5); border:2.5px solid #fff; box-shadow:0 3px 10px rgba(0,0,0,.3); z-index:90; pointer-events:none; opacity:0; transition:left .6s cubic-bezier(.45,.05,.25,1), top .6s cubic-bezier(.45,.05,.25,1), opacity .3s, transform .14s ease;';
+    stage.appendChild(dot);
+
+    function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+    function ev() { return { stopPropagation: function () {} }; }
+    function posOf(el) {
+      var cr = stage.getBoundingClientRect(), r = el.getBoundingClientRect();
+      return { x: r.left - cr.left + r.width / 2, y: r.top - cr.top + r.height / 2 };
+    }
+    function moveTo(el) {
+      if (!el) { return sleep(0); }
+      var p = posOf(el);
+      dot.style.opacity = '1';
+      dot.style.left = (p.x - 12) + 'px';
+      dot.style.top = (p.y - 12) + 'px';
+      return sleep(700);
+    }
+    function ripple() {
+      var x = parseFloat(dot.style.left) + 12, y = parseFloat(dot.style.top) + 12;
+      var r = document.createElement('div');
+      r.style.cssText = 'position:absolute; left:' + (x - 11) + 'px; top:' + (y - 11) + 'px; width:22px; height:22px; border-radius:50%; border:2px solid rgba(52,211,153,.9); z-index:89; pointer-events:none; opacity:.9; transform:scale(.4); transition:transform .5s ease-out, opacity .5s ease-out;';
+      stage.appendChild(r);
+      requestAnimationFrame(function () { r.style.transform = 'scale(2.6)'; r.style.opacity = '0'; });
+      setTimeout(function () { r.remove(); }, 540);
+    }
+    function tap() {
+      dot.style.transform = 'scale(.72)';
+      ripple();
+      return sleep(160).then(function () { dot.style.transform = 'scale(1)'; return sleep(160); });
+    }
+    function smoothScroll(to, dur) {
+      return new Promise(function (res) {
+        var from = sa.scrollTop, d = to - from, t0 = null;
+        if (Math.abs(d) < 1) { return res(); }
+        function step(ts) {
+          if (t0 === null) { t0 = ts; }
+          var p = Math.min(1, (ts - t0) / dur);
+          var e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+          sa.scrollTop = from + d * e;
+          if (p < 1) { requestAnimationFrame(step); } else { res(); }
+        }
+        requestAnimationFrame(step);
+      });
+    }
+    function reset() {
+      try { closeWordCard(ev()); } catch (e) {}
+      try { closeBar(ev()); } catch (e) {}
+      try { addedWords = {}; } catch (e) {}
+      try { if (saved) { toggleSave(ev()); } } catch (e) {}
+      sa.scrollTop = 0;
+    }
+    var firstWord = document.querySelector('.tw[data-ru="p1-enc"]');
+
+    function cycle() {
+      reset();
+      dot.style.opacity = '0';
+      return sleep(800)
+        .then(function () { return moveTo(firstWord); })
+        .then(tap)
+        .then(function () { tapWord(ev(), firstWord); return sleep(720); })
+        .then(function () { return moveTo(document.querySelector('#wbar [title="Word card"]')); })
+        .then(tap)
+        .then(function () { openWordCard(ev()); return sleep(820); })
+        .then(function () { return moveTo(document.getElementById('wcAddBtn')); })
+        .then(tap)
+        .then(function () { cardAdd(ev()); return sleep(1250); })
+        .then(function () { return moveTo(document.querySelector('#wcSheet [title="Close"]')); })
+        .then(tap)
+        .then(function () { closeWordCard(ev()); return sleep(720); })
+        .then(function () { dot.style.opacity = '0'; return smoothScroll(Math.min(sa.scrollHeight - sa.clientHeight, 300), 1000); })
+        .then(function () { return sleep(560); })
+        .then(function () { return moveTo(document.getElementById('saveBtn')); })
+        .then(tap)
+        .then(function () { toggleSave(ev()); return sleep(1350); })
+        .then(function () { dot.style.opacity = '0'; return sleep(850); });
+    }
+    function loop() { cycle().then(loop); }
+    setTimeout(loop, 700);
+  })();
 </script>
 </body>
 </html>

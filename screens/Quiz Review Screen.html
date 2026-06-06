@@ -890,13 +890,50 @@
     try { window.parent.postMessage({ __l7demo: true, action: 'toHome', lang: lang }, '*'); } catch (e) {}
   }
 
-  // Режимы для встраивания в библиотеку (postMessage и палец только в hero-демо):
-  //   static — вкладка «Тесты»: вопрос + варианты, пользователь сам кликает;
-  //   audio  — вкладка «Аудио»: авто-старт озвучки-караоке (TTS замьючен выше → визуально, без звука).
+  // Режимы для встраивания в библиотеку:
+  //   static — «Адаптивные тесты»: некликабельно, авто-демо по циклу (вариант → lien → словарь → крестик → звезда);
+  //   audio  — «Аудио»: некликабельно, авто-старт озвучки-караоке (зациклено, TTS замьючен);
+  //   (без mode) — hero-демо run() с postMessage.
+  function ev0() { return { stopPropagation: function () {} }; }
+  function resetQuiz() {
+    answered = false;
+    [0, 1, 2, 3].forEach(function (i) {
+      var el = document.getElementById('opt' + i);
+      el.style.border = '1.5px solid #e8eaec'; el.style.background = '#fff';
+      var en = el.querySelector('.opt-en'); if (en) { en.style.fontWeight = '500'; }
+      var ru = el.querySelector('.opt-ru'); if (ru) { ru.style.color = '#9aa1a0'; }
+      var b = el.querySelector('.opt-badge'); if (b) { b.style.display = 'none'; }
+    });
+    document.getElementById('exBox').style.display = 'none';
+    try { addedWords = {}; } catch (e) {}
+    try { if (saved) { toggleSave(ev0()); } } catch (e) {}
+    try { closeBar(ev0()); } catch (e) {}
+    var sa = document.getElementById('scrollArea'); if (sa) { sa.scrollTop = 0; }
+  }
+  async function runStatic() {
+    frame.style.pointerEvents = 'none';            // глушим пользовательские клики
+    while (true) {
+      resetQuiz();
+      finger.style.opacity = '0';
+      await sleep(850);
+      finger.style.opacity = '1';
+      await sleep(260);
+      await tap(document.getElementById('opt0'), 950);       // 1. вариант «an easement»
+      var lien = q('#exEN .tw[data-ru="ru-lien"]');
+      scrollInto(lien); await sleep(380);
+      await tap(lien, 850);                                   // 2. слово lien в разборе → попап
+      await tap(document.getElementById('addBtn'), 1150);    // 3. добавить в словарь
+      await tap(q('#wbar button[title="Close"]'), 760);      // 4. крестик
+      await tap(document.getElementById('saveBtn'), 1350);   // 5. звезда (сохранить вопрос)
+      finger.style.opacity = '0';
+      await sleep(950);
+    }
+  }
   var __mode = params.get('mode') || '';
   function __launch() {
-    if (__mode === 'static') { return; }
+    if (__mode === 'static') { runStatic(); return; }
     if (__mode === 'audio') {
+      frame.style.pointerEvents = 'none';
       window.__loopAudio = true;
       setTimeout(function () { var b = document.getElementById('autoBtn'); if (b) { b.click(); } }, 450);
       return;

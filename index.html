@@ -45,7 +45,6 @@
       <nav class="nav">
         <a href="#languages" class="nav__link">Языки</a>
         <a href="#library" class="nav__link">Что внутри</a>
-        <a href="#states" class="nav__link">Штаты</a>
         <a href="#reviews" class="nav__link">Отзывы</a>
         <a href="#faq" class="nav__link">FAQ</a>
       </nav>
@@ -77,7 +76,6 @@
   <div class="mobile-menu" id="mobileMenu">
     <a href="#languages" class="mobile-menu__link">Языки</a>
     <a href="#library" class="mobile-menu__link">Что внутри</a>
-    <a href="#states" class="mobile-menu__link">Штаты</a>
     <a href="#reviews" class="mobile-menu__link">Отзывы</a>
     <a href="#faq" class="mobile-menu__link">FAQ</a>
     <a href="#" class="mobile-menu__link mobile-menu__login" data-login>Войти</a>
@@ -252,18 +250,11 @@
   <!-- 6. Что внутри -->
   <section class="library" id="library">
     <div class="container">
-      <h2 class="section__title">Два мира в одном приложении — подготовка и&nbsp;язык</h2>
-      <p class="section__subtitle">Учебник, карточки, тесты и математика — тот же материал, что у носителей. А языковой слой L7 (параллельный перевод, словарь, повторение) встроен в каждый из них. Два мира идут параллельно и пересекаются.</p>
-
-      <div class="library__tabs">
-        <button class="library__tab is-active" data-tab="textbook">Интерактивный учебник</button>
-        <button class="library__tab" data-tab="cards">Карточки терминов</button>
-        <button class="library__tab" data-tab="audio">Аудио</button>
-        <button class="library__tab" data-tab="tests">Тесты</button>
-      </div>
+      <h2 class="section__title">Инструменты подготовки — и&nbsp;ваш язык встроен в&nbsp;каждый</h2>
+      <p class="section__subtitle">Языковой слой L7 позволяет готовиться к&nbsp;экзамену на&nbsp;своём языке.</p>
 
       <div class="library__panels">
-        <div class="library__panel is-active" data-tab="textbook">
+        <div class="library__panel" data-tab="textbook">
           <div class="library__panel-content">
             <h3>Интерактивный учебник — с&nbsp;параллельным переводом и&nbsp;аудио</h3>
             <p>Тот же учебный материал, что и у носителей: каждый абзац — на английском и вашем языке, с озвучкой (10 языков). Непонятное слово сохраняете тапом в Словарь&nbsp;L7.</p>
@@ -275,7 +266,25 @@
           </div>
           <div class="library__phone">
             <div class="phone__frame library__frame">
-              <iframe src="screens/Textbook%20Reading%20Screen.html" title="Демо: интерактивный учебник — параллельный перевод, озвучка, тап → словарь" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
+              <iframe data-src="screens/Textbook%20Reading%20Screen.html?demo=1" title="Демо: интерактивный учебник — параллельный перевод, озвучка, тап → словарь" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
+            </div>
+          </div>
+        </div>
+
+        <div class="library__panel" data-tab="tests">
+          <div class="library__panel-content">
+            <h3>Адаптивные тесты по&nbsp;разделам — с&nbsp;разбором на вашем языке</h3>
+            <p>Настоящие вопросы по темам плюс полные экзамены штата и национальный. Вопрос, варианты и разбор «Here's why» — с параллельным переводом; непонятное слово уходит в Словарь&nbsp;L7.</p>
+            <div class="library__examples">Agency &bull; Contracts &bull; Financing &bull; Math &bull; Vocabulary &bull; State &bull; National</div>
+            <div class="library__badges">
+              <span class="library__badge">По темам</span>
+              <span class="library__badge">Штат + национальный</span>
+              <span class="library__badge">Переведённые разборы</span>
+            </div>
+          </div>
+          <div class="library__phone">
+            <div class="phone__frame library__frame">
+              <iframe data-src="screens/Quiz%20Review%20Screen.html?mode=static" title="Демо: тест с вариантами ответа и переведённым разбором" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
             </div>
           </div>
         </div>
@@ -291,15 +300,8 @@
             </div>
           </div>
           <div class="library__phone">
-            <div class="phone__frame phone__frame--md mock-frame" data-screen="cards">
-              <div class="flashcard flashcard--lg">
-                <span class="flashcard__tag">Term card · 1 / 60</span>
-                <div class="flashcard__term">Lien</div>
-                <div class="flashcard__termtr"><span style="font-weight:700;font-size:10px;">RU</span> залоговое удержание</div>
-                <div class="flashcard__def">A legal claim against a property that must be paid off when the property is sold.</div>
-                <div class="flashcard__deftr">Юридическое требование к объекту, которое должно быть погашено при его продаже.</div>
-                <div class="flashcard__hint">Tap a word to translate &amp; save</div>
-              </div>
+            <div class="phone__frame library__frame">
+              <iframe data-src="screens/Term%20Card%20Screen.html?demo=1" title="Демо: умная карточка термина — перевод, аудио, пример, оценка усвоения" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
             </div>
           </div>
         </div>
@@ -316,25 +318,7 @@
           </div>
           <div class="library__phone">
             <div class="phone__frame library__frame">
-              <iframe src="screens/Quiz%20Review%20Screen.html?mode=audio" title="Демо: аудио-режим — озвучка вопроса и перевода (караоке)" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
-            </div>
-          </div>
-        </div>
-
-        <div class="library__panel" data-tab="tests">
-          <div class="library__panel-content">
-            <h3>Адаптивные тесты по&nbsp;разделам — с&nbsp;разбором на вашем языке</h3>
-            <p>Настоящие вопросы по темам плюс полные экзамены штата и национальный. Вопрос, варианты и разбор «Here's why» — с параллельным переводом; непонятное слово уходит в Словарь&nbsp;L7. <a href="#engine" style="color:#059669;font-weight:600;">Как тесты строят ваш путь&nbsp;→</a></p>
-            <div class="library__examples">Agency &bull; Contracts &bull; Financing &bull; Math &bull; Vocabulary &bull; State &bull; National</div>
-            <div class="library__badges">
-              <span class="library__badge">По темам</span>
-              <span class="library__badge">Штат + национальный</span>
-              <span class="library__badge">Переведённые разборы</span>
-            </div>
-          </div>
-          <div class="library__phone">
-            <div class="phone__frame library__frame">
-              <iframe src="screens/Quiz%20Review%20Screen.html?mode=static" title="Демо: тест с вариантами ответа и переведённым разбором" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
+              <iframe data-src="screens/Quiz%20Review%20Screen.html?mode=audio" title="Демо: аудио-режим — озвучка вопроса и перевода (караоке)" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
             </div>
           </div>
         </div>
@@ -344,73 +328,15 @@
     </div>
   </section>
 
-  <!-- 7. Движок -->
-  <section class="engine" id="engine">
-    <div class="container">
-      <h2 class="section__title">Под капотом — наставник, который видит и&nbsp;предмет, и&nbsp;язык</h2>
-      <p class="section__subtitle">Подготовку ведёт адаптивный движок в духе Math Academy: знает, что и когда вам учить, и доводит до проходного балла кратчайшим путём. У обычного наставника предмет один — у нас предмет и язык сразу.</p>
-      <div class="engine__grid">
-
-        <div class="engine__card">
-          <div class="phone__frame phone__frame--sm mock-frame" data-screen="diag">
-            <div style="display:flex;flex-direction:column;height:100%;min-height:360px;padding:16px 14px;background:#fff;color:#1a1a2e;">
-              <div style="font-size:12.5px;font-weight:800;">Placement Test</div>
-              <div style="font-size:10.5px;color:#6b7280;margin-bottom:12px;">adapting to your level</div>
-              <div style="display:flex;gap:5px;margin-bottom:14px;">
-                <i style="width:18px;height:5px;border-radius:3px;background:#34D399;"></i>
-                <i style="width:18px;height:5px;border-radius:3px;background:#34D399;"></i>
-                <i style="width:18px;height:5px;border-radius:3px;background:#34D399;"></i>
-                <i style="width:18px;height:5px;border-radius:3px;background:#cfe9df;"></i>
-                <i style="width:18px;height:5px;border-radius:3px;background:#eef0f2;"></i>
-                <span style="margin-left:auto;font-size:10px;color:#9aa0a8;">Question 6</span>
-              </div>
-              <div style="font-size:13px;font-weight:700;line-height:1.35;">Which document transfers title to real property?</div>
-              <div style="font-size:11px;color:#6b7280;line-height:1.35;margin:4px 0 12px;"><b style="color:#059669;font-size:9px;">RU</b> Какой документ передаёт право собственности?</div>
-              <div style="display:flex;flex-direction:column;gap:7px;">
-                <div style="border:1px solid #e8eaec;border-radius:10px;padding:8px 11px;font-size:12px;">a lien</div>
-                <div style="border:1.5px solid #34D399;background:rgba(52,211,153,.1);border-radius:10px;padding:8px 11px;font-size:12px;font-weight:600;">a deed</div>
-                <div style="border:1px solid #e8eaec;border-radius:10px;padding:8px 11px;font-size:12px;">an easement</div>
-              </div>
-              <div style="margin-top:auto;background:rgba(52,211,153,.12);border-radius:10px;padding:9px 11px;font-size:11px;line-height:1.4;">🎯 Gap found: percentages for commission math — added to your plan.<br><span style="color:#6b7280;"><b style="color:#059669;font-size:9px;">RU</b> Нашли пробел: проценты для расчёта комиссии.</span></div>
-            </div>
-          </div>
-          <h3 class="engine__title">Адаптивная диагностика</h3>
-          <p class="engine__text">Короткий входной тест по разделам строит ваш персональный курс и находит пробелы в базе. Не тратите время на то, что уже знаете.</p>
-        </div>
-
-        <div class="engine__card">
-          <div class="phone__frame phone__frame--sm mock-frame" data-screen="path">
-            <div style="display:flex;flex-direction:column;height:100%;min-height:360px;padding:16px 14px;background:#fff;color:#1a1a2e;">
-              <div style="font-size:12.5px;font-weight:800;">Your Path</div>
-              <div style="font-size:10.5px;color:#6b7280;margin-bottom:14px;">Ваш путь к лицензии</div>
-              <div style="display:flex;flex-direction:column;gap:9px;">
-                <div style="display:flex;align-items:center;gap:9px;"><span style="width:20px;height:20px;border-radius:50%;background:#34D399;color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">✓</span><span style="font-size:12px;"><b>Property Ownership</b><br><span style="color:#9aa0a8;font-size:10.5px;">Право собственности</span></span><span style="margin-left:auto;font-size:9.5px;color:#9aa0a8;">Done</span></div>
-                <div style="display:flex;align-items:center;gap:9px;"><span style="width:20px;height:20px;border-radius:50%;background:#34D399;color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">✓</span><span style="font-size:12px;"><b>Title</b><br><span style="color:#9aa0a8;font-size:10.5px;">Титул</span></span><span style="margin-left:auto;font-size:9.5px;color:#9aa0a8;">Done</span></div>
-                <div style="display:flex;align-items:center;gap:9px;border:1.5px solid #34D399;background:rgba(52,211,153,.08);border-radius:12px;padding:8px 9px;"><span style="width:20px;height:20px;border-radius:50%;background:#34D399;color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">●</span><span style="font-size:12px;"><b>Liens &amp; Encumbrances</b><br><span style="color:#059669;font-size:10.5px;">Залоги и обременения</span></span><span style="margin-left:auto;font-size:9.5px;color:#059669;font-weight:700;">You're here</span></div>
-                <div style="display:flex;align-items:center;gap:9px;"><span style="width:20px;height:20px;border-radius:50%;border:1.5px solid #d3d8dd;color:#9aa0a8;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">○</span><span style="font-size:12px;"><b>Agency</b><br><span style="color:#9aa0a8;font-size:10.5px;">Агентирование</span></span><span style="margin-left:auto;font-size:9.5px;color:#9aa0a8;">Next</span></div>
-                <div style="display:flex;align-items:center;gap:9px;opacity:.65;"><span style="width:20px;height:20px;border-radius:50%;background:#eef0f2;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">🔒</span><span style="font-size:12px;"><b>Contracts</b><br><span style="color:#9aa0a8;font-size:10.5px;">Договоры</span></span><span style="margin-left:auto;font-size:9.5px;color:#9aa0a8;">Locked</span></div>
-                <div style="display:flex;align-items:center;gap:9px;opacity:.65;"><span style="width:20px;height:20px;border-radius:50%;background:#eef0f2;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">🔒</span><span style="font-size:12px;"><b>Real Estate Math</b><br><span style="color:#9aa0a8;font-size:10.5px;">Математика</span></span><span style="margin-left:auto;font-size:9.5px;color:#9aa0a8;">Locked</span></div>
-              </div>
-            </div>
-          </div>
-          <h3 class="engine__title">Автоматический путь</h3>
-          <p class="engine__text">Система сама знает, что повторить и что учить дальше, — убирает вопрос «что учить?» из вашей головы.</p>
-        </div>
-
-        <div class="engine__card">
-          <div class="phone__frame phone__frame--sm mock-frame">
-            <div class="srs-mock">
-              <div class="srs-mock__head">Review · today</div>
-              <div class="srs-mock__q">What is a <strong>lien</strong>?</div>
-              <div class="srs-mock__hint"><span style="font-weight:700;font-size:10px;">RU</span> залоговое удержание</div>
-              <div class="srs-mock__row"><span class="srs-mock__again">Again</span><span class="srs-mock__good">Good</span><span class="srs-mock__easy">Easy</span></div>
-              <div class="srs-mock__bar"><i></i></div>
-            </div>
-          </div>
-          <h3 class="engine__title">Научная методика</h3>
-          <p class="engine__text">Active recall, интервальное повторение, mastery-прогресс. К экзамену вы не «прошли уроки», а реально готовы — и отвечаете не переводя.</p>
-        </div>
-
+  <!-- Интервальное повторение -->
+  <section class="workenglish">
+    <div class="container workenglish__inner">
+      <h2 class="workenglish__title">Интервальное повторение — выученное держится до&nbsp;экзамена</h2>
+      <p class="workenglish__text">Зубрёжка выветривается за пару дней. Движок сам возвращает каждый сохранённый термин и вопрос ровно тогда, когда вы начинаете забывать, — в этот момент повторение закрепляет сильнее всего. Это научно доказанный метод: к экзамену вы не «прошли уроки», а действительно помните.</p>
+      <div class="workenglish__points">
+        <div class="workenglish__point"><span>🧠</span> Вспоминаете, а не перечитываете</div>
+        <div class="workenglish__point"><span>⏰</span> Возврат перед самым забыванием</div>
+        <div class="workenglish__point"><span>📈</span> Повтор до прочного мастерства</div>
       </div>
     </div>
   </section>
@@ -430,21 +356,8 @@
       </div>
       <div class="mathsec__phone">
         <div class="phone__frame mathsec__frame">
-          <iframe src="screens/Math%20Problem%20Screen.html" title="Демо: математика экзамена — задача с переводом, разбором и практикой" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
+          <iframe data-src="screens/Math%20Problem%20Screen.html" title="Демо: математика экзамена — задача с переводом, разбором и практикой" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Бонус: рабочий английский -->
-  <section class="workenglish">
-    <div class="container workenglish__inner">
-      <h2 class="workenglish__title">Сдадите экзамен — и&nbsp;останется рабочий&nbsp;английский</h2>
-      <p class="workenglish__text">Готовясь, вы каждый день читаете, слышите и сохраняете реальный язык недвижимости. К лицензии приходите не только со знанием предмета — английский «в мышцах» остаётся с вами для настоящей работы.</p>
-      <div class="workenglish__points">
-        <div class="workenglish__point"><span>💬</span> Говорить с клиентами</div>
-        <div class="workenglish__point"><span>📄</span> Читать договоры и раскрытия</div>
-        <div class="workenglish__point"><span>🏠</span> Вести показы на английском</div>
       </div>
     </div>
   </section>
@@ -522,33 +435,6 @@
         <div class="pains__answer" data-pain="6">
           <strong>«Боюсь снова провалить»</strong>
           <p>Начните с бесплатного пробного теста. Увидите реальный уровень и насколько помогает языковая поддержка — до оплаты.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 10. Штаты -->
-  <section class="languages" id="states">
-    <div class="container">
-      <h2 class="section__title">Все 50 штатов — плюс&nbsp;национальный экзамен</h2>
-      <p class="section__subtitle">Ваш язык — ядро, не костыль: на нём вы понимаете правила своего штата, а английский тех же правил закрепляется параллельно. Поддержка 10 языков.</p>
-      <div class="languages__langs" style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:760px;margin:0 auto 48px;">
-        <span class="pill">Испанский</span>
-        <span class="pill">Португальский (бразильский)</span>
-        <span class="pill">Гаитянский креольский</span>
-        <span class="pill">Русский</span>
-        <span class="pill">Французский</span>
-        <span class="pill">Немецкий</span>
-        <span class="pill">Итальянский</span>
-        <span class="pill">Китайский (мандарин)</span>
-        <span class="pill">Арабский</span>
-        <span class="pill">Тагальский</span>
-      </div>
-      <div class="languages__marquee">
-        <div class="languages__track">
-          <span>Texas</span><span>California</span><span>Florida</span><span>New York</span><span>Georgia</span><span>Illinois</span><span>Arizona</span><span>Michigan</span><span>North Carolina</span><span>Ohio</span><span>Pennsylvania</span><span>Washington</span><span>Virginia</span><span>Colorado</span><span>Nevada</span><span>New Jersey</span><span>Tennessee</span><span>South Carolina</span><span>Maryland</span><span>Massachusetts</span><span>Indiana</span><span>Missouri</span><span>Wisconsin</span><span>Minnesota</span>
-          <!-- duplicate for infinite scroll -->
-          <span>Texas</span><span>California</span><span>Florida</span><span>New York</span><span>Georgia</span><span>Illinois</span><span>Arizona</span><span>Michigan</span><span>North Carolina</span><span>Ohio</span><span>Pennsylvania</span><span>Washington</span><span>Virginia</span><span>Colorado</span><span>Nevada</span><span>New Jersey</span><span>Tennessee</span><span>South Carolina</span><span>Maryland</span><span>Massachusetts</span><span>Indiana</span><span>Missouri</span><span>Wisconsin</span><span>Minnesota</span>
         </div>
       </div>
     </div>
@@ -817,6 +703,14 @@
         var code = el.getAttribute('data-lang');
         if (!code) { return; }
         el.addEventListener('click', function () { pick(code); });
+      });
+
+      // Язык сайта (?lang) подставляем в src экранов-iframe ОДИН раз (data-src → src),
+      // чтобы каждый экран сразу грузился на нужном языке (hero — через оркестратор демо).
+      document.querySelectorAll('iframe[data-src]').forEach(function (f) {
+        var src = f.getAttribute('data-src');
+        if (!src) { return; }
+        f.src = src + (src.indexOf('?') >= 0 ? '&' : '?') + 'lang=' + cur;
       });
 
       document.addEventListener('click', function () {
