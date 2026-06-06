@@ -934,6 +934,9 @@ a { text-decoration: none; color: inherit; }
   margin: 0 auto;
 }
 
+/* Маркер в заголовке секции сохраняет вес заголовка (иначе .hero__hl утончил бы до 600) */
+.section__title .hero__hl { font-weight: inherit; }
+
 .compare__row {
   display: flex;
   align-items: stretch;
@@ -3241,6 +3244,143 @@ a { text-decoration: none; color: inherit; }
 .mathsec__text { font-size: 17px; color: #555; line-height: 1.6; margin-bottom: 20px; }
 .mathsec__text strong { color: #047857; }
 .mathsec__phone { flex-shrink: 0; }
+/* Рамка под интерактивный экран (iframe 320×600) — математика и учебник */
+.mathsec__frame,
+.library__frame {
+  width: 320px;
+  height: 600px;
+  border: none;
+  border-radius: 24px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 18px 50px rgba(26, 26, 46, .14);
+  flex-shrink: 0;
+}
+@media (max-width: 360px) {
+  .mathsec__frame,
+  .library__frame { transform: scale(0.86); transform-origin: top center; }
+}
+
+/* ===== Языки (10 языков · орбита флагов) ===== */
+.langs { padding: 100px 0; background: #fff; }
+.langs__layout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 64px;
+  margin-top: 48px;
+  flex-wrap: wrap;
+}
+.langs__orbit {
+  position: relative;
+  width: min(420px, 86vw);
+  aspect-ratio: 1;
+  flex-shrink: 0;
+}
+.langs__ring {
+  position: absolute;
+  inset: 6%;
+  border-radius: 50%;
+  border: 1px dashed rgba(52, 211, 153, .35);
+  background: radial-gradient(circle, rgba(52, 211, 153, .10), rgba(52, 211, 153, 0) 62%);
+}
+.langs__hub {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 40%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+.langs__hub img { width: 100%; height: auto; display: block; }
+.langs__flag {
+  position: absolute;
+  width: 50px; height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 4px 14px rgba(26, 26, 46, .16);
+  border: 2px solid #fff;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  z-index: 1;
+}
+.langs__flag-svg { width: 100%; height: 100%; display: block; }
+.langs__flag:hover,
+.langs__flag.is-active {
+  transform: translate(-50%, -50%) scale(1.16);
+  box-shadow: 0 8px 22px rgba(5, 150, 105, .4);
+  border-color: #34D399;
+  z-index: 3;
+}
+.langs__flag--1  { left: 50%;    top: 8.33%; }
+.langs__flag--2  { left: 74.49%; top: 16.29%; }
+.langs__flag--3  { left: 89.63%; top: 37.13%; }
+.langs__flag--4  { left: 89.63%; top: 62.87%; }
+.langs__flag--5  { left: 74.49%; top: 83.71%; }
+.langs__flag--6  { left: 50%;    top: 91.67%; }
+.langs__flag--7  { left: 25.51%; top: 83.71%; }
+.langs__flag--8  { left: 10.37%; top: 62.87%; }
+.langs__flag--9  { left: 10.37%; top: 37.13%; }
+.langs__flag--10 { left: 25.51%; top: 16.29%; }
+
+.langs__list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 250px;
+}
+.langs__item {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 9px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background .18s ease;
+}
+.langs__item:hover,
+.langs__item.is-active { background: rgba(52, 211, 153, .12); }
+.langs__chip {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(26, 26, 46, .16);
+  border: 1.5px solid #fff;
+}
+.langs__chip-svg { width: 100%; height: 100%; display: block; }
+.langs__txt { display: flex; flex-direction: column; line-height: 1.2; }
+.langs__txt b { font-size: 15px; font-weight: 700; color: #1a1a2e; }
+.langs__txt i { font-size: 12.5px; font-style: normal; color: #8a909a; }
+
+/* Выбранный язык (синхронизирован с переключателем в шапке) */
+.langs__flag.is-selected {
+  border-color: #34D399;
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, .55), 0 6px 18px rgba(5, 150, 105, .3);
+  transform: translate(-50%, -50%) scale(1.1);
+  z-index: 2;
+}
+.langs__item.is-selected { background: rgba(52, 211, 153, .16); }
+.langs__item.is-selected .langs__txt b { color: #047857; }
+.langs__item.is-selected::after {
+  content: '✓';
+  margin-left: auto;
+  color: #059669;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .langs__layout { flex-direction: column; gap: 32px; }
+}
+@media (max-width: 520px) {
+  .langs__flag { width: 42px; height: 42px; border-width: 1.5px; }
+  .langs__list { width: 100%; max-width: 320px; }
+}
 @media (max-width: 900px) {
   .mathsec__inner { flex-direction: column; gap: 36px; text-align: center; }
   .mathsec__title { font-size: 28px; }

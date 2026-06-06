@@ -675,7 +675,7 @@
   function startAuto() {
     autoOn = true; setAutoBtn(true);
     document.getElementById('wbar').style.display = 'none';
-    document.getElementById('bottomBar').style.display = 'none';
+    if (!window.__loopAudio) { document.getElementById('bottomBar').style.display = 'none'; }
     var pr = document.getElementById('pauseRow'); pr.style.display = 'flex';
     document.getElementById('pauseLabel').textContent = pauseText();
     autoSteps = buildSteps(); autoIdx = -1; autoStep();
@@ -692,7 +692,7 @@
     if (!autoOn) { return; }
     clearHl(); document.getElementById('pausePill').classList.remove('read');
     autoIdx++;
-    if (autoIdx >= autoSteps.length) { stopAuto(); return; }
+    if (autoIdx >= autoSteps.length) { stopAuto(); if (window.__loopAudio) { setTimeout(function () { if (window.__loopAudio) { startAuto(); } }, 1500); } return; }
     var s = autoSteps[autoIdx];
     if (s.pause) {
       if (pauseSec === 0) { autoStep(); return; }
@@ -890,8 +890,21 @@
     try { window.parent.postMessage({ __l7demo: true, action: 'toHome', lang: lang }, '*'); } catch (e) {}
   }
 
-  if (document.readyState === 'complete') { run(); }
-  else { window.addEventListener('load', run); }
+  // Режимы для встраивания в библиотеку (postMessage и палец только в hero-демо):
+  //   static — вкладка «Тесты»: вопрос + варианты, пользователь сам кликает;
+  //   audio  — вкладка «Аудио»: авто-старт озвучки-караоке (TTS замьючен выше → визуально, без звука).
+  var __mode = params.get('mode') || '';
+  function __launch() {
+    if (__mode === 'static') { return; }
+    if (__mode === 'audio') {
+      window.__loopAudio = true;
+      setTimeout(function () { var b = document.getElementById('autoBtn'); if (b) { b.click(); } }, 450);
+      return;
+    }
+    run();
+  }
+  if (document.readyState === 'complete') { __launch(); }
+  else { window.addEventListener('load', __launch); }
 })();
 </script>
 </body>
