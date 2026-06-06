@@ -779,7 +779,8 @@
   var lang = params.get('lang') || 'ru';
   // switch the screen to the site language
   try {
-    if (lang !== 'off' && window.LMETA && LMETA[lang] && lang !== curLang) { pickLang(lang); }
+    if (lang === 'en') { pickLang('off'); var __el = document.getElementById('langLabel'); if (__el) { __el.textContent = 'EN'; } }
+    else if (lang !== 'off' && window.LMETA && LMETA[lang] && lang !== curLang) { pickLang(lang); }
   } catch (e) {}
 
   // hero loops silently — keep the auto-read VISUAL (word karaoke), but mute its TTS

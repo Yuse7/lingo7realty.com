@@ -265,8 +265,11 @@
             </div>
           </div>
           <div class="library__phone">
-            <div class="phone__frame library__frame">
-              <iframe data-src="screens/Textbook%20Reading%20Screen.html?demo=1" title="Демо: интерактивный учебник — параллельный перевод, озвучка, тап → словарь" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
+            <div class="phone-cased">
+              <img src="pics/phone-clean.svg" alt="" class="phone__shell">
+              <div class="phone__frame phone__frame--hero">
+                <iframe data-src="screens/Textbook%20Reading%20Screen.html?demo=1" title="Демо: интерактивный учебник — параллельный перевод, озвучка, тап → словарь" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
+              </div>
             </div>
           </div>
         </div>
@@ -283,8 +286,11 @@
             </div>
           </div>
           <div class="library__phone">
-            <div class="phone__frame library__frame">
-              <iframe data-src="screens/Quiz%20Review%20Screen.html?mode=static" title="Демо: тест с вариантами ответа и переведённым разбором" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
+            <div class="phone-cased">
+              <img src="pics/phone-clean.svg" alt="" class="phone__shell">
+              <div class="phone__frame phone__frame--hero">
+                <iframe data-src="screens/Quiz%20Review%20Screen.html?mode=static" title="Демо: тест с вариантами ответа и переведённым разбором" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
+              </div>
             </div>
           </div>
         </div>
@@ -300,8 +306,11 @@
             </div>
           </div>
           <div class="library__phone">
-            <div class="phone__frame library__frame">
-              <iframe data-src="screens/Term%20Card%20Screen.html?demo=1" title="Демо: умная карточка термина — перевод, аудио, пример, оценка усвоения" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
+            <div class="phone-cased">
+              <img src="pics/phone-clean.svg" alt="" class="phone__shell">
+              <div class="phone__frame phone__frame--hero">
+                <iframe data-src="screens/Term%20Card%20Screen.html?demo=1" title="Демо: умная карточка термина — перевод, аудио, пример, оценка усвоения" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
+              </div>
             </div>
           </div>
         </div>
@@ -317,8 +326,11 @@
             </div>
           </div>
           <div class="library__phone">
-            <div class="phone__frame library__frame">
-              <iframe data-src="screens/Quiz%20Review%20Screen.html?mode=audio" title="Демо: аудио-режим — озвучка вопроса и перевода (караоке)" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
+            <div class="phone-cased">
+              <img src="pics/phone-clean.svg" alt="" class="phone__shell">
+              <div class="phone__frame phone__frame--hero">
+                <iframe data-src="screens/Quiz%20Review%20Screen.html?mode=audio" title="Демо: аудио-режим — озвучка вопроса и перевода (караоке)" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
+              </div>
             </div>
           </div>
         </div>
@@ -355,8 +367,11 @@
         </div>
       </div>
       <div class="mathsec__phone">
-        <div class="phone__frame mathsec__frame">
-          <iframe data-src="screens/Math%20Problem%20Screen.html" title="Демо: математика экзамена — задача с переводом, разбором и практикой" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
+        <div class="phone-cased">
+          <img src="pics/phone-clean.svg" alt="" class="phone__shell">
+          <div class="phone__frame phone__frame--hero">
+            <iframe data-src="screens/Math%20Problem%20Screen.html" title="Демо: математика экзамена — задача с переводом, разбором и практикой" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
+          </div>
         </div>
       </div>
     </div>
@@ -653,6 +668,7 @@
     // Header language switcher (desktop + mobile) — sets ?lang and reloads
     (function () {
       var HLANGS = [
+        { code: 'en', label: 'EN', native: 'English' },
         { code: 'es', label: 'ES', native: 'Español' },
         { code: 'pt', label: 'PT', native: 'Português' },
         { code: 'ht', label: 'HT', native: 'Kreyòl Ayisyen' },
@@ -801,7 +817,7 @@
     // Язык демо в телефоне. Дефолт — испанский (главная позиционируется как испанская версия).
     // Приоритет: ?lang=xx в адресе → <html lang> (если это реальная локаль, не русский шаблон) → DEMO_DEFAULT.
     // Русскую подстановку посмотреть: index.html?lang=ru
-    var DEMO_LANGS = ['es', 'pt', 'ht', 'ru', 'fr', 'de', 'it', 'zh', 'ar', 'tl'];
+    var DEMO_LANGS = ['en', 'es', 'pt', 'ht', 'ru', 'fr', 'de', 'it', 'zh', 'ar', 'tl'];
     var DEMO_DEFAULT = 'es';
     var urlLang = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
     var htmlLang = (document.documentElement.getAttribute('lang') || '').toLowerCase().split('-')[0];

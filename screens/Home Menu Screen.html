@@ -232,7 +232,7 @@
 
     // 2. pick the site language
     var menu = document.getElementById('langMenu');
-    var opt = document.querySelector('.langOpt[data-lang="' + lang + '"]') ||
+    var opt = document.querySelector('.langOpt[data-lang="' + (lang === 'en' ? 'off' : lang) + '"]') ||
               document.querySelector('.langOpt[data-lang="ru"]');
     if (menu && opt) { menu.scrollTop = Math.max(0, opt.offsetTop - menu.clientHeight / 2 + opt.offsetHeight / 2); }
     await sleep(180);

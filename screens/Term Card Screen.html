@@ -182,9 +182,9 @@
   var curLang = 'ru', parallelOn = true;
   (function () {
     var l = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
-    if (l === 'off') { parallelOn = false; } else if (LMETA[l]) { curLang = l; }
+    if (l === 'off' || l === 'en') { parallelOn = false; } else if (LMETA[l]) { curLang = l; }
     var lbl = document.getElementById('langLabel');
-    if (lbl) { lbl.textContent = parallelOn ? LMETA[curLang].label : 'Translate'; }
+    if (lbl) { lbl.textContent = parallelOn ? LMETA[curLang].label : (l === 'en' ? 'EN' : 'Translate'); }
     if (!parallelOn) { var ch = document.getElementById('langChip'); if (ch) { ch.style.background = '#fff'; ch.style.color = '#047857'; ch.style.borderColor = 'rgba(52,211,153,.55)'; } }
   })();
 
