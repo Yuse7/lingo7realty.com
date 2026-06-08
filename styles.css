@@ -2278,7 +2278,7 @@ a { text-decoration: none; color: inherit; }
 
 /* ===== 13. Final CTA ===== */
 .final-cta {
-  padding: 100px 0;
+  padding: 90px 0;
   background: linear-gradient(135deg, #34D399 0%, #0d9668 100%);
   text-align: center;
 }
@@ -2286,6 +2286,48 @@ a { text-decoration: none; color: inherit; }
 .final-cta__inner {
   max-width: 600px;
 }
+
+/* ===== Блок оплаты (нативно, заскоуплено под .pricing) ===== */
+.pricing { width: 100%; max-width: 480px; margin: 0 auto; text-align: left; color: #1a1a2e; }
+.pricing .card { background: #fff; border: 1px solid #eee; border-radius: 24px; box-shadow: 0 8px 48px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04); padding: 38px 36px 30px; }
+.pricing .eyebrow { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #047857; background: rgba(52,211,153,.12); padding: 6px 13px; border-radius: 20px; margin-bottom: 16px; }
+.pricing .eyebrow .pin { width: 6px; height: 6px; border-radius: 50%; background: #34D399; }
+.pricing .title { font-size: 29px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.16; }
+.pricing .title .accent { color: #34D399; }
+.pricing .roles { display: flex; gap: 8px; background: #f3f5f7; border-radius: 14px; padding: 5px; margin: 26px 0 28px; }
+.pricing .role { flex: 1; display: flex; align-items: center; justify-content: center; gap: 9px; font-family: inherit; font-size: 15px; font-weight: 600; color: #6b7280; background: transparent; border: none; border-radius: 10px; padding: 11px 8px; cursor: pointer; transition: background .18s, color .18s, box-shadow .18s; }
+.pricing .role .dot { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #c4cad1; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: border-color .18s; }
+.pricing .role .dot::after { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #34D399; transform: scale(0); transition: transform .18s; }
+.pricing .role.active { background: #fff; color: #1a1a2e; font-weight: 700; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+.pricing .role.active .dot { border-color: #34D399; }
+.pricing .role.active .dot::after { transform: scale(1); }
+.pricing .role.soon { cursor: default; color: #aab0b6; }
+.pricing .role .soon-tag { font-size: 9.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #9aa0a8; background: #eceef0; border-radius: 20px; padding: 2px 7px; margin-left: -2px; }
+.pricing .role.flash { animation: pricing-nudge .4s ease; }
+@keyframes pricing-nudge { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+.pricing .sub-q { font-size: 17px; font-weight: 700; margin-bottom: 16px; }
+.pricing .roles-msg { font-size: 12.5px; font-weight: 600; color: #9aa0a8; margin: -18px 0 26px; height: 0; opacity: 0; overflow: hidden; transition: opacity .2s; }
+.pricing .roles-msg.show { height: auto; opacity: 1; margin: -18px 0 24px; }
+.pricing .plans { display: flex; flex-direction: column; gap: 10px; margin-bottom: 26px; }
+.pricing .plan { display: flex; align-items: center; gap: 13px; border: 1.5px solid #e5e7eb; border-radius: 16px; padding: 16px 18px; cursor: pointer; background: #fff; transition: border-color .18s, background .18s, box-shadow .18s; }
+.pricing .plan:hover { border-color: #bfe9d4; }
+.pricing .plan.active { border-color: #34D399; background: rgba(52,211,153,.06); box-shadow: 0 2px 12px rgba(52,211,153,.12); }
+.pricing .radio { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #c4cad1; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: border-color .18s; }
+.pricing .radio::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: #34D399; transform: scale(0); transition: transform .18s; }
+.pricing .plan.active .radio { border-color: #34D399; }
+.pricing .plan.active .radio::after { transform: scale(1); }
+.pricing .plan-name { font-size: 16px; font-weight: 700; color: #1a1a2e; white-space: nowrap; }
+.pricing .plan-price { font-size: 16px; font-weight: 600; color: #9aa0a8; white-space: nowrap; }
+.pricing .plan.active .plan-price { color: #059669; }
+.pricing .badge { margin-left: auto; font-size: 10.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #047857; background: rgba(52,211,153,.15); padding: 5px 10px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+.pricing .save-tag { margin-left: auto; font-size: 12.5px; font-weight: 600; color: #059669; white-space: nowrap; }
+.pricing .badge + .save-tag { margin-left: 10px; }
+.pricing .cta { width: 100%; font-family: inherit; font-size: 17px; font-weight: 700; color: #fff; background: #34D399; border: none; border-radius: 14px; padding: 18px; cursor: pointer; box-shadow: 0 4px 24px rgba(52,211,153,.3); transition: background .18s, transform .12s, box-shadow .18s; display: flex; align-items: center; justify-content: center; gap: 9px; }
+.pricing .cta:hover { background: #2bc48a; transform: translateY(-1px); box-shadow: 0 6px 28px rgba(52,211,153,.38); }
+.pricing .cta:active { transform: translateY(0) scale(.99); }
+.pricing .guarantee { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 18px; font-size: 14px; font-weight: 600; color: #6b7280; }
+.pricing .guarantee svg { color: #34D399; }
+.pricing .plans-note { text-align: center; font-size: 12px; color: #aab0b6; font-weight: 500; margin: 13px 0 2px; }
 
 .final-cta__title {
   font-size: 36px;
@@ -2964,6 +3006,30 @@ a { text-decoration: none; color: inherit; }
   display: block;
   height: 52px;
 }
+
+/* ===== Модальные окна (оплата / вход) ===== */
+body.modal-open { overflow: hidden; }
+.modal { display: none; position: fixed; inset: 0; z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+.modal.is-open { display: flex; }
+.modal__backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
+.modal__dialog { position: relative; z-index: 1; width: 100%; max-width: 484px; max-height: 92vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.modal__dialog--login { max-width: 400px; }
+.modal__dialog .pricing { max-width: none; }
+.modal__close { position: absolute; top: 14px; right: 14px; z-index: 3; width: 32px; height: 32px; padding: 0; border: none; background: rgba(255,255,255,0.85); border-radius: 50%; font-size: 22px; line-height: 1; color: #6b7280; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+.modal__close:hover { color: #1a1a2e; background: #fff; }
+
+.login-card { background: #fff; border-radius: 24px; box-shadow: 0 8px 48px rgba(0,0,0,0.14); padding: 36px 32px 30px; }
+.login-card__title { font-size: 22px; font-weight: 800; color: #1a1a2e; margin-bottom: 6px; }
+.login-card__sub { font-size: 14px; color: #6b7280; margin-bottom: 22px; }
+.login-field { margin-bottom: 14px; }
+.login-field label { display: block; font-size: 13px; font-weight: 600; color: #1a1a2e; margin-bottom: 6px; }
+.login-field input { width: 100%; box-sizing: border-box; font-family: inherit; font-size: 15px; color: #1a1a2e; background: #f7f8fa; border: 1.5px solid #e5e7eb; border-radius: 12px; padding: 13px 14px; transition: border-color .18s, background .18s; }
+.login-field input:focus { outline: none; border-color: #34D399; background: #fff; }
+.login-card__btn { width: 100%; font-family: inherit; font-size: 16px; font-weight: 700; color: #fff; background: #34D399; border: none; border-radius: 14px; padding: 15px; cursor: pointer; margin-top: 6px; box-shadow: 0 4px 20px rgba(52,211,153,.3); transition: background .18s, transform .12s; }
+.login-card__btn:hover { background: #2bc48a; transform: translateY(-1px); }
+.login-card__alt { text-align: center; font-size: 13.5px; color: #6b7280; margin-top: 18px; }
+.login-card__alt a { color: #059669; font-weight: 600; text-decoration: none; }
+.login-card__alt a:hover { text-decoration: underline; }
 
 /* ============================================================= */
 /* ===== Lingo7 Realty — exam-prep additions ===================== */
