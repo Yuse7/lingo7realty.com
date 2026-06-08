@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Term Card — Lingo7</title>
 <style>
-  body { margin: 0; background: #e9edec; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  body { margin: 0; background: #e9edec; display: flex; align-items: flex-start; justify-content: center; min-height: 100vh; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
   .tw { cursor: pointer; }
   .hl { background: #d4f4e4; color: #047857; border-radius: 4px; padding: 0 2px; border-bottom: 1px dotted transparent; }
   .grade { flex: 1; border-radius: 12px; padding: 11px 4px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; transition: transform .08s, background .15s; display: flex; align-items: center; justify-content: center; gap: 5px; }
@@ -320,7 +320,7 @@
 
     var dot = document.createElement('div');
     dot.setAttribute('aria-hidden', 'true');
-    dot.style.cssText = 'position:absolute; left:-60px; top:-60px; width:24px; height:24px; border-radius:50%; background:rgba(26,26,46,.5); border:2.5px solid #fff; box-shadow:0 3px 10px rgba(0,0,0,.3); z-index:90; pointer-events:none; opacity:0; transition:left .6s cubic-bezier(.45,.05,.25,1), top .6s cubic-bezier(.45,.05,.25,1), opacity .3s, transform .14s ease;';
+    dot.style.cssText = 'position:absolute; left:-60px; top:-60px; width:24px; height:24px; border-radius:50%; background:rgba(26,26,46,.5); border:2.5px solid #fff; box-shadow:0 3px 10px rgba(0,0,0,.3); z-index:90; pointer-events:none; opacity:0; transition:left .45s cubic-bezier(.45,.05,.25,1), top .45s cubic-bezier(.45,.05,.25,1), opacity .25s, transform .14s ease;';
     stage.appendChild(dot);
 
     function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
@@ -329,7 +329,7 @@
       var cr = stage.getBoundingClientRect(), r = el.getBoundingClientRect();
       var x = r.left - cr.left + r.width / 2, y = r.top - cr.top + r.height / 2;
       dot.style.opacity = '1'; dot.style.left = (x - 12) + 'px'; dot.style.top = (y - 12) + 'px';
-      return sleep(720);
+      return sleep(520);
     }
     function ripple() {
       var x = parseFloat(dot.style.left) + 12, y = parseFloat(dot.style.top) + 12;
@@ -341,14 +341,27 @@
     }
     function tap() {
       dot.style.transform = 'scale(.72)'; ripple();
-      return sleep(160).then(function () { dot.style.transform = 'scale(1)'; return sleep(160); });
+      return sleep(120).then(function () { dot.style.transform = 'scale(1)'; return sleep(110); });
     }
     try { if (flipped) { flipped = false; setFace(); } } catch (e) {}
-    sleep(900)
-      .then(function () { return moveTo(document.getElementById('showAnsBtn')); })
-      .then(tap)
-      .then(function () { try { flipCard({ stopPropagation: function () {} }); } catch (e) {} return sleep(600); })
-      .then(function () { dot.style.opacity = '0'; });
+
+    // Листаем карточку каждые ~5 c, пока блок в зоне видимости (родитель шлёт play/pause через postMessage)
+    var running = false, timer = null;
+    function tick() {
+      if (!running) { return; }
+      var btn = flipped ? document.getElementById('flipBtn') : document.getElementById('showAnsBtn');
+      moveTo(btn).then(tap).then(function () {
+        if (!running) { return; }
+        try { flipCard({ stopPropagation: function () {} }); } catch (e) {}
+        timer = setTimeout(tick, 4250);
+      });
+    }
+    function play() { if (running) { return; } running = true; timer = setTimeout(tick, 120); }
+    function pause() { running = false; if (timer) { clearTimeout(timer); timer = null; } dot.style.opacity = '0'; }
+    window.addEventListener('message', function (e) {
+      if (!e.data || e.data.__l7 !== 'libdemo') { return; }
+      if (e.data.action === 'play') { play(); } else if (e.data.action === 'pause') { pause(); }
+    });
   })();
 </script>
 </body>

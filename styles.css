@@ -368,7 +368,7 @@ a { text-decoration: none; color: inherit; }
   position: absolute;
   width: 333px;
   height: 611px;
-  top: -5px;
+  top: -3px;
   left: -7px;
   z-index: 20;
   pointer-events: none;
@@ -3279,6 +3279,19 @@ a { text-decoration: none; color: inherit; }
 
 /* ===== Языки (10 языков · орбита флагов) ===== */
 .langs { padding: 100px 0; background: #fff; }
+/* Иконка-подсказка «кликни», чтобы выбрать язык */
+.click-cue {
+  width: 20px;
+  height: 20px;
+  vertical-align: -4px;
+  margin: 0 1px;
+  color: #047857;
+  animation: click-cue-pulse 1.5s ease-in-out infinite;
+}
+@keyframes click-cue-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.18); }
+}
 .langs__layout {
   display: flex;
   align-items: center;
@@ -3419,8 +3432,8 @@ a { text-decoration: none; color: inherit; }
   box-sizing: border-box;
 }
 .workenglish__title { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; color: #1a1a2e; margin-bottom: 14px; }
-.workenglish__text { font-size: 17px; color: #555; line-height: 1.6; max-width: 660px; margin: 0 auto 28px; }
-.workenglish__points { display: flex; justify-content: center; flex-wrap: wrap; gap: 14px; }
+.workenglish__text { font-size: 17px; color: #555; line-height: 1.6; max-width: 660px; margin: 0 auto 28px; text-align: left; }
+.workenglish__points { display: flex; justify-content: flex-start; flex-wrap: wrap; gap: 14px; max-width: 660px; margin: 0 auto; }
 .workenglish__point { display: flex; align-items: center; gap: 8px; background: #f7faf9; border: 1px solid #eef0f0; border-radius: 14px; padding: 12px 18px; font-size: 15px; font-weight: 600; color: #1a1a2e; }
 @media (max-width: 600px) { .workenglish__inner { padding: 32px 22px; } .workenglish__title { font-size: 25px; } .workenglish__text { font-size: 15px; } }
 

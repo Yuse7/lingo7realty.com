@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Test · Review — Lingo7</title>
 <style>
-  body { margin: 0; background: #e9edec; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  body { margin: 0; background: #e9edec; display: flex; align-items: flex-start; justify-content: center; min-height: 100vh; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
   .tw { cursor: pointer; border-bottom: 1px dotted #c6cfcc; }
   .hl { background: #d4f4e4; color: #047857; border-radius: 4px; padding: 0 1px; box-decoration-break: clone; -webkit-box-decoration-break: clone; border-bottom-color: transparent; }
-  .rw-on { background: #d4f4e4; color: #047857; border-radius: 4px; transition: background .08s; }
+  .rw-on { background: #ff4d4d; color: #fff; border-radius: 4px; box-shadow: 0 0 0 1px rgba(255,77,77,.35); transition: background .08s; }
   .read { background: #eafaf2 !important; border-color: #34D399 !important; }
   .read-opt { box-shadow: 0 0 0 2px #34D399, 0 2px 12px rgba(52,211,153,.3) !important; }
   .nav-btn { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform .08s ease, background .15s ease; flex-shrink: 0; }
@@ -932,11 +932,15 @@
   }
   var __mode = params.get('mode') || '';
   function __launch() {
-    if (__mode === 'static') { runStatic(); return; }
-    if (__mode === 'audio') {
-      frame.style.pointerEvents = 'none';
-      window.__loopAudio = true;
-      setTimeout(function () { var b = document.getElementById('autoBtn'); if (b) { b.click(); } }, 450);
+    if (__mode === 'static' || __mode === 'audio') {
+      frame.style.pointerEvents = 'none';     // некликабельно
+      var started = false;
+      window.addEventListener('message', function (e) {   // старт, когда экран в зоне видимости
+        if (!e.data || e.data.__l7 !== 'libdemo' || e.data.action !== 'play' || started) { return; }
+        started = true;
+        if (__mode === 'static') { runStatic(); }
+        else { window.__loopAudio = true; var b = document.getElementById('autoBtn'); if (b) { b.click(); } }
+      });
       return;
     }
     run();

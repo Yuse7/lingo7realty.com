@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Interactive Textbook — Lingo7</title>
 <style>
-  body { margin: 0; background: #e9edec; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  body { margin: 0; background: #e9edec; display: flex; align-items: flex-start; justify-content: center; min-height: 100vh; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
   .tw { cursor: pointer; border-bottom: 1px dotted #c6cfcc; }
   .hl { background: #d4f4e4; color: #047857; border-radius: 4px; padding: 0 1px; box-decoration-break: clone; -webkit-box-decoration-break: clone; border-bottom-color: transparent; }
   .rw-on { background: #d4f4e4; color: #047857; border-radius: 4px; transition: background .08s; }
@@ -843,8 +843,13 @@
         .then(function () { toggleSave(ev()); return sleep(1350); })
         .then(function () { dot.style.opacity = '0'; return sleep(850); });
     }
-    function loop() { cycle().then(loop); }
-    setTimeout(loop, 700);
+    var running = false;
+    function loop() { if (!running) { return; } cycle().then(function () { if (running) { loop(); } }); }
+    window.addEventListener('message', function (e) {
+      if (!e.data || e.data.__l7 !== 'libdemo') { return; }
+      if (e.data.action === 'play') { if (!running) { running = true; loop(); } }
+      else if (e.data.action === 'pause') { running = false; }
+    });
   })();
 </script>
 </body>
