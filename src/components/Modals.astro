@@ -1,0 +1,40 @@
+---
+// Pricing & login modals + sticky mobile CTA. Behaviour lives in main.ts.
+---
+<!-- Модалка: выбор тарифа и оплата -->
+<div class="modal" id="pricingModal" role="dialog" aria-modal="true" aria-label="Choose a plan and checkout">
+  <div class="modal__backdrop" data-close-modal></div>
+  <div class="modal__dialog">
+    <button class="modal__close" data-close-modal aria-label="Close">&times;</button>
+    <div id="pricingHost"></div>
+  </div>
+</div>
+
+<!-- Модалка: вход -->
+<div class="modal" id="loginModal" role="dialog" aria-modal="true" aria-label="Log in">
+  <div class="modal__backdrop" data-close-modal></div>
+  <div class="modal__dialog modal__dialog--login">
+    <button class="modal__close" data-close-modal aria-label="Close">&times;</button>
+    <div class="login-card">
+      <h3 class="login-card__title" data-i18n="modals.login-title">Log in to Lingo7 <span class="logo__accent">Realty</span></h3>
+      <p class="login-card__sub" data-i18n="modals.login-sub">Pick up your prep right where you left off.</p>
+      <form class="login-form" id="loginForm">
+        <div class="login-field">
+          <label for="loginEmail" data-i18n="modals.login-email-label">Email</label>
+          <input type="email" id="loginEmail" name="email" placeholder="you@example.com" autocomplete="email" required />
+        </div>
+        <div class="login-field">
+          <label for="loginPass" data-i18n="modals.login-pass-label">Password</label>
+          <input type="password" id="loginPass" name="password" placeholder="••••••••" autocomplete="current-password" required />
+        </div>
+        <button type="submit" class="login-card__btn" data-i18n="modals.login-btn">Log in</button>
+      </form>
+      <p class="login-card__alt" data-i18n="modals.login-alt">Don't have an account? <a href="#" data-buy>Start preparing</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- Sticky CTA (mobile) -->
+<div class="sticky-cta" id="stickyCta">
+  <a href="#" class="btn btn--primary btn--full" data-buy data-i18n="sticky.cta">Start preparing</a>
+</div>

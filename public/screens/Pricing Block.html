@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lingo7 — Pricing Block</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: transparent;
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: 18px;
+    color: #1a1a2e;
+  }
+
+  .card {
+    width: 100%; max-width: 480px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 24px;
+    box-shadow: 0 8px 48px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+    padding: 38px 36px 30px;
+  }
+
+  .eyebrow { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #047857; background: rgba(52,211,153,.12); padding: 6px 13px; border-radius: 20px; margin-bottom: 16px; }
+  .eyebrow .pin { width: 6px; height: 6px; border-radius: 50%; background: #34D399; }
+  .title { font-size: 29px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.16; }
+  .title .accent { color: #34D399; }
+
+  .field-label { font-size: 15px; font-weight: 700; color: #1a1a2e; margin-bottom: 10px; }
+
+  /* segmented role toggle */
+  .roles { display: flex; gap: 8px; background: #f3f5f7; border-radius: 14px; padding: 5px; margin-bottom: 28px; }
+  .role {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 9px;
+    font-family: inherit; font-size: 15px; font-weight: 600; color: #6b7280;
+    background: transparent; border: none; border-radius: 10px;
+    padding: 11px 8px; cursor: pointer;
+    transition: background .18s, color .18s, box-shadow .18s;
+  }
+  .role .dot {
+    width: 16px; height: 16px; border-radius: 50%; border: 2px solid #c4cad1; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; transition: border-color .18s;
+  }
+  .role .dot::after { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #34D399; transform: scale(0); transition: transform .18s; }
+  .role.active { background: #fff; color: #1a1a2e; font-weight: 700; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .role.active .dot { border-color: #34D399; }
+  .role.active .dot::after { transform: scale(1); }
+  .role.soon { cursor: default; color: #aab0b6; }
+  .role .soon-tag { font-size: 9.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #9aa0a8; background: #eceef0; border-radius: 20px; padding: 2px 7px; margin-left: -2px; }
+  .role.flash { animation: nudge .4s ease; }
+  @keyframes nudge { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+
+  .sub-q { font-size: 17px; font-weight: 700; }
+  .sub-hint { font-size: 14px; color: #888; margin-top: 3px; margin-bottom: 16px; }
+  .roles-msg { font-size: 12.5px; font-weight: 600; color: #9aa0a8; margin: -18px 0 26px; height: 0; opacity: 0; overflow: hidden; transition: opacity .2s; }
+  .roles-msg.show { height: auto; opacity: 1; margin: -18px 0 24px; }
+
+  /* plans */
+  .plans { display: flex; flex-direction: column; gap: 10px; margin-bottom: 26px; }
+  .plan {
+    display: flex; align-items: center; gap: 13px;
+    border: 1.5px solid #e5e7eb; border-radius: 16px;
+    padding: 16px 18px; cursor: pointer; background: #fff;
+    transition: border-color .18s, background .18s, box-shadow .18s;
+  }
+  .plan:hover { border-color: #bfe9d4; }
+  .plan.active { border-color: #34D399; background: rgba(52,211,153,.06); box-shadow: 0 2px 12px rgba(52,211,153,.12); }
+  .radio {
+    width: 22px; height: 22px; border-radius: 50%; border: 2px solid #c4cad1; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; transition: border-color .18s;
+  }
+  .radio::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: #34D399; transform: scale(0); transition: transform .18s; }
+  .plan.active .radio { border-color: #34D399; }
+  .plan.active .radio::after { transform: scale(1); }
+  .plan-name { font-size: 16px; font-weight: 700; color: #1a1a2e; white-space: nowrap; }
+  .plan-price { font-size: 16px; font-weight: 600; color: #9aa0a8; white-space: nowrap; }
+  .plan.active .plan-price { color: #059669; }
+  .per { font-size: 12.5px; color: #aab0b6; font-weight: 500; }
+  .badge {
+    margin-left: auto;
+    font-size: 10.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+    color: #047857; background: rgba(52,211,153,.15);
+    padding: 5px 10px; border-radius: 20px; white-space: nowrap; flex-shrink: 0;
+  }
+  .save-tag { margin-left: auto; font-size: 12.5px; font-weight: 600; color: #059669; white-space: nowrap; }
+  .badge + .save-tag, .plan .badge ~ .save-tag { margin-left: 10px; }
+
+  /* CTA */
+  .cta {
+    width: 100%; font-family: inherit; font-size: 17px; font-weight: 700; color: #fff;
+    background: #34D399; border: none; border-radius: 14px;
+    padding: 18px; cursor: pointer;
+    box-shadow: 0 4px 24px rgba(52,211,153,.3);
+    transition: background .18s, transform .12s, box-shadow .18s;
+    display: flex; align-items: center; justify-content: center; gap: 9px;
+  }
+  .cta:hover { background: #2bc48a; transform: translateY(-1px); box-shadow: 0 6px 28px rgba(52,211,153,.38); }
+  .cta:active { transform: translateY(0) scale(.99); }
+
+  .guarantee {
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    margin-top: 18px; font-size: 14px; font-weight: 600; color: #6b7280;
+  }
+  .guarantee svg { color: #34D399; }
+  .trust { text-align: center; font-size: 12.5px; color: #aab0b6; margin-top: 11px; }
+  .plans-note { text-align: center; font-size: 12px; color: #aab0b6; font-weight: 500; margin: 13px 0 2px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <span class="eyebrow"><span class="pin"></span>Florida Real Estate</span>
+    <h1 class="title">Pass faster with the <span class="accent">right plan.</span></h1>
+
+    <div class="roles" id="roles" style="margin-top:26px;">
+      <button class="role active" data-role="sa"><span class="dot"></span>Sales Associate</button>
+      <button class="role soon" data-role="broker"><span class="dot"></span>Broker <span class="soon-tag">Soon</span></button>
+    </div>
+    <div class="roles-msg" id="rolesMsg">Broker prep is on the way — join the Sales Associate track for now.</div>
+
+    <div class="sub-q">How much study time do you want?</div>
+
+    <div class="plans" id="plans">
+      <div class="plan" data-plan="1 Week" data-price="49">
+        <span class="radio"></span>
+        <span class="plan-name">1 Week</span>
+        <span class="plan-price">$49</span>
+      </div>
+      <div class="plan active" data-plan="1 Month" data-price="69">
+        <span class="radio"></span>
+        <span class="plan-name">1 Month</span>
+        <span class="plan-price">$69</span>
+        <span class="badge">Most popular</span>
+      </div>
+      <div class="plan" data-plan="3 Months" data-price="89">
+        <span class="radio"></span>
+        <span class="plan-name">3 Months</span>
+        <span class="plan-price">$89</span>
+        <span class="save-tag">Best value</span>
+      </div>
+    </div>
+
+    <div class="plans-note">One-time payment · no auto-renewal</div>
+
+    <button class="cta" id="cta">
+      Get 1 Month
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+    </button>
+
+    <div class="guarantee">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
+      7-day money-back guarantee
+    </div>
+  </div>
+
+<script>
+  var roles = document.getElementById('roles');
+  var rolesMsg = document.getElementById('rolesMsg');
+  roles.addEventListener('click', function (e) {
+    var b = e.target.closest('.role'); if (!b) { return; }
+    if (b.classList.contains('soon')) {
+      b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash');
+      rolesMsg.classList.add('show');
+      return;
+    }
+    rolesMsg.classList.remove('show');
+    roles.querySelectorAll('.role').forEach(function (r) { r.classList.remove('active'); });
+    b.classList.add('active');
+  });
+
+  var plans = document.getElementById('plans');
+  var cta = document.getElementById('cta');
+  function ctaIcon() { return ' <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>'; }
+  plans.addEventListener('click', function (e) {
+    var p = e.target.closest('.plan'); if (!p) { return; }
+    plans.querySelectorAll('.plan').forEach(function (x) { x.classList.remove('active'); });
+    p.classList.add('active');
+    cta.innerHTML = 'Get ' + p.getAttribute('data-plan') + ctaIcon();
+  });
+
+  // авто-высота для встраивания в iframe
+  function postH() { try { parent.postMessage({ __l7ph: document.body.scrollHeight }, '*'); } catch (e) {} }
+  window.addEventListener('load', postH);
+  if (window.ResizeObserver) { new ResizeObserver(postH).observe(document.body); }
+</script>
+</body>
+</html>

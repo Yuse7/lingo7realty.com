@@ -19,11 +19,20 @@
 
 ## Стек и архитектура
 
-- Чистый статический сайт: **HTML + CSS + ванильный JS**, без сборщиков и фреймворков. Превью = просто открыть `index.html`.
-- `index.html` — весь лендинг (14 секций) + 6 блоков `<script>` в конце (модалка, sticky-CTA, бургер, орбитальный метод, ревилы/табы/чипы/аккордеон, интерактивное демо).
-- `styles.css` — **унаследован от L7 без изменений**, плюс в конце дописан блок `===== Lingo7 Realty — exam-prep additions =====` с новыми классами (см. ниже). При правках стилей: общие компоненты уже есть в L7-части, не дублируй — переиспользуй.
-- Секции (в порядке): hero · trust-strip · compare · метод (orbital) · 4 шага · «Что внутри» (library-табы) · «Загрузи свой курс» (custom-book) · для кого (audience) · боли→решения (pains) · штаты (бывш. languages) · отзывы · FAQ · финальный CTA · footer.
-- Служебные страницы: `about/contacts/privacy/terms.html`. SEO: `sitemap.xml`, `robots.txt`, домен-плейсхолдер `lingo7realty.com`.
+- **Astro** (статическая генерация, `output: 'static'`, `format: 'directory'` → URL со слешем: `/about/`). Сделано по образцу соседнего проекта `lingoseven.com`. Интеграция `@astrojs/sitemap` сама генерирует `sitemap-index.xml`. Node >= 22.
+- Команды: `npm run dev` (дев-сервер), `npm run build` (в `dist/`), `npm run preview`.
+- Структура:
+  - `src/pages/` — страницы: `index.astro` (лендинг), `about/contacts/terms/privacy.astro`.
+  - `src/layouts/` — `BaseLayout.astro` (лендинг: тёмная тема, `global.css`, Head+Header+Footer+скрипт), `LegalLayout.astro` (светлая тема для about/legal, свои стили инлайн).
+  - `src/components/` — общие `Head/Header/Footer` + секции лендинга (`HeroSection`, `TrustStrip`, `Compare`, `Languages`, `Library`, `SpacedRepetition`, `MathSection`, `Audience`, `Reviews`, `Faq`, `FinalCta`, `Modals`).
+  - `src/scripts/main.ts` — **весь** клиентский JS лендинга (модалки, sticky-CTA, бургер, переключатель языков, ревилы/табы/аккордеон, оркестратор демо, i18n-свап). Подключён `<script src>` в `BaseLayout`, грузится только на лендинге.
+  - `src/styles/global.css` — бывший `styles.css` (унаследован от L7 + блок `Lingo7 Realty additions`). При правках стилей переиспользуй L7-часть, не дублируй.
+  - `src/i18n/ru.ts` — словарь `I18N_RU` (русская локаль; импортируется в `main.ts`).
+  - `public/` — статика, копируется как есть: фавиконки/иконки, `pics/` (только `green2.png`, `phone-clean.svg`), `screens/*.html` (iframe-демо), `robots.txt`, `CNAME`, `.nojekyll`.
+- **Локализация: client-side.** По умолчанию сайт на английском (`data-i18n` + английский текст в разметке). При `?lang=ru` `main.ts` подменяет `innerHTML` по словарю. Переведён только русский (язык-шаблон); переключатель в шапке перезагружает с `?lang=<code>`, для прочих кодов остаётся английский. Демо-экраны получают `?lang` в src. Полноценный route-based i18n (как 49 локалей в lingoseven) НЕ делали — нет переводов.
+- Деплой: GitHub Pages через `.github/workflows/deploy.yml` (build → upload `dist` → deploy) при push в `main`.
+- Секции лендинга (в порядке): hero · trust-strip · compare · языки (orbital) · «Что внутри» (library-табы) · интервальное повторение · математика · для кого (audience) · отзывы · FAQ · финальный CTA · footer.
+- `pics/` (исходники, 44 МБ), `inside/`, `previews/`, `design-*.md`, `make-previews.sh` — dev-референс, НЕ часть сайта (`inside/`, `previews/` в `.gitignore`). Исходные `*.html`/`styles.css` удалены — заменены Astro-версиями.
 
 ### Новые CSS-классы (мокапы продукта, только в этом проекте)
 `.examhome` (экран-каталог в hero и step 01), `.flashcard` / `.flashcard--lg` (карточка термина с двуязычным определением), `.qcard` (вопрос теста + переведённый разбор), `.gloss` (двуязычный глоссарий), `.wordcard-mock` (карточка слова, step 03), `.srs-mock` (интервальное повторение, step 04), `.reader__lang` (чип языка в демо), `.header__cta`, `.logo__accent`, `.mock-frame`.
@@ -55,13 +64,11 @@
 ## Превью / проверка вёрстки
 
 ```bash
-open index.html
-# Скриншот через headless Chrome:
+npm run build && npm run preview   # обычно http://localhost:4321 (или 4322, если занят)
+# Скриншот через headless Chrome (подставь актуальный порт):
 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless --disable-gpu \
-  --hide-scrollbars --window-size=1400,1050 --screenshot=/tmp/shot.png "file://$PWD/index.html"
-# Вся страница в PDF (hero растягивается на 100vh, поэтому tall-screenshot не годится):
-"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless --disable-gpu \
-  --no-pdf-header-footer --print-to-pdf=/tmp/page.pdf "file://$PWD/index.html"
+  --hide-scrollbars --window-size=1400,1050 --screenshot=/tmp/shot.png "http://localhost:4321/"
+# Русская локаль: добавь ?lang=ru к URL.
 ```
 NB: секции `compare` и `audience` появляются по scroll-reveal (IntersectionObserver) — в статичном PDF/скрине они пустые, в живом браузере проявляются при прокрутке. Это норма, унаследовано от L7.
 

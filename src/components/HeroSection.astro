@@ -1,0 +1,34 @@
+---
+// 1. Hero — headline, CTA, and the interactive phone demo (orchestrated by main.ts).
+---
+<section class="hero">
+  <div class="hero__bg">
+    <div class="hero__wave hero__wave--1"></div>
+    <div class="hero__wave hero__wave--2"></div>
+  </div>
+  <div class="container hero__inner">
+    <div class="hero__content">
+      <h1 class="hero__title" data-i18n="hero.title">Pass the Florida real estate license exam <span class="hero__accent">on&nbsp;your&nbsp;first&nbsp;try</span></h1>
+      <p class="hero__subtitle" data-i18n="hero.subtitle"><strong class="hero__hl">Study in your own language</strong> and pass with confidence in English.<br><strong class="hero__hl">You grasp the meaning right away</strong>, while an adaptive trainer drills exam questions until they're second&nbsp;nature.</p>
+      <a href="#" class="btn btn--primary hero__cta" data-buy data-i18n="hero.cta">Start preparing</a>
+      <p class="hero__guarantee" data-i18n="hero.guarantee">🛡️ 7-day money-back guarantee</p>
+    </div>
+    <div class="hero__showcase">
+      <!-- Feature deck: возможности «вылетают» сюда по ходу демо -->
+      <div class="vocab-deck feat-deck" id="featDeck" aria-hidden="true"><span class="feat-default" data-i18n="hero.feat-default">More than just an effective exam-prep system</span></div>
+      <div class="hero__phone-wrap">
+        <img src="/pics/green2.png" alt="" class="hero__mascot" />
+        <img src="/pics/phone-clean.svg" alt="" class="phone__shell" />
+        <div class="phone__frame phone__frame--hero">
+          <iframe id="heroDemo" src="/screens/Home%20Menu%20Screen.html" title="Демо: подготовка к экзамену с переводом" style="width:100%; height:100%; border:none; display:block; transition:opacity .25s ease; pointer-events:none;" scrolling="no"></iframe>
+        </div>
+      </div>
+    </div>
+    <div class="hero__speech">
+      <img src="/pics/green2.png" alt="" class="hero__speech-mascot" />
+      <div class="hero__speech-bubble">
+        <p data-i18n="hero.speech-bubble"><strong class="hero__hl">Study in your own language</strong> and pass with confidence in English. <strong class="hero__hl">You grasp the meaning right away</strong>, while an adaptive trainer drills exam questions until they're second&nbsp;nature.</p>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,55 @@
+---
+// 4. Languages — 10 supported languages, orbital flags synced with the list.
+---
+<section class="langs" id="languages">
+  <div class="container">
+    <h2 class="section__title" data-i18n="langs.title">10 languages supported — pick yours</h2>
+    <p class="section__subtitle" data-i18n="langs.subtitle">Every bit of the exam material comes with parallel translation and audio in your native language. Pick yours <svg class="click-cue" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 11.24V7.5C9 6.12 10.12 5 11.5 5S14 6.12 14 7.5v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zm9.84 4.63l-4.54-2.26c-.17-.07-.35-.11-.54-.11H13v-6C13 6.67 12.33 6 11.5 6S10 6.67 10 7.5v10.74l-3.43-.72c-.08-.01-.15-.03-.24-.03-.31 0-.59.13-.79.33l-.79.8 4.94 4.94c.27.27.65.44 1.06.44h6.79c.75 0 1.33-.55 1.44-1.28l.75-5.27c.01-.07.02-.14.02-.2 0-.62-.38-1.16-.91-1.38z"/></svg> — and prep without the language barrier.</p>
+
+    <!-- Флаги-кружки (определены один раз, переиспользуются через <use>) -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+      <symbol id="fl-es" viewBox="0 0 36 36"><rect width="36" height="36" fill="#c60b1e"/><rect y="9" width="36" height="18" fill="#ffc400"/></symbol>
+      <symbol id="fl-pt" viewBox="0 0 36 36"><rect width="36" height="36" fill="#009b3a"/><polygon points="18,5 32,18 18,31 4,18" fill="#fedf00"/><circle cx="18" cy="18" r="6.5" fill="#002776"/></symbol>
+      <symbol id="fl-ht" viewBox="0 0 36 36"><rect width="36" height="18" fill="#00209f"/><rect y="18" width="36" height="18" fill="#d21034"/></symbol>
+      <symbol id="fl-ru" viewBox="0 0 36 36"><rect width="36" height="12" fill="#fff"/><rect y="12" width="36" height="12" fill="#0039a6"/><rect y="24" width="36" height="12" fill="#d52b1e"/></symbol>
+      <symbol id="fl-fr" viewBox="0 0 36 36"><rect width="12" height="36" fill="#0055a4"/><rect x="12" width="12" height="36" fill="#fff"/><rect x="24" width="12" height="36" fill="#ef4135"/></symbol>
+      <symbol id="fl-de" viewBox="0 0 36 36"><rect width="36" height="12" fill="#000"/><rect y="12" width="36" height="12" fill="#dd0000"/><rect y="24" width="36" height="12" fill="#ffce00"/></symbol>
+      <symbol id="fl-it" viewBox="0 0 36 36"><rect width="12" height="36" fill="#009246"/><rect x="12" width="12" height="36" fill="#fff"/><rect x="24" width="12" height="36" fill="#ce2b37"/></symbol>
+      <symbol id="fl-zh" viewBox="0 0 36 36"><rect width="36" height="36" fill="#de2910"/><g fill="#ffde00" font-family="Arial, sans-serif"><text x="2.5" y="16.5" font-size="13">★</text><text x="15" y="6.5" font-size="5.5">★</text><text x="19.5" y="10.5" font-size="5.5">★</text><text x="19.5" y="16" font-size="5.5">★</text><text x="15" y="20" font-size="5.5">★</text></g></symbol>
+      <symbol id="fl-ar" viewBox="0 0 36 36"><rect width="36" height="36" fill="#006c35"/><rect x="6" y="16.5" width="24" height="2.4" rx="1.2" fill="#fff"/></symbol>
+      <symbol id="fl-tl" viewBox="0 0 36 36"><rect width="36" height="18" fill="#0038a8"/><rect y="18" width="36" height="18" fill="#ce1126"/><polygon points="0,0 20,18 0,36" fill="#fff"/><circle cx="6.5" cy="18" r="2.6" fill="#fcd116"/></symbol>
+    </defs></svg>
+
+    <div class="langs__layout">
+      <!-- Орбита: маскот в центре, 10 флагов по кругу -->
+      <div class="langs__orbit">
+        <div class="langs__ring"></div>
+        <div class="langs__hub"><img src="/pics/green2.png" alt=""></div>
+        <div class="langs__flag langs__flag--1" data-lang="es"><svg class="langs__flag-svg"><use href="#fl-es"/></svg></div>
+        <div class="langs__flag langs__flag--2" data-lang="pt"><svg class="langs__flag-svg"><use href="#fl-pt"/></svg></div>
+        <div class="langs__flag langs__flag--3" data-lang="ht"><svg class="langs__flag-svg"><use href="#fl-ht"/></svg></div>
+        <div class="langs__flag langs__flag--4" data-lang="ru"><svg class="langs__flag-svg"><use href="#fl-ru"/></svg></div>
+        <div class="langs__flag langs__flag--5" data-lang="fr"><svg class="langs__flag-svg"><use href="#fl-fr"/></svg></div>
+        <div class="langs__flag langs__flag--6" data-lang="de"><svg class="langs__flag-svg"><use href="#fl-de"/></svg></div>
+        <div class="langs__flag langs__flag--7" data-lang="it"><svg class="langs__flag-svg"><use href="#fl-it"/></svg></div>
+        <div class="langs__flag langs__flag--8" data-lang="zh"><svg class="langs__flag-svg"><use href="#fl-zh"/></svg></div>
+        <div class="langs__flag langs__flag--9" data-lang="ar"><svg class="langs__flag-svg"><use href="#fl-ar"/></svg></div>
+        <div class="langs__flag langs__flag--10" data-lang="tl"><svg class="langs__flag-svg"><use href="#fl-tl"/></svg></div>
+      </div>
+
+      <!-- Список языков (наведение на флаг подсвечивает язык, и наоборот) -->
+      <div class="langs__list">
+        <div class="langs__item" data-lang="es"><span class="langs__chip"><svg class="langs__chip-svg"><use href="#fl-es"/></svg></span><span class="langs__txt" data-i18n="langs.item-es"><b>Spanish</b><i>Español</i></span></div>
+        <div class="langs__item" data-lang="pt"><span class="langs__chip"><svg class="langs__chip-svg"><use href="#fl-pt"/></svg></span><span class="langs__txt" data-i18n="langs.item-pt"><b>Portuguese</b><i>Português</i></span></div>
+        <div class="langs__item" data-lang="ht"><span class="langs__chip"><svg class="langs__chip-svg"><use href="#fl-ht"/></svg></span><span class="langs__txt" data-i18n="langs.item-ht"><b>Haitian Creole</b><i>Kreyòl Ayisyen</i></span></div>
+        <div class="langs__item" data-lang="ru"><span class="langs__chip"><svg class="langs__chip-svg"><use href="#fl-ru"/></svg></span><span class="langs__txt" data-i18n="langs.item-ru"><b>Russian</b><i data-i18n="reviews.card2.source">Russian</i></span></div>
+        <div class="langs__item" data-lang="fr"><span class="langs__chip"><svg class="langs__chip-svg"><use href="#fl-fr"/></svg></span><span class="langs__txt" data-i18n="langs.item-fr"><b>French</b><i>Français</i></span></div>
+        <div class="langs__item" data-lang="de"><span class="langs__chip"><svg class="langs__chip-svg"><use href="#fl-de"/></svg></span><span class="langs__txt" data-i18n="langs.item-de"><b>German</b><i>Deutsch</i></span></div>
+        <div class="langs__item" data-lang="it"><span class="langs__chip"><svg class="langs__chip-svg"><use href="#fl-it"/></svg></span><span class="langs__txt" data-i18n="langs.item-it"><b>Italian</b><i>Italiano</i></span></div>
+        <div class="langs__item" data-lang="zh"><span class="langs__chip"><svg class="langs__chip-svg"><use href="#fl-zh"/></svg></span><span class="langs__txt" data-i18n="langs.item-zh"><b>Chinese</b><i>中文</i></span></div>
+        <div class="langs__item" data-lang="ar"><span class="langs__chip"><svg class="langs__chip-svg"><use href="#fl-ar"/></svg></span><span class="langs__txt" data-i18n="langs.item-ar"><b>Arabic</b><i>العربية</i></span></div>
+        <div class="langs__item" data-lang="tl"><span class="langs__chip"><svg class="langs__chip-svg"><use href="#fl-tl"/></svg></span><span class="langs__txt" data-i18n="langs.item-tl"><b>Tagalog</b><i>Tagalog</i></span></div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,50 @@
+---
+// Landing header: logo, nav, language switcher (desktop + mobile), login, and
+// the mobile slide-down menu. Interactivity lives in src/scripts/main.ts.
+---
+<header class="header">
+  <div class="container header__inner">
+    <a href="/" class="logo">
+      <img src="/favicon.svg" alt="Lingo7 Realty" class="logo__img" />
+      <span class="logo__text" data-i18n="header.logo">Lingo7 <span class="logo__accent">Realty</span></span>
+    </a>
+    <nav class="nav">
+      <a href="#languages" class="nav__link" data-i18n="header.nav-languages">Languages</a>
+      <a href="#library" class="nav__link" data-i18n="header.nav-library">Tools</a>
+      <a href="#reviews" class="nav__link" data-i18n="header.nav-reviews">Reviews</a>
+      <a href="#faq" class="nav__link" data-i18n="header.nav-faq">FAQ</a>
+      <a href="/about/" class="nav__link" data-i18n="header.nav-about">About</a>
+    </nav>
+    <div class="lang-switch lang-switch--mhdr" id="langSwitchMWrap">
+      <button class="lang-switch__btn" id="langSwitchBtnM" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Site language">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="3" y1="12" x2="21" y2="12"></line><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"></path></svg>
+        <span class="lang-switch__code" id="langSwitchCodeM">ES</span>
+        <span class="lang-switch__chev">▾</span>
+      </button>
+      <div class="lang-switch__menu" id="langSwitchMenuM" role="menu"></div>
+    </div>
+    <button class="burger" id="burger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="header__right header__right--desktop">
+      <div class="lang-switch" id="langSwitch">
+        <button class="lang-switch__btn" id="langSwitchBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Site language">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="3" y1="12" x2="21" y2="12"></line><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"></path></svg>
+          <span class="lang-switch__code" id="langSwitchCode">ES</span>
+          <span class="lang-switch__chev">▾</span>
+        </button>
+        <div class="lang-switch__menu" id="langSwitchMenu" role="menu"></div>
+      </div>
+      <a href="#" class="header__login" data-login data-i18n="header.login">Log in</a>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#languages" class="mobile-menu__link" data-i18n="mobilemenu.languages">Languages</a>
+  <a href="#library" class="mobile-menu__link" data-i18n="mobilemenu.tools">Tools</a>
+  <a href="#reviews" class="mobile-menu__link" data-i18n="mobilemenu.reviews">Reviews</a>
+  <a href="#faq" class="mobile-menu__link" data-i18n="mobilemenu.faq">FAQ</a>
+  <a href="/about/" class="mobile-menu__link" data-i18n="mobilemenu.about">About</a>
+  <a href="#" class="mobile-menu__link mobile-menu__login" data-login data-i18n="mobilemenu.login">Log in</a>
+</div>

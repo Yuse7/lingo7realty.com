@@ -1,0 +1,68 @@
+---
+import LegalLayout from '../layouts/LegalLayout.astro';
+---
+
+<LegalLayout
+  title="Terms of Service — Lingo7 Realty"
+  description="Terms of Service for the Lingo7 Realty app."
+  canonicalUrl="https://lingo7realty.com/terms/"
+  noindex={true}
+>
+  <section class="legal">
+    <h1>Terms of Service</h1>
+    <p class="date">Last updated: June 8, 2026</p>
+
+    <h2>1. General Terms</h2>
+    <p>These Terms govern your use of the Lingo7 Realty app and website (lingo7realty.com, the "Service") — a service for Florida Real Estate license exam preparation, designed for people whose first language is not English. The Service is operated by the administrators of lingo7realty.com (the "Administration"). By using the Service, you agree to these Terms.</p>
+
+    <h2>2. Conditions of Use</h2>
+    <p>The Service is intended for personal, non-commercial use. You may not copy, distribute, or modify the content of the Service without the Administration's consent.</p>
+
+    <h2>3. Payment and Access</h2>
+    <p>Full access to the Service is provided for a one-time payment covering the term you choose (for example, one week, one month, or three months), with no auto-renewal. You can renew your access at any time. A 7-day money-back guarantee applies from the date of payment.</p>
+
+    <h2>4. Intellectual Property</h2>
+    <p>All rights to the Service and its study materials (texts, terms, questions, explanations, translations, and audio) belong to the Administration or are used on lawful grounds. These materials are provided solely for your personal exam preparation.</p>
+
+    <h2>5. Limitation of Liability</h2>
+    <p>The Service is provided "as is" and is a supplementary preparation tool. The Administration does not guarantee that you will pass the exam or obtain a license: your final result depends on you, and the official exam and licensing are administered by the authorized bodies (in particular, the Florida state regulator). The Service does not constitute legal advice. The Administration is not liable for service interruptions or the actions of third parties.</p>
+
+    <h2>6. Personal Data</h2>
+    <p>Data is processed in accordance with our <a href="/privacy/" style="color: #34D399; text-decoration: underline;">Privacy Policy</a>.</p>
+
+    <h2>7. Miscellaneous</h2>
+    <p>The Administration may amend these Terms. The current version is available at lingo7realty.com/terms/. The applicable law is determined by the Administration's place of registration.</p>
+    <p>Contact: <a href="mailto:support@lingoseven.com" style="color: #34D399; text-decoration: underline;">support@lingoseven.com</a></p>
+  </section>
+</LegalLayout>
+
+<style>
+  .legal {
+    padding: 120px 40px 80px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .legal h1 {
+    font-size: 36px; font-weight: 800; margin-bottom: 12px;
+  }
+  .legal .date {
+    font-size: 14px; color: #888; margin-bottom: 40px;
+  }
+  .legal h2 {
+    font-size: 22px; font-weight: 700; margin: 36px 0 16px;
+  }
+  .legal p, .legal li {
+    font-size: 16px; color: #444; line-height: 1.75; margin-bottom: 12px;
+  }
+  .legal ul, .legal ol {
+    padding-left: 24px; margin-bottom: 16px;
+  }
+  .legal li { margin-bottom: 8px; }
+
+  @media (max-width: 768px) {
+    .legal { padding: 100px 16px 60px; }
+    .legal h1 { font-size: 28px; }
+    .legal h2 { font-size: 20px; }
+    .legal p, .legal li { font-size: 15px; }
+  }
+</style>
