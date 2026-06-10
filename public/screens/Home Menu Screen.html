@@ -223,23 +223,21 @@
   }
 
   async function run() {
-    await sleep(650);
+    await sleep(300);
     finger.style.opacity = '1';
-    await sleep(280);
+    await sleep(140);
 
-    // 1. open the Translate menu
-    await tap(document.getElementById('langChip'), 600);
+    // 1. open the Translate menu - the first comment fires the moment the list opens
+    await tap(document.getElementById('langChip'), 0);
+    try { window.parent.postMessage({ __l7demo: true, action: 'badge', id: 'native' }, '*'); } catch (e) {}
 
     // 2. pick the site language
     var menu = document.getElementById('langMenu');
     var opt = document.querySelector('.langOpt[data-lang="' + (lang === 'en' ? 'off' : lang) + '"]') ||
               document.querySelector('.langOpt[data-lang="ru"]');
     if (menu && opt) { menu.scrollTop = Math.max(0, opt.offsetTop - menu.clientHeight / 2 + opt.offsetHeight / 2); }
-    await sleep(180);
-    // first comment fires the instant the language is picked, then dwells so it reads as "language chosen"
-    await tap(opt, 0);
-    try { window.parent.postMessage({ __l7demo: true, action: 'badge', id: 'native' }, '*'); } catch (e) {}
-    await sleep(1250);
+    await sleep(950);
+    await tap(opt, 850);
 
     // 3. open Tests (2nd menu item)
     await tap(document.querySelectorAll('.mi')[1], 850);

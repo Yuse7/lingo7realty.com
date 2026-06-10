@@ -840,7 +840,7 @@
 
     // двуязычный вопрос на экране → плашка «Параллельный перевод»
     badge('translate');
-    await sleep(700);
+    await sleep(1300);
 
     // 1. tap the word "claim" → word toolbar
     await tap(q('#qEN .tw[data-ru="q-claim"]'), 900);
@@ -848,7 +848,7 @@
     // 2. add it to the L7 dictionary → toast + плашка «Словарь + повторение»
     await tap(document.getElementById('addBtn'), 400);
     badge('dict');
-    await sleep(1000);
+    await sleep(1600);
 
     // 3. close the toolbar
     await tap(q('#wbar button[title="Close"]'), 520);
@@ -856,7 +856,7 @@
     // 4. choose answer "a deed" → reveal explanation + плашка «Разбор на вашем языке»
     await tap(document.getElementById('opt3'), 500);
     badge('explain');
-    await sleep(1100);
+    await sleep(1700);
 
     // 5. tap the key term "lien" in the explanation → toolbar
     var lien = q('#exEN .tw[data-ru="ru-lien"]');
@@ -867,7 +867,7 @@
     // 6. open the word card + плашка «Карточка термина»
     await tap(q('#wbar button[title="Word card"]'), 550);
     badge('card');
-    await sleep(800);
+    await sleep(1500);
 
     // 7. reveal the translation inside the card
     await tap(document.getElementById('wcRuToggle'), 1550);

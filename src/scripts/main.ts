@@ -146,7 +146,7 @@
     if (nameEl && enName) { nameEl.textContent = enName.textContent; }
   }
 
-  // Выбор языка: меняем ?lang и перезагружаем — вся демо-обвязка читает его при загрузке.
+  // Выбор языка: меняем ?lang и перезагружаем - вся демо-обвязка читает его при загрузке.
   // Перед перезагрузкой ставим флаг, чтобы после неё подсветить телефон с демо.
   menu.querySelectorAll('.hero-lang__opt').forEach(function (opt) {
     opt.addEventListener('click', function (e) {
@@ -160,7 +160,7 @@
     });
   });
 
-  // После перезагрузки (выбор языка) — короткая вспышка-подсветка телефона справа,
+  // После перезагрузки (выбор языка) - короткая вспышка-подсветка телефона справа,
   // чтобы взгляд ушёл на демо, которое теперь играет на выбранном языке.
   var flash = false;
   try { flash = sessionStorage.getItem('langFlash') === '1'; sessionStorage.removeItem('langFlash'); } catch (err) { /* */ }
@@ -256,17 +256,17 @@ document.querySelectorAll('.faq__q').forEach(function (q) {
   // ── Дека возможностей: плашки прилетают по событиям из экранов ──
   var deck = document.getElementById('featDeck');
   var BADGES: Record<string, { label: string }> = (lang === 'ru') ? {
-    native:    { label: 'Вы выбираете свой язык — и вся подготовка идёт на нём' },
+    native:    { label: 'Вы выбираете свой язык' },
     translate: { label: 'Читайте каждый вопрос на английском с параллельным переводом' },
     dict:      { label: 'Сохранённые термины возвращаются по интервальному повторению, чтобы запомниться' },
-    explain:   { label: 'Каждый ответ разобран на вашем языке — суть понятна сразу' },
+    explain:   { label: 'Каждый ответ разобран на вашем языке, и суть понятна сразу' },
     card:      { label: 'Умные флеш-карточки превращают термины в быстрое повторение' },
     audio:     { label: 'Слушайте вопросы и переводы на двух языках, не отрываясь от дел' }
   } : {
-    native:    { label: 'You pick your language — and your whole prep speaks it' },
+    native:    { label: 'You pick your language' },
     translate: { label: 'Read every English question with a parallel translation' },
     dict:      { label: 'Saved terms come back with spaced repetition, so they stick' },
-    explain:   { label: 'Every answer is explained in your language — you get it right away' },
+    explain:   { label: 'Every answer is explained in your language, so you get it right away' },
     card:      { label: 'Smart flashcards turn each saved term into quick review' },
     audio:     { label: 'Listen to questions and translations in two languages, hands-free' }
   };
