@@ -236,9 +236,10 @@
               document.querySelector('.langOpt[data-lang="ru"]');
     if (menu && opt) { menu.scrollTop = Math.max(0, opt.offsetTop - menu.clientHeight / 2 + opt.offsetHeight / 2); }
     await sleep(180);
-    await tap(opt, 400);
+    // first comment fires the instant the language is picked, then dwells so it reads as "language chosen"
+    await tap(opt, 0);
     try { window.parent.postMessage({ __l7demo: true, action: 'badge', id: 'native' }, '*'); } catch (e) {}
-    await sleep(650);
+    await sleep(1250);
 
     // 3. open Tests (2nd menu item)
     await tap(document.querySelectorAll('.mi')[1], 850);
