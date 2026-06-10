@@ -2,7 +2,7 @@
 // Consolidated from the inline <script> blocks of the original index.html:
 // modals, sticky CTA, burger menu, header language switcher, language section
 // sync/hover, scroll reveals, library tabs, FAQ accordion, the hero demo
-// orchestrator. The language switcher is decorative — it reloads with a
+// orchestrator. The language switcher is decorative - it reloads with a
 // ?lang code but the page content always stays English (as in the original).
 
 // ── Pricing & login modals ──
@@ -67,61 +67,14 @@
   });
 })();
 
-// ── Header language switcher (desktop + mobile) — sets ?lang and reloads ──
+// ── Site language for demo iframes + supporting UI ──
 (function () {
-  var HLANGS = [
-    { code: 'en', label: 'EN', native: 'English' },
-    { code: 'es', label: 'ES', native: 'Español' },
-    { code: 'pt', label: 'PT', native: 'Português' },
-    { code: 'ht', label: 'HT', native: 'Kreyòl Ayisyen' },
-    { code: 'ru', label: 'RU', native: 'Русский' },
-    { code: 'fr', label: 'FR', native: 'Français' },
-    { code: 'de', label: 'DE', native: 'Deutsch' },
-    { code: 'it', label: 'IT', native: 'Italiano' },
-    { code: 'zh', label: '中文', native: '中文（普通话）' },
-    { code: 'ar', label: 'AR', native: 'العربية' },
-    { code: 'tl', label: 'TL', native: 'Tagalog' }
-  ];
-  var byCode: Record<string, { code: string; label: string; native: string }> = {};
-  HLANGS.forEach(function (l) { byCode[l.code] = l; });
   var urlLang = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
-  var cur = byCode[urlLang] ? urlLang : 'es';
-  function pick(code: string) { location.href = location.pathname + '?lang=' + code + location.hash; }
-  function setup(btnId: string, codeId: string, menuId: string) {
-    var btn = document.getElementById(btnId), codeEl = document.getElementById(codeId), menu = document.getElementById(menuId);
-    if (!btn || !menu) { return; }
-    if (codeEl) { codeEl.textContent = byCode[cur].label; }
-    menu.innerHTML = '';
-    HLANGS.forEach(function (l) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'lang-switch__opt' + (l.code === cur ? ' is-active' : '');
-      if (l.code === 'ar') { b.setAttribute('dir', 'rtl'); }
-      b.innerHTML = '<span>' + l.native + '</span>' + (l.code === cur ? '<span class="lang-switch__tick">✓</span>' : '');
-      b.addEventListener('click', function (e) { e.stopPropagation(); pick(l.code); });
-      menu!.appendChild(b);
-    });
-    btn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      var open = menu!.classList.toggle('is-open');
-      btn!.setAttribute('aria-expanded', open ? 'true' : 'false');
-      document.querySelectorAll('.lang-switch__menu.is-open').forEach(function (m) { if (m !== menu) { m.classList.remove('is-open'); } });
-    });
-  }
-  setup('langSwitchBtn', 'langSwitchCode', 'langSwitchMenu');
-  setup('langSwitchBtnM', 'langSwitchCodeM', 'langSwitchMenuM');
-
-  // Секция «Языки»: список и флаги синхронизированы с переключателем в шапке
-  document.querySelectorAll('.langs__flag[data-lang="' + cur + '"], .langs__item[data-lang="' + cur + '"]')
-    .forEach(function (el) { el.classList.add('is-selected'); });
-  document.querySelectorAll('.langs__flag, .langs__item').forEach(function (el) {
-    var code = el.getAttribute('data-lang');
-    if (!code) { return; }
-    el.addEventListener('click', function () { pick(code!); });
-  });
+  var VALID = ['en', 'es', 'pt', 'ht', 'ru', 'fr', 'de', 'it', 'zh', 'ar', 'tl'];
+  var cur = VALID.indexOf(urlLang) >= 0 ? urlLang : 'es';
 
   // Язык сайта (?lang) подставляем в src экранов-iframe ОДИН раз (data-src → src),
-  // чтобы каждый экран сразу грузился на нужном языке (hero — через оркестратор демо).
+  // чтобы каждый экран сразу грузился на нужном языке (hero - через оркестратор демо).
   document.querySelectorAll('iframe[data-src]').forEach(function (f) {
     var src = f.getAttribute('data-src');
     if (!src) { return; }
@@ -139,7 +92,7 @@
     });
   }
 
-  // Блок оплаты (нативный, делегирование — работает и для клона в модалке)
+  // Блок оплаты (нативный, делегирование - работает и для клона в модалке)
   (function () {
     function ctaIcon() { return ' <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>'; }
     document.addEventListener('click', function (e) {
@@ -168,22 +121,50 @@
     });
   })();
 
-  document.addEventListener('click', function () {
-    document.querySelectorAll('.lang-switch__menu.is-open').forEach(function (m) { m.classList.remove('is-open'); });
-  });
 })();
 
-// ── Языки: наведение на флаг подсвечивает язык в списке (и наоборот) ──
+// ── Hero inline language picker: pick a language → reload with ?lang=xx so ──
+//    every demo screen (hero phone, library, math) renders in that language.
 (function () {
-  function setActive(code: string, on: boolean) {
-    document.querySelectorAll('.langs__flag[data-lang="' + code + '"], .langs__item[data-lang="' + code + '"]')
-      .forEach(function (el) { el.classList.toggle('is-active', on); });
+  var dd = document.getElementById('heroLang');
+  var btn = document.getElementById('heroLangBtn');
+  var menu = document.getElementById('heroLangMenu');
+  var nameEl = document.getElementById('heroLangName');
+  if (!dd || !btn || !menu) { return; }
+
+  // Текущий язык: ?lang из адреса, если поддержан, иначе испанский (как везде).
+  var VALID = ['es', 'pt', 'ht', 'ru', 'fr', 'de', 'it', 'zh', 'ar', 'tl'];
+  var urlLang = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
+  var cur = VALID.indexOf(urlLang) >= 0 ? urlLang : 'es';
+
+  // Подсветить активный язык и подставить его английское имя в заголовок.
+  var curOpt = menu.querySelector('.hero-lang__opt[data-lang="' + cur + '"]');
+  if (curOpt) {
+    menu.querySelectorAll('.hero-lang__opt').forEach(function (o) { o.classList.remove('is-active'); });
+    curOpt.classList.add('is-active');
+    var enName = curOpt.querySelector('.hero-lang__opt-txt b');
+    if (nameEl && enName) { nameEl.textContent = enName.textContent; }
   }
-  document.querySelectorAll('.langs__flag, .langs__item').forEach(function (el) {
-    var code = el.getAttribute('data-lang');
-    if (!code) { return; }
-    el.addEventListener('mouseenter', function () { setActive(code!, true); });
-    el.addEventListener('mouseleave', function () { setActive(code!, false); });
+
+  // Выбор языка: меняем ?lang и перезагружаем — вся демо-обвязка читает его при загрузке.
+  menu.querySelectorAll('.hero-lang__opt').forEach(function (opt) {
+    opt.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var code = opt.getAttribute('data-lang')!;
+      var params = new URLSearchParams(location.search);
+      params.set('lang', code);
+      location.search = params.toString();
+    });
+  });
+
+  btn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    var open = dd!.classList.toggle('is-open');
+    btn!.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  document.addEventListener('click', function () {
+    dd!.classList.remove('is-open');
+    btn!.setAttribute('aria-expanded', 'false');
   });
 })();
 
@@ -247,7 +228,7 @@ document.querySelectorAll('.faq__q').forEach(function (q) {
   if (!frame) { return; }
   var HOME = '/screens/Home%20Menu%20Screen.html';
   var QUIZ = '/screens/Quiz%20Review%20Screen.html';
-  // Язык демо в телефоне. Дефолт — испанский (главная позиционируется как испанская версия).
+  // Язык демо в телефоне. Дефолт - испанский (главная позиционируется как испанская версия).
   // Приоритет: ?lang=xx в адресе → DEMO_DEFAULT. Русскую подстановку посмотреть: /?lang=ru
   var DEMO_LANGS = ['en', 'es', 'pt', 'ht', 'ru', 'fr', 'de', 'it', 'zh', 'ar', 'tl'];
   var DEMO_DEFAULT = 'es';
@@ -262,14 +243,14 @@ document.querySelectorAll('.faq__q').forEach(function (q) {
     dict:      { icon: '🔁', label: 'Словарь L7',                  sub: 'Интервальное повторение под капотом' },
     explain:   { icon: '💡', label: 'Разбор на вашем языке',       sub: 'Вы сразу понимаете суть' },
     card:      { icon: '🗂️', label: 'Умные флеш-карточки',         sub: 'Быстрое запоминание терминов по карточкам' },
-    audio:     { icon: '🎧', label: 'Слушай тесты на двух языках',  sub: 'Учитесь на ходу или за рулём — слушайте вопросы и переводы фоном' }
+    audio:     { icon: '🎧', label: 'Слушай тесты на двух языках',  sub: 'Учитесь на ходу или за рулём - слушайте вопросы и переводы фоном' }
   } : {
-    native:    { icon: '📖', label: 'Study in your own language',  sub: 'Interactive textbook and tests with translation' },
-    translate: { icon: '🌐', label: 'Parallel translation',        sub: 'Read English as if it were your own' },
-    dict:      { icon: '🔁', label: 'L7 dictionary',               sub: 'Spaced repetition under the hood' },
-    explain:   { icon: '💡', label: 'Explanations in your language', sub: 'You grasp the meaning right away' },
-    card:      { icon: '🗂️', label: 'Smart flashcards',            sub: 'Memorize terms fast with cards' },
-    audio:     { icon: '🎧', label: 'Listen to tests in two languages', sub: 'Learn on the go or behind the wheel — questions and translations play in the background' }
+    native:    { icon: '📖', label: 'Study in your own language',  sub: 'Textbook and tests with translation' },
+    translate: { icon: '🌐', label: 'Parallel translation',        sub: 'Read English like your own language' },
+    dict:      { icon: '🔁', label: 'L7 dictionary',               sub: 'Spaced repetition built in' },
+    explain:   { icon: '💡', label: 'Answers in your language',     sub: 'You understand it right away' },
+    card:      { icon: '🗂️', label: 'Smart cards',                 sub: 'Learn terms fast with cards' },
+    audio:     { icon: '🎧', label: 'Listen to tests in two languages', sub: 'Study on the go. Questions and translations play in the background' }
   };
   var shown: Record<string, boolean> = {};
   function clearDeck() {
@@ -307,7 +288,7 @@ document.querySelectorAll('.faq__q').forEach(function (q) {
   }
 
   function load(which: string) {
-    if (which === HOME) { clearDeck(); }   // новый цикл — дека пустеет
+    if (which === HOME) { clearDeck(); }   // новый цикл - дека пустеет
     frame!.style.opacity = '0';
     setTimeout(function () { frame!.src = which + '?lang=' + lang; }, 170);
   }

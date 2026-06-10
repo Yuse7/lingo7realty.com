@@ -1,21 +1,57 @@
 ---
-// 1. Hero — headline, CTA, and the interactive phone demo (orchestrated by main.ts).
+// 1. Hero - headline with an inline language picker, CTA, and the phone demo.
+// Picking a language reloads the page with ?lang=xx; every demo screen then
+// renders in that language (wired in main.ts: #heroLang... + hero orchestrator).
 ---
 <section class="hero">
   <div class="hero__bg">
     <div class="hero__wave hero__wave--1"></div>
     <div class="hero__wave hero__wave--2"></div>
   </div>
+
+  <!-- Flag circles, defined once and reused in the language menu via <use>. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+    <symbol id="fl-es" viewBox="0 0 36 36"><rect width="36" height="36" fill="#c60b1e"/><rect y="9" width="36" height="18" fill="#ffc400"/></symbol>
+    <symbol id="fl-pt" viewBox="0 0 36 36"><rect width="36" height="36" fill="#009b3a"/><polygon points="18,5 32,18 18,31 4,18" fill="#fedf00"/><circle cx="18" cy="18" r="6.5" fill="#002776"/></symbol>
+    <symbol id="fl-ht" viewBox="0 0 36 36"><rect width="36" height="18" fill="#00209f"/><rect y="18" width="36" height="18" fill="#d21034"/></symbol>
+    <symbol id="fl-ru" viewBox="0 0 36 36"><rect width="36" height="12" fill="#fff"/><rect y="12" width="36" height="12" fill="#0039a6"/><rect y="24" width="36" height="12" fill="#d52b1e"/></symbol>
+    <symbol id="fl-fr" viewBox="0 0 36 36"><rect width="12" height="36" fill="#0055a4"/><rect x="12" width="12" height="36" fill="#fff"/><rect x="24" width="12" height="36" fill="#ef4135"/></symbol>
+    <symbol id="fl-de" viewBox="0 0 36 36"><rect width="36" height="12" fill="#000"/><rect y="12" width="36" height="12" fill="#dd0000"/><rect y="24" width="36" height="12" fill="#ffce00"/></symbol>
+    <symbol id="fl-it" viewBox="0 0 36 36"><rect width="12" height="36" fill="#009246"/><rect x="12" width="12" height="36" fill="#fff"/><rect x="24" width="12" height="36" fill="#ce2b37"/></symbol>
+    <symbol id="fl-zh" viewBox="0 0 36 36"><rect width="36" height="36" fill="#de2910"/><g fill="#ffde00" font-family="Arial, sans-serif"><text x="2.5" y="16.5" font-size="13">★</text><text x="15" y="6.5" font-size="5.5">★</text><text x="19.5" y="10.5" font-size="5.5">★</text><text x="19.5" y="16" font-size="5.5">★</text><text x="15" y="20" font-size="5.5">★</text></g></symbol>
+    <symbol id="fl-ar" viewBox="0 0 36 36"><rect width="36" height="36" fill="#006c35"/><rect x="6" y="16.5" width="24" height="2.4" rx="1.2" fill="#fff"/></symbol>
+    <symbol id="fl-tl" viewBox="0 0 36 36"><rect width="36" height="18" fill="#0038a8"/><rect y="18" width="36" height="18" fill="#ce1126"/><polygon points="0,0 20,18 0,36" fill="#fff"/><circle cx="6.5" cy="18" r="2.6" fill="#fcd116"/></symbol>
+  </defs></svg>
+
   <div class="container hero__inner">
     <div class="hero__content">
       <h1 class="hero__title" data-i18n="hero.title">Pass the Florida real estate license exam <span class="hero__accent">on&nbsp;your&nbsp;first&nbsp;try</span></h1>
-      <p class="hero__subtitle" data-i18n="hero.subtitle"><strong class="hero__hl">Study in your own language</strong> and pass with confidence in English.<br><strong class="hero__hl">You grasp the meaning right away</strong>, while an adaptive trainer drills exam questions until they're second&nbsp;nature.</p>
-      <a href="#" class="btn btn--primary hero__cta" data-buy data-i18n="hero.cta">Start preparing</a>
-      <p class="hero__guarantee" data-i18n="hero.guarantee">🛡️ 7-day money-back guarantee</p>
+      <p class="hero__subtitle" data-i18n="hero.subtitle">Pick your language and see what your prep will look&nbsp;like</p>
+      <p class="hero__lang-line">
+        <span data-i18n="hero.lang-pre">My language is</span> <span class="hero-lang" id="heroLang">
+          <button class="hero-lang__btn" id="heroLangBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Choose your language">
+            <span class="hero-lang__name" id="heroLangName">Spanish</span><span class="hero-lang__chev" aria-hidden="true">▾</span>
+          </button>
+          <span class="hero-lang__menu" id="heroLangMenu" role="listbox">
+            <button class="hero-lang__opt is-active" type="button" role="option" data-lang="es"><span class="hero-lang__chip"><svg class="hero-lang__chip-svg"><use href="#fl-es"/></svg></span><span class="hero-lang__opt-txt"><b>Spanish</b><i>Español</i></span></button>
+            <button class="hero-lang__opt" type="button" role="option" data-lang="pt"><span class="hero-lang__chip"><svg class="hero-lang__chip-svg"><use href="#fl-pt"/></svg></span><span class="hero-lang__opt-txt"><b>Portuguese</b><i>Português</i></span></button>
+            <button class="hero-lang__opt" type="button" role="option" data-lang="ht"><span class="hero-lang__chip"><svg class="hero-lang__chip-svg"><use href="#fl-ht"/></svg></span><span class="hero-lang__opt-txt"><b>Haitian Creole</b><i>Kreyòl Ayisyen</i></span></button>
+            <button class="hero-lang__opt" type="button" role="option" data-lang="ru"><span class="hero-lang__chip"><svg class="hero-lang__chip-svg"><use href="#fl-ru"/></svg></span><span class="hero-lang__opt-txt"><b>Russian</b><i>Русский</i></span></button>
+            <button class="hero-lang__opt" type="button" role="option" data-lang="fr"><span class="hero-lang__chip"><svg class="hero-lang__chip-svg"><use href="#fl-fr"/></svg></span><span class="hero-lang__opt-txt"><b>French</b><i>Français</i></span></button>
+            <button class="hero-lang__opt" type="button" role="option" data-lang="de"><span class="hero-lang__chip"><svg class="hero-lang__chip-svg"><use href="#fl-de"/></svg></span><span class="hero-lang__opt-txt"><b>German</b><i>Deutsch</i></span></button>
+            <button class="hero-lang__opt" type="button" role="option" data-lang="it"><span class="hero-lang__chip"><svg class="hero-lang__chip-svg"><use href="#fl-it"/></svg></span><span class="hero-lang__opt-txt"><b>Italian</b><i>Italiano</i></span></button>
+            <button class="hero-lang__opt" type="button" role="option" data-lang="zh"><span class="hero-lang__chip"><svg class="hero-lang__chip-svg"><use href="#fl-zh"/></svg></span><span class="hero-lang__opt-txt"><b>Chinese</b><i>中文</i></span></button>
+            <button class="hero-lang__opt" type="button" role="option" data-lang="ar" dir="rtl"><span class="hero-lang__chip"><svg class="hero-lang__chip-svg"><use href="#fl-ar"/></svg></span><span class="hero-lang__opt-txt"><b>Arabic</b><i>العربية</i></span></button>
+            <button class="hero-lang__opt" type="button" role="option" data-lang="tl"><span class="hero-lang__chip"><svg class="hero-lang__chip-svg"><use href="#fl-tl"/></svg></span><span class="hero-lang__opt-txt"><b>Tagalog</b><i>Tagalog</i></span></button>
+          </span>
+        </span>
+      </p>
+      <a href="#" class="btn btn--primary hero__cta" data-buy data-i18n="hero.cta">Start now</a>
+      <p class="hero__guarantee" data-i18n="hero.guarantee">🛡️ Not for you? Get your money back in 7&nbsp;days.</p>
     </div>
     <div class="hero__showcase">
       <!-- Feature deck: возможности «вылетают» сюда по ходу демо -->
-      <div class="vocab-deck feat-deck" id="featDeck" aria-hidden="true"><span class="feat-default" data-i18n="hero.feat-default">More than just an effective exam-prep system</span></div>
+      <div class="vocab-deck feat-deck" id="featDeck" aria-hidden="true"><span class="feat-default" data-i18n="hero.feat-default">More than just a test app</span></div>
       <div class="hero__phone-wrap">
         <img src="/pics/green2.png" alt="" class="hero__mascot" />
         <img src="/pics/phone-clean.svg" alt="" class="phone__shell" />
@@ -27,7 +63,7 @@
     <div class="hero__speech">
       <img src="/pics/green2.png" alt="" class="hero__speech-mascot" />
       <div class="hero__speech-bubble">
-        <p data-i18n="hero.speech-bubble"><strong class="hero__hl">Study in your own language</strong> and pass with confidence in English. <strong class="hero__hl">You grasp the meaning right away</strong>, while an adaptive trainer drills exam questions until they're second&nbsp;nature.</p>
+        <p data-i18n="hero.speech-bubble"><strong class="hero__hl">Read every question in your own language</strong> and take the exam in English. You understand it right away. The app then helps you practice until you know it&nbsp;well.</p>
       </div>
     </div>
   </div>

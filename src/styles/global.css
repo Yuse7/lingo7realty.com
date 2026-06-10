@@ -374,7 +374,7 @@ a { text-decoration: none; color: inherit; }
   pointer-events: none;
 }
 
-/* Vocabulary deck — overlapping cards */
+/* Vocabulary deck - overlapping cards */
 .vocab-deck {
   display: flex;
   align-items: stretch;
@@ -1330,7 +1330,7 @@ a { text-decoration: none; color: inherit; }
   transition: all 0.3s;
 }
 
-/* Visited state — compact, colored dot */
+/* Visited state - compact, colored dot */
 .method__detail.is-visited {
   opacity: 0.6;
 }
@@ -1339,7 +1339,7 @@ a { text-decoration: none; color: inherit; }
   background: #34D399;
 }
 
-/* Active state — expanded, highlighted */
+/* Active state - expanded, highlighted */
 .method__detail.is-active-detail {
   opacity: 1;
   background: rgba(52,211,153,0.06);
@@ -1366,7 +1366,7 @@ a { text-decoration: none; color: inherit; }
   margin-top: 4px;
 }
 
-/* Pending state — not yet reached */
+/* Pending state - not yet reached */
 .method__detail:not(.is-visited):not(.is-active-detail) {
   opacity: 0.3;
 }
@@ -2729,7 +2729,7 @@ a { text-decoration: none; color: inherit; }
     margin-bottom: 14px;
   }
 
-  /* Чек-лист — центрированный блок, галка вплотную к тексту */
+  /* Чек-лист - центрированный блок, галка вплотную к тексту */
   .hero__checklist {
     width: -moz-fit-content;
     width: fit-content;
@@ -2745,8 +2745,8 @@ a { text-decoration: none; color: inherit; }
     padding-bottom: 0;
   }
 
-  /* Плашки на мобиле — та же логика одного слота (из базы), только чуть мельче.
-     Префикс .hero__showcase — чтобы перебить базовую .feat-deck ниже по файлу. */
+  /* Плашки на мобиле - та же логика одного слота (из базы), только чуть мельче.
+     Префикс .hero__showcase - чтобы перебить базовую .feat-deck ниже по файлу. */
   .hero__showcase .feat-deck {
     max-width: 100%;
     height: 76px;
@@ -2781,7 +2781,7 @@ a { text-decoration: none; color: inherit; }
 
   .phone__frame--hero { width: 320px; height: 600px; border-radius: 24px; }
 
-  /* Полоса фич на мобиле — вертикальный список строк (иконка слева, текст справа) */
+  /* Полоса фич на мобиле - вертикальный список строк (иконка слева, текст справа) */
   .trust { display: block; padding: 30px 0; }
   .trust__inner { flex-direction: column; gap: 10px; }
   .trust__card {
@@ -3032,7 +3032,7 @@ body.modal-open { overflow: hidden; }
 .login-card__alt a:hover { text-decoration: underline; }
 
 /* ============================================================= */
-/* ===== Lingo7 Realty — exam-prep additions ===================== */
+/* ===== Lingo7 Realty - exam-prep additions ===================== */
 /* ============================================================= */
 
 /* Brand accent in logo */
@@ -3316,7 +3316,7 @@ body.modal-open { overflow: hidden; }
 .mathsec__text { font-size: 17px; color: #555; line-height: 1.6; margin-bottom: 20px; }
 .mathsec__text strong { color: #047857; }
 .mathsec__phone { flex-shrink: 0; }
-/* Рамка под интерактивный экран (iframe 320×600) — математика и учебник */
+/* Рамка под интерактивный экран (iframe 320×600) - математика и учебник */
 .mathsec__frame,
 .library__frame {
   width: 320px;
@@ -3343,103 +3343,71 @@ body.modal-open { overflow: hidden; }
   .phone-cased { transform: scale(0.86); transform-origin: top center; }
 }
 
-/* ===== Языки (10 языков · орбита флагов) ===== */
-.langs { padding: 100px 0; background: #fff; }
-/* Иконка-подсказка «кликни», чтобы выбрать язык */
-.click-cue {
-  width: 20px;
-  height: 20px;
-  vertical-align: -4px;
-  margin: 0 1px;
-  color: #047857;
-  animation: click-cue-pulse 1.5s ease-in-out infinite;
+/* ===== Hero inline language picker ===== */
+.hero__lang-line {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin: 0 0 22px;
 }
-@keyframes click-cue-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.18); }
-}
-.langs__layout {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 64px;
-  margin-top: 48px;
-  flex-wrap: wrap;
-}
-.langs__orbit {
-  position: relative;
-  width: min(420px, 86vw);
-  aspect-ratio: 1;
-  flex-shrink: 0;
-}
-.langs__ring {
-  position: absolute;
-  inset: 6%;
-  border-radius: 50%;
-  border: 1px dashed rgba(52, 211, 153, .35);
-  background: radial-gradient(circle, rgba(52, 211, 153, .10), rgba(52, 211, 153, 0) 62%);
-}
-.langs__hub {
-  position: absolute;
-  left: 50%; top: 50%;
-  transform: translate(-50%, -50%);
-  width: 40%;
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-}
-.langs__hub img { width: 100%; height: auto; display: block; }
-.langs__flag {
-  position: absolute;
-  width: 50px; height: 50px;
-  border-radius: 50%;
-  overflow: hidden;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 4px 14px rgba(26, 26, 46, .16);
-  border: 2px solid #fff;
+.hero-lang { position: relative; display: inline-block; }
+.hero-lang__btn {
+  display: inline-flex;
+  align-items: baseline;
+  gap: .1em;
+  padding: 0;
+  border: none;
+  background: none;
   cursor: pointer;
-  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-  z-index: 1;
+  font: inherit;
+  color: #059669;
+  border-bottom: 3px dotted rgba(5, 150, 105, .5);
+  line-height: 1;
+  transition: color .18s ease, border-color .18s ease;
 }
-.langs__flag-svg { width: 100%; height: 100%; display: block; }
-.langs__flag:hover,
-.langs__flag.is-active {
-  transform: translate(-50%, -50%) scale(1.16);
-  box-shadow: 0 8px 22px rgba(5, 150, 105, .4);
-  border-color: #34D399;
-  z-index: 3;
-}
-.langs__flag--1  { left: 50%;    top: 8.33%; }
-.langs__flag--2  { left: 74.49%; top: 16.29%; }
-.langs__flag--3  { left: 89.63%; top: 37.13%; }
-.langs__flag--4  { left: 89.63%; top: 62.87%; }
-.langs__flag--5  { left: 74.49%; top: 83.71%; }
-.langs__flag--6  { left: 50%;    top: 91.67%; }
-.langs__flag--7  { left: 25.51%; top: 83.71%; }
-.langs__flag--8  { left: 10.37%; top: 62.87%; }
-.langs__flag--9  { left: 10.37%; top: 37.13%; }
-.langs__flag--10 { left: 25.51%; top: 16.29%; }
+.hero-lang__btn:hover { color: #047857; border-bottom-color: rgba(5, 150, 105, .85); }
+.hero-lang__name { font-weight: inherit; }
+.hero-lang__chev { font-size: .5em; color: #34D399; transition: transform .18s ease; }
+.hero-lang.is-open .hero-lang__chev { transform: rotate(180deg); }
 
-.langs__list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 250px;
+.hero-lang__menu {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  min-width: 260px;
+  background: #fff;
+  border: 1px solid #eef0f0;
+  border-radius: 16px;
+  box-shadow: 0 14px 40px rgba(26, 26, 46, .16);
+  padding: 6px;
+  z-index: 40;
+  max-height: 340px;
+  overflow-y: auto;
+  display: none;
+  /* Reset the H1 typography inside the floating menu. */
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: 1.2;
 }
-.langs__item {
+.hero-lang.is-open .hero-lang__menu { display: block; }
+.hero-lang__opt {
   display: flex;
   align-items: center;
-  gap: 13px;
-  padding: 9px 14px;
-  border-radius: 12px;
+  gap: 12px;
+  width: 100%;
+  padding: 9px 12px;
+  border: none;
+  background: none;
+  border-radius: 11px;
   cursor: pointer;
-  transition: background .18s ease;
+  font-family: inherit;
+  text-align: left;
+  transition: background .15s ease;
 }
-.langs__item:hover,
-.langs__item.is-active { background: rgba(52, 211, 153, .12); }
-.langs__chip {
+.hero-lang__opt:hover { background: rgba(52, 211, 153, .1); }
+.hero-lang__opt.is-active { background: rgba(52, 211, 153, .16); }
+.hero-lang__chip {
   width: 30px; height: 30px;
   border-radius: 50%;
   overflow: hidden;
@@ -3447,34 +3415,20 @@ body.modal-open { overflow: hidden; }
   box-shadow: 0 1px 4px rgba(26, 26, 46, .16);
   border: 1.5px solid #fff;
 }
-.langs__chip-svg { width: 100%; height: 100%; display: block; }
-.langs__txt { display: flex; flex-direction: column; line-height: 1.2; }
-.langs__txt b { font-size: 15px; font-weight: 700; color: #1a1a2e; }
-.langs__txt i { font-size: 12.5px; font-style: normal; color: #8a909a; }
-
-/* Выбранный язык (синхронизирован с переключателем в шапке) */
-.langs__flag.is-selected {
-  border-color: #34D399;
-  box-shadow: 0 0 0 3px rgba(52, 211, 153, .55), 0 6px 18px rgba(5, 150, 105, .3);
-  transform: translate(-50%, -50%) scale(1.1);
-  z-index: 2;
-}
-.langs__item.is-selected { background: rgba(52, 211, 153, .16); }
-.langs__item.is-selected .langs__txt b { color: #047857; }
-.langs__item.is-selected::after {
+.hero-lang__chip-svg { width: 100%; height: 100%; display: block; }
+.hero-lang__opt-txt { display: flex; flex-direction: column; }
+.hero-lang__opt-txt b { font-size: 15px; font-weight: 700; color: #1a1a2e; }
+.hero-lang__opt-txt i { font-size: 12.5px; font-style: normal; color: #8a909a; }
+.hero-lang__opt.is-active .hero-lang__opt-txt b { color: #047857; }
+.hero-lang__opt.is-active::after {
   content: '✓';
   margin-left: auto;
   color: #059669;
   font-weight: 800;
   font-size: 14px;
 }
-
-@media (max-width: 900px) {
-  .langs__layout { flex-direction: column; gap: 32px; }
-}
-@media (max-width: 520px) {
-  .langs__flag { width: 42px; height: 42px; border-width: 1.5px; }
-  .langs__list { width: 100%; max-width: 320px; }
+@media (max-width: 600px) {
+  .hero-lang__menu { min-width: 220px; }
 }
 @media (max-width: 900px) {
   .mathsec__inner { flex-direction: column; gap: 36px; text-align: center; }
@@ -3486,22 +3440,61 @@ body.modal-open { overflow: hidden; }
 .qcard__opt.is-wrong { border-color: #d05656; background: #fdecec; color: #b3434a; font-weight: 600; }
 
 /* ===== Work-english bonus band ===== */
-.workenglish { padding: 80px 0; background: #fff; text-align: center; }
-.workenglish__inner {
-  width: min(820px, calc(100% - 48px));
+.srs { padding: 80px 0; background: linear-gradient(180deg, #fff 0%, #f4faf8 100%); }
+.srs__card {
+  display: grid;
+  grid-template-columns: 1fr 1.05fr;
+  gap: 40px;
+  align-items: center;
+  width: min(1040px, calc(100% - 48px));
   margin: 0 auto;
-  padding: 46px 48px;
-  border: 1.5px solid rgba(52, 211, 153, .32);
-  border-radius: 24px;
-  background: #f7faf9;
-  box-shadow: 0 10px 34px rgba(5, 150, 105, .07);
+  padding: 44px 48px;
+  border: 1px solid rgba(52, 211, 153, .28);
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(5, 150, 105, .10);
   box-sizing: border-box;
 }
-.workenglish__title { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; color: #1a1a2e; margin-bottom: 14px; }
-.workenglish__text { font-size: 17px; color: #555; line-height: 1.6; max-width: 660px; margin: 0 auto 28px; text-align: left; }
-.workenglish__points { display: flex; justify-content: flex-start; flex-wrap: wrap; gap: 14px; max-width: 660px; margin: 0 auto; }
-.workenglish__point { display: flex; align-items: center; gap: 8px; background: #f7faf9; border: 1px solid #eef0f0; border-radius: 14px; padding: 12px 18px; font-size: 15px; font-weight: 600; color: #1a1a2e; }
-@media (max-width: 600px) { .workenglish__inner { padding: 32px 22px; } .workenglish__title { font-size: 25px; } .workenglish__text { font-size: 15px; } }
+.srs__eyebrow {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; margin-bottom: 18px;
+  background: #ecfdf5; color: #047857;
+  font-size: 13px; font-weight: 700; letter-spacing: .01em;
+  border-radius: 999px;
+}
+.srs__title { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.18; color: #1a1a2e; margin: 0 0 14px; }
+.srs__text { font-size: 17px; color: #555; line-height: 1.6; margin: 0 0 26px; }
+.srs__features { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.srs__feature { display: flex; align-items: center; gap: 14px; }
+.srs__icon {
+  flex: 0 0 auto;
+  display: grid; place-items: center;
+  width: 44px; height: 44px;
+  background: #ecfdf5; border: 1px solid #d1fae5;
+  border-radius: 13px; font-size: 20px;
+}
+.srs__feature-body { display: flex; flex-direction: column; line-height: 1.3; }
+.srs__feature-title { font-size: 15.5px; font-weight: 700; color: #1a1a2e; }
+.srs__feature-sub { font-size: 13.5px; color: #6b7280; }
+.srs__viz {
+  margin: 0;
+  padding: 22px 22px 16px;
+  background: #fafdfc;
+  border: 1px solid #eef2f1;
+  border-radius: 20px;
+}
+.srs__chart { display: block; width: 100%; height: auto; }
+.srs__axis { font-size: 12px; font-weight: 600; fill: #94a3b8; font-family: inherit; }
+.srs__legend { display: flex; justify-content: center; gap: 22px; margin-top: 10px; }
+.srs__legend-item { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #475569; }
+.srs__legend-dot { width: 18px; height: 3px; border-radius: 2px; }
+.srs__legend-item--good .srs__legend-dot { background: #059669; }
+.srs__legend-item--bad .srs__legend-dot { background: #fca5a5; }
+@media (max-width: 860px) {
+  .srs__card { grid-template-columns: 1fr; gap: 30px; padding: 34px 26px; }
+  .srs__title { font-size: 26px; }
+  .srs__text { font-size: 15.5px; }
+}
 
 
 /* ===== Hero pills: two-world grouping (prep vs L7) ===== */
@@ -3527,7 +3520,7 @@ body.modal-open { overflow: hidden; }
   color: #1a1a2e;
 }
 
-/* ===== hero — зелёные акценты заголовка и подзаголовка ===== */
+/* ===== hero - зелёные акценты заголовка и подзаголовка ===== */
 /* акцент в H1: чистый зелёный текст («с первого раза») */
 .hero__accent { color: #059669; }
 
@@ -3543,18 +3536,18 @@ body.modal-open { overflow: hidden; }
           box-decoration-break: clone;
 }
 
-/* ===== Feature deck — возможности «вылетают» по ходу hero-демо ===== */
+/* ===== Feature deck - возможности «вылетают» по ходу hero-демо ===== */
 .feat-deck {
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   max-width: 460px;
-  height: 82px;                 /* ФИКС-слот под одну плашку (ярлык + подпись до 2 строк) — телефон под декой стоит намертво */
+  height: 82px;                 /* ФИКС-слот под одну плашку (ярлык + подпись до 2 строк) - телефон под декой стоит намертво */
   margin-bottom: 14px;
   padding: 0 6px;
 }
-/* Одна плашка в слоте: предыдущая уезжает вверх и гаснет, новая приходит снизу — кросс-фейд на месте, без рефлоу */
+/* Одна плашка в слоте: предыдущая уезжает вверх и гаснет, новая приходит снизу - кросс-фейд на месте, без рефлоу */
 .feat-chip {
   position: absolute;
   left: 50%;
@@ -3596,7 +3589,7 @@ body.modal-open { overflow: hidden; }
 }
 .feat-deck.has-badge .feat-default { opacity: 0; }
 
-/* ===== Header — переключатель языка + вход ===== */
+/* ===== Header - переключатель языка + вход ===== */
 .lang-switch { position: relative; }
 .lang-switch__btn {
   display: inline-flex;

@@ -1,14 +1,88 @@
 ---
-// Spaced repetition explainer.
+// Spaced repetition explainer with a forgetting-curve visual.
 ---
-<section class="workenglish">
-  <div class="container workenglish__inner">
-    <h2 class="workenglish__title" data-i18n="workenglish.title">Spaced repetition — what you learn sticks until&nbsp;exam day</h2>
-    <p class="workenglish__text" data-i18n="workenglish.text">Cramming fades in a couple of days. The engine brings back every saved term and question right as you start to forget — that's exactly when a review locks it in the strongest. It's a scientifically proven method: by exam day you haven't just "gone through the lessons," you actually remember.</p>
-    <div class="workenglish__points">
-      <div class="workenglish__point" data-i18n="workenglish.point-recall"><span>🧠</span> Recall, don't reread</div>
-      <div class="workenglish__point" data-i18n="workenglish.point-timing"><span>⏰</span> Review at the right moment</div>
-      <div class="workenglish__point" data-i18n="workenglish.point-memory"><span>📈</span> Long-term memory</div>
+<section class="srs" id="srs">
+  <div class="container">
+    <div class="srs__card">
+      <div class="srs__copy">
+        <span class="srs__eyebrow">📚 Memory science</span>
+        <h2 class="srs__title">Spaced repetition: you remember it until&nbsp;exam day</h2>
+        <p class="srs__text">When you cram, you forget it in a few days. The app brings back each term and question just before you forget it &mdash; the best moment to review. By exam day you do not just feel ready, you really remember.</p>
+        <ul class="srs__features">
+          <li class="srs__feature">
+            <span class="srs__icon">🧠</span>
+            <span class="srs__feature-body">
+              <span class="srs__feature-title">Active recall</span>
+              <span class="srs__feature-sub">Remember it, do not just reread</span>
+            </span>
+          </li>
+          <li class="srs__feature">
+            <span class="srs__icon">⏰</span>
+            <span class="srs__feature-body">
+              <span class="srs__feature-title">Right timing</span>
+              <span class="srs__feature-sub">Review just before you forget</span>
+            </span>
+          </li>
+          <li class="srs__feature">
+            <span class="srs__icon">📈</span>
+            <span class="srs__feature-body">
+              <span class="srs__feature-title">Long-term memory</span>
+              <span class="srs__feature-sub">Locked in by exam day</span>
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <figure class="srs__viz">
+        <svg class="srs__chart" viewBox="0 0 560 300" role="img" aria-label="Forgetting curve: spaced review keeps memory high while cramming fades">
+          <defs>
+            <linearGradient id="srsArea" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#34D399" stop-opacity="0.28"/>
+              <stop offset="100%" stop-color="#34D399" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+
+          <!-- gridlines -->
+          <g stroke="#eef2f1" stroke-width="1">
+            <line x1="48" y1="46" x2="540" y2="46"/>
+            <line x1="48" y1="148" x2="540" y2="148"/>
+            <line x1="48" y1="250" x2="540" y2="250"/>
+          </g>
+
+          <!-- y axis caption -->
+          <text x="40" y="50" class="srs__axis" text-anchor="end">100%</text>
+          <text x="40" y="254" class="srs__axis" text-anchor="end">0%</text>
+
+          <!-- spaced retention area -->
+          <path d="M60,46 C95,46 120,150 150,150 L150,46 C200,46 230,124 260,124 L260,46 C320,46 355,104 390,104 L390,46 C450,46 495,86 530,86 L530,250 L60,250 Z" fill="url(#srsArea)"/>
+
+          <!-- cramming curve -->
+          <path d="M60,46 C140,140 270,212 530,238" fill="none" stroke="#fca5a5" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 8"/>
+
+          <!-- spaced retention curve -->
+          <path d="M60,46 C95,46 120,150 150,150 L150,46 C200,46 230,124 260,124 L260,46 C320,46 355,104 390,104 L390,46 C450,46 495,86 530,86" fill="none" stroke="#059669" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+          <!-- review markers -->
+          <g>
+            <circle cx="150" cy="46" r="6" fill="#fff" stroke="#059669" stroke-width="3"/>
+            <circle cx="260" cy="46" r="6" fill="#fff" stroke="#059669" stroke-width="3"/>
+            <circle cx="390" cy="46" r="6" fill="#fff" stroke="#059669" stroke-width="3"/>
+          </g>
+
+          <!-- x axis day labels -->
+          <g class="srs__axis" text-anchor="middle">
+            <text x="60" y="272">Learn</text>
+            <text x="150" y="272">Day 1</text>
+            <text x="260" y="272">Day 3</text>
+            <text x="390" y="272">Day 7</text>
+            <text x="530" y="272">Day 16</text>
+          </g>
+        </svg>
+        <figcaption class="srs__legend">
+          <span class="srs__legend-item srs__legend-item--good"><span class="srs__legend-dot"></span>With spaced review</span>
+          <span class="srs__legend-item srs__legend-item--bad"><span class="srs__legend-dot"></span>Cramming</span>
+        </figcaption>
+      </figure>
     </div>
   </div>
 </section>
