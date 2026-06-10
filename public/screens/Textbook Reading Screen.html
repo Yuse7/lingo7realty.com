@@ -29,6 +29,7 @@
   .book p.ru { margin: 5px 0 0; font-size: 12px; line-height: 1.5; color: #a3a8af; }
   .book .scroll::-webkit-scrollbar { width: 0; }
   .figchip { background: #fff; border: 1px solid #e6e9ea; border-radius: 7px; padding: 5px 7px; font-size: 10px; font-weight: 600; color: #3a3a4a; text-align: center; }
+  .figchip-tr { font-size: 8.5px; font-weight: 600; color: #a3a8af; margin-top: 2px; line-height: 1.2; }
 </style>
 </head>
 <body>
@@ -85,18 +86,18 @@
           <div style="flex:1;">
             <div style="background:rgba(52,211,153,.14); border:1px solid rgba(52,211,153,.4); border-radius:9px; padding:6px; text-align:center; font-size:10px; font-weight:800; color:#047857; margin-bottom:7px;">Financial · Liens</div>
             <div style="display:flex; flex-direction:column; gap:5px;">
-              <div class="figchip">Mortgage</div>
-              <div class="figchip">Property tax</div>
-              <div class="figchip">Mechanic’s</div>
-              <div class="figchip">Judgment</div>
+              <div class="figchip">Mortgage<div class="figchip-tr ru-line" data-chip="mortgage"></div></div>
+              <div class="figchip">Property tax<div class="figchip-tr ru-line" data-chip="propertyTax"></div></div>
+              <div class="figchip">Mechanic’s<div class="figchip-tr ru-line" data-chip="mechanics"></div></div>
+              <div class="figchip">Judgment<div class="figchip-tr ru-line" data-chip="judgment"></div></div>
             </div>
           </div>
           <div style="flex:1;">
             <div style="background:#eef0f2; border:1px solid #e0e4e6; border-radius:9px; padding:6px; text-align:center; font-size:10px; font-weight:800; color:#6b7280; margin-bottom:7px;">Non-financial</div>
             <div style="display:flex; flex-direction:column; gap:5px;">
-              <div class="figchip">Easements</div>
-              <div class="figchip">Encroachments</div>
-              <div class="figchip">Deed restrictions</div>
+              <div class="figchip">Easements<div class="figchip-tr ru-line" data-chip="easements"></div></div>
+              <div class="figchip">Encroachments<div class="figchip-tr ru-line" data-chip="encroachments"></div></div>
+              <div class="figchip">Deed restrictions<div class="figchip-tr ru-line" data-chip="deedRestrictions"></div></div>
             </div>
           </div>
         </div>
@@ -447,11 +448,30 @@
     document.querySelectorAll('.rw-on').forEach(function (e) { e.classList.remove('rw-on'); });
   }
 
+  // Переводы чипов диаграммы Fig. 4.2 (под каждым английским термином)
+  var CHIP_I18N = {
+    es: { mortgage: 'Hipoteca', propertyTax: 'Impuesto predial', mechanics: 'Gravamen del constructor', judgment: 'Gravamen judicial', easements: 'Servidumbres', encroachments: 'Invasiones', deedRestrictions: 'Restricciones de escritura' },
+    pt: { mortgage: 'Hipoteca', propertyTax: 'Imposto predial', mechanics: 'Ônus do construtor', judgment: 'Ônus judicial', easements: 'Servidões', encroachments: 'Invasões', deedRestrictions: 'Restrições da escritura' },
+    ht: { mortgage: 'Prè ipotekè', propertyTax: 'Taks pwopriyete', mechanics: 'Privilèj konstriktè', judgment: 'Privilèj jidisyè', easements: 'Sèvitid', encroachments: 'Anpyètman', deedRestrictions: 'Restriksyon nan tit' },
+    ru: { mortgage: 'Ипотека', propertyTax: 'Налог на недвижимость', mechanics: 'Залог подрядчика', judgment: 'Судебный залог', easements: 'Сервитуты', encroachments: 'Посягательства', deedRestrictions: 'Ограничения по акту' },
+    fr: { mortgage: 'Hypothèque', propertyTax: 'Taxe foncière', mechanics: 'Privilège de l’entrepreneur', judgment: 'Privilège judiciaire', easements: 'Servitudes', encroachments: 'Empiétements', deedRestrictions: 'Restrictions de l’acte' },
+    de: { mortgage: 'Hypothek', propertyTax: 'Grundsteuer', mechanics: 'Bauhandwerker-Pfandrecht', judgment: 'Gerichtliches Pfandrecht', easements: 'Dienstbarkeiten', encroachments: 'Grenzüberbauten', deedRestrictions: 'Urkundliche Beschränkungen' },
+    it: { mortgage: 'Ipoteca', propertyTax: 'Imposta sugli immobili', mechanics: 'Privilegio dell’appaltatore', judgment: 'Privilegio giudiziale', easements: 'Servitù', encroachments: 'Sconfinamenti', deedRestrictions: 'Vincoli dell’atto' },
+    zh: { mortgage: '抵押贷款', propertyTax: '房产税', mechanics: '承建商留置权', judgment: '判决留置权', easements: '地役权', encroachments: '越界占用', deedRestrictions: '契约限制' },
+    ar: { mortgage: 'رهن عقاري', propertyTax: 'ضريبة عقارية', mechanics: 'امتياز المقاول', judgment: 'امتياز قضائي', easements: 'حقوق الارتفاق', encroachments: 'التعديات', deedRestrictions: 'قيود سند الملكية' },
+    tl: { mortgage: 'Mortgage', propertyTax: 'Buwis sa ari-arian', mechanics: 'Lien ng kontratista', judgment: 'Lien mula sa hatol', easements: 'Mga easement', encroachments: 'Paglabag sa hangganan', deedRestrictions: 'Restriksyon sa titulo' }
+  };
+
   // ════════════ Language application ════════════
   function applyLang() {
     var L = I18N[curLang], dir = LMETA[curLang].dir;
     function setLine(id, val) { var el = document.getElementById(id); el.textContent = val; el.setAttribute('dir', dir); }
     setLine('tTR', L.t); setLine('h2TR', L.h2); setLine('h3TR', L.h3); setLine('figCap', L.figCap);
+    var chips = CHIP_I18N[curLang] || {};
+    document.querySelectorAll('.figchip-tr').forEach(function (el) {
+      el.textContent = chips[el.getAttribute('data-chip')] || '';
+      el.setAttribute('dir', dir);
+    });
     ['p1', 'p2', 'p3', 'p4', 'p5'].forEach(function (k) {
       var el = document.getElementById(k + 'TR');
       el.innerHTML = renderSegs(L[k]); el.setAttribute('dir', dir);

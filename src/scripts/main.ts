@@ -147,15 +147,33 @@
   }
 
   // Выбор языка: меняем ?lang и перезагружаем — вся демо-обвязка читает его при загрузке.
+  // Перед перезагрузкой ставим флаг, чтобы после неё подсветить телефон с демо.
   menu.querySelectorAll('.hero-lang__opt').forEach(function (opt) {
     opt.addEventListener('click', function (e) {
       e.stopPropagation();
       var code = opt.getAttribute('data-lang')!;
+      if (code === cur) { dd!.classList.remove('is-open'); return; }
+      try { sessionStorage.setItem('langFlash', '1'); } catch (err) { /* приватный режим */ }
       var params = new URLSearchParams(location.search);
       params.set('lang', code);
       location.search = params.toString();
     });
   });
+
+  // После перезагрузки (выбор языка) — короткая вспышка-подсветка телефона справа,
+  // чтобы взгляд ушёл на демо, которое теперь играет на выбранном языке.
+  var flash = false;
+  try { flash = sessionStorage.getItem('langFlash') === '1'; sessionStorage.removeItem('langFlash'); } catch (err) { /* */ }
+  if (flash) {
+    var phoneWrap = document.querySelector('.hero__phone-wrap');
+    if (phoneWrap) {
+      phoneWrap.classList.add('is-langflash');
+      var shell = phoneWrap.querySelector('.phone__shell');
+      if (shell) {
+        shell.addEventListener('animationend', function () { phoneWrap!.classList.remove('is-langflash'); }, { once: true });
+      }
+    }
+  }
 
   btn.addEventListener('click', function (e) {
     e.stopPropagation();
@@ -237,20 +255,20 @@ document.querySelectorAll('.faq__q').forEach(function (q) {
 
   // ── Дека возможностей: плашки прилетают по событиям из экранов ──
   var deck = document.getElementById('featDeck');
-  var BADGES: Record<string, { icon: string; label: string; sub: string }> = (lang === 'ru') ? {
-    native:    { icon: '📖', label: 'Готовьтесь на своём языке',   sub: 'Интерактивный учебник и тесты с переводом' },
-    translate: { icon: '🌐', label: 'Параллельный перевод',        sub: 'Читайте на английском как на своём' },
-    dict:      { icon: '🔁', label: 'Словарь L7',                  sub: 'Интервальное повторение под капотом' },
-    explain:   { icon: '💡', label: 'Разбор на вашем языке',       sub: 'Вы сразу понимаете суть' },
-    card:      { icon: '🗂️', label: 'Умные флеш-карточки',         sub: 'Быстрое запоминание терминов по карточкам' },
-    audio:     { icon: '🎧', label: 'Слушай тесты на двух языках',  sub: 'Учитесь на ходу или за рулём - слушайте вопросы и переводы фоном' }
+  var BADGES: Record<string, { label: string }> = (lang === 'ru') ? {
+    native:    { label: 'Вы выбираете свой язык — и вся подготовка идёт на нём' },
+    translate: { label: 'Читайте каждый вопрос на английском с параллельным переводом' },
+    dict:      { label: 'Сохранённые термины возвращаются по интервальному повторению, чтобы запомниться' },
+    explain:   { label: 'Каждый ответ разобран на вашем языке — суть понятна сразу' },
+    card:      { label: 'Умные флеш-карточки превращают термины в быстрое повторение' },
+    audio:     { label: 'Слушайте вопросы и переводы на двух языках, не отрываясь от дел' }
   } : {
-    native:    { icon: '📖', label: 'Study in your own language',  sub: 'Textbook and tests with translation' },
-    translate: { icon: '🌐', label: 'Parallel translation',        sub: 'Read English like your own language' },
-    dict:      { icon: '🔁', label: 'L7 dictionary',               sub: 'Spaced repetition built in' },
-    explain:   { icon: '💡', label: 'Answers in your language',     sub: 'You understand it right away' },
-    card:      { icon: '🗂️', label: 'Smart cards',                 sub: 'Learn terms fast with cards' },
-    audio:     { icon: '🎧', label: 'Listen to tests in two languages', sub: 'Study on the go. Questions and translations play in the background' }
+    native:    { label: 'You pick your language — and your whole prep speaks it' },
+    translate: { label: 'Read every English question with a parallel translation' },
+    dict:      { label: 'Saved terms come back with spaced repetition, so they stick' },
+    explain:   { label: 'Every answer is explained in your language — you get it right away' },
+    card:      { label: 'Smart flashcards turn each saved term into quick review' },
+    audio:     { label: 'Listen to questions and translations in two languages, hands-free' }
   };
   var shown: Record<string, boolean> = {};
   function clearDeck() {
@@ -269,9 +287,7 @@ document.querySelectorAll('.faq__q').forEach(function (q) {
     var b = BADGES[id];
     var el = document.createElement('span');
     el.className = 'feat-chip';
-    el.innerHTML = '<span class="feat-chip__icon">' + b.icon + '</span>' +
-      '<span class="feat-chip__body"><span class="feat-chip__label">' + b.label + '</span>' +
-      '<span class="feat-chip__sub">' + b.sub + '</span></span>';
+    el.innerHTML = '<span class="feat-chip__label">' + b.label + '</span>';
     deck.appendChild(el);
     deck.classList.add('has-badge');         // спрятать титульную заглушку
     requestAnimationFrame(function () {
