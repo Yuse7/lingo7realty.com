@@ -263,10 +263,10 @@ document.querySelectorAll('.faq__q').forEach(function (q) {
     card:      { label: 'Умные флеш-карточки превращают термины в быстрое повторение' },
     audio:     { label: 'Слушайте вопросы и переводы на двух языках, не отрываясь от дел' }
   } : {
-    native:    { label: 'You pick your language' },
-    translate: { label: 'Read every English question with a parallel translation' },
-    dict:      { label: 'Saved terms come back with spaced repetition, so they stick' },
-    explain:   { label: 'Every answer is explained in your language, so you get it right away' },
+    native:    { label: 'Pick your language' },
+    translate: { label: 'Read English questions with a parallel translation' },
+    dict:      { label: 'Save words to repeat them later' },
+    explain:   { label: 'Every answer is explained in your language' },
     card:      { label: 'Smart flashcards turn each saved term into quick review' },
     audio:     { label: 'Listen to questions and translations in two languages, hands-free' }
   };
@@ -304,7 +304,7 @@ document.querySelectorAll('.faq__q').forEach(function (q) {
   }
 
   function load(which: string) {
-    if (which === HOME) { clearDeck(); }   // новый цикл - дека пустеет
+    clearDeck();   // при любой смене экрана дека пустеет (плашка предыдущего экрана не тянется на следующий)
     frame!.style.opacity = '0';
     setTimeout(function () { frame!.src = which + '?lang=' + lang; }, 170);
   }

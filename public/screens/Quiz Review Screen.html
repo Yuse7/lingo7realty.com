@@ -535,7 +535,7 @@
       var dru = document.getElementById('wcDefRU');
       dru.textContent = pdata.def || ''; dru.setAttribute('dir', dir);
       document.getElementById('wcToggleLabel').textContent = LMETA[curLang].label + ' translation';
-      setCardRu(false);
+      setCardRu(true);
     } else {
       common.style.display = 'block'; pro.style.display = 'none';
       var raw2 = (lc.common && lc.common[key]) ? lc.common[key] : (d.lemma || key);
@@ -798,7 +798,7 @@
 
   var finger = document.createElement('div');
   finger.setAttribute('aria-hidden', 'true');
-  finger.style.cssText = 'position:absolute; left:50%; top:55%; width:30px; height:30px; border-radius:50%; background:radial-gradient(circle at 50% 38%, rgba(52,211,153,.62), rgba(52,211,153,.22)); border:2px solid rgba(255,255,255,.92); box-shadow:0 3px 12px rgba(26,26,46,.35); transform:translate(-50%,-50%) scale(1); transition:left .55s cubic-bezier(.4,.1,.25,1), top .55s cubic-bezier(.4,.1,.25,1), transform .16s ease, opacity .3s ease; opacity:0; pointer-events:none; z-index:9999;';
+  finger.style.cssText = 'position:absolute; left:50%; top:55%; width:30px; height:30px; border-radius:50%; background:radial-gradient(circle at 50% 38%, rgba(52,211,153,.62), rgba(52,211,153,.22)); border:2px solid rgba(255,255,255,.92); box-shadow:0 3px 12px rgba(26,26,46,.35); transform:translate(-50%,-50%) scale(1); transition:left 1.05s cubic-bezier(.4,.1,.25,1), top 1.05s cubic-bezier(.4,.1,.25,1), transform .16s ease, opacity .3s ease; opacity:0; pointer-events:none; z-index:9999;';
   frame.appendChild(finger);
 
   function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
@@ -815,7 +815,7 @@
   async function moveTo(el) {
     var c = centerOf(el);
     finger.style.left = c.x + 'px'; finger.style.top = c.y + 'px';
-    await sleep(580);
+    await sleep(1080);
   }
   async function press() {
     finger.style.transform = 'translate(-50%,-50%) scale(.72)';
@@ -834,60 +834,60 @@
   function badge(id) { try { window.parent.postMessage({ __l7demo: true, action: 'badge', id: id }, '*'); } catch (e) {} }
 
   async function run() {
-    await sleep(620);
+    await sleep(1150);
     finger.style.opacity = '1';
-    await sleep(280);
+    await sleep(520);
 
     // двуязычный вопрос на экране → плашка «Параллельный перевод»
     badge('translate');
-    await sleep(1300);
+    await sleep(2450);
 
     // 1. tap the word "claim" → word toolbar
-    await tap(q('#qEN .tw[data-ru="q-claim"]'), 900);
+    await tap(q('#qEN .tw[data-ru="q-claim"]'), 1700);
 
     // 2. add it to the L7 dictionary → toast + плашка «Словарь + повторение»
-    await tap(document.getElementById('addBtn'), 400);
+    await tap(document.getElementById('addBtn'), 760);
     badge('dict');
-    await sleep(1600);
+    await sleep(2950);
 
     // 3. close the toolbar
-    await tap(q('#wbar button[title="Close"]'), 520);
+    await tap(q('#wbar button[title="Close"]'), 970);
 
     // 4. choose answer "a deed" → reveal explanation + плашка «Разбор на вашем языке»
-    await tap(document.getElementById('opt3'), 500);
+    await tap(document.getElementById('opt3'), 940);
     badge('explain');
-    await sleep(1700);
+    await sleep(3150);
 
     // 5. tap the key term "lien" in the explanation → toolbar
     var lien = q('#exEN .tw[data-ru="ru-lien"]');
     scrollInto(lien);
-    await sleep(360);
-    await tap(lien, 900);
+    await sleep(680);
+    await tap(lien, 1700);
 
     // 6. open the word card + плашка «Карточка термина»
-    await tap(q('#wbar button[title="Word card"]'), 550);
+    await tap(q('#wbar button[title="Word card"]'), 1020);
     badge('card');
-    await sleep(1500);
+    await sleep(2750);
 
-    // 7. reveal the translation inside the card
-    await tap(document.getElementById('wcRuToggle'), 1550);
+    // 7. translation is shown right away inside the card - just dwell to read it
+    await sleep(2800);
 
     // 8. close the word card
-    await tap(q('#wcSheet button[title="Close"]'), 720);
+    await tap(q('#wcSheet button[title="Close"]'), 1300);
 
     // 9. scroll back to the question, then tap "play" → auto-read karaokes EN → site language (~5s, TTS muted)
     var sa = document.getElementById('scrollArea');
     if (sa) { sa.scrollTop = 0; }
-    await sleep(320);
-    await tap(document.getElementById('autoBtn'), 600);
+    await sleep(600);
+    await tap(document.getElementById('autoBtn'), 1100);
     badge('audio');
     await sleep(4400);
 
     // 10. back arrow → return to the home menu (loops the demo)
-    await tap(q('.hdr-back'), 480);
+    await tap(q('.hdr-back'), 880);
 
     finger.style.opacity = '0';
-    await sleep(260);
+    await sleep(470);
     try { window.parent.postMessage({ __l7demo: true, action: 'toHome', lang: lang }, '*'); } catch (e) {}
   }
 
