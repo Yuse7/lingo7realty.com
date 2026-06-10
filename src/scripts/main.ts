@@ -2,8 +2,8 @@
 // Consolidated from the inline <script> blocks of the original index.html:
 // modals, sticky CTA, burger menu, header language switcher, language section
 // sync/hover, scroll reveals, library tabs, FAQ accordion, the hero demo
-// orchestrator, and the Russian i18n swap.
-import { I18N_RU } from '../i18n/ru';
+// orchestrator. The language switcher is decorative — it reloads with a
+// ?lang code but the page content always stays English (as in the original).
 
 // ── Pricing & login modals ──
 (function () {
@@ -323,14 +323,4 @@ document.querySelectorAll('.faq__q').forEach(function (q) {
 
   // первичная загрузка с нужным языком (overrides статический src)
   load(HOME);
-})();
-
-// ── Russian i18n swap (?lang=ru) ──
-(function () {
-  if ((new URLSearchParams(location.search).get('lang') || '').toLowerCase() !== 'ru') { return; }
-  document.documentElement.lang = 'ru';
-  document.querySelectorAll('[data-i18n]').forEach(function (el) {
-    var k = el.getAttribute('data-i18n')!;
-    if (I18N_RU[k] != null) { el.innerHTML = I18N_RU[k]; }
-  });
 })();
