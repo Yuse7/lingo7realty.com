@@ -3602,7 +3602,7 @@ body.modal-open { overflow: hidden; }
 .feat-chip {
   position: absolute;
   left: 50%;
-  top: 50%;
+  bottom: 0;                     /* якорим к низу слота: многострочная плашка растёт вверх, не наезжая на телефон */
   width: max-content;            /* мерить по контенту, а не по «половинке» деки (left:50%) */
   max-width: min(440px, 88vw);   /* vw, а не % - у деки ширина неопределённая, % схлопывал плашку в столбец */
   display: flex;
@@ -3614,26 +3614,30 @@ body.modal-open { overflow: hidden; }
   border: 1.5px solid transparent;
   box-shadow: 0 6px 24px rgba(16, 122, 87, .2);
   opacity: 0;
-  transform: translate(-50%, -50%) translateY(11px) scale(.9);
+  transform: translate(-50%, 11px) scale(.9);
   transition: opacity .4s ease, transform .46s cubic-bezier(.33, 1, .68, 1);
   pointer-events: none;
 }
-.feat-chip.is-in  { opacity: 1; transform: translate(-50%, -50%) translateY(0) scale(1); }
-.feat-chip.is-out { opacity: 0; transform: translate(-50%, -50%) translateY(-11px) scale(.92); }
+.feat-chip.is-in  { opacity: 1; transform: translate(-50%, 0) scale(1); }
+.feat-chip.is-out { opacity: 0; transform: translate(-50%, -11px) scale(.92); }
 .feat-chip__label { font-size: 16.5px; font-weight: 700; color: #047857; line-height: 1.4; white-space: normal; text-align: center; }
 /* Титульная подсказка «Pick a language»: видна на экране-каталоге до выбора языка.
-   Просто текст-призыв над телефоном, без зелёной плашки. */
+   Оформлена как зелёная плашка - тот же язык, что у плашек-фич, чтобы читалась как
+   подпись-призыв прямо над телефоном. */
 .feat-default {
   position: absolute;
   left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  bottom: 0;                    /* у низа слота, как и плашки-фичи - тогда телефон стоит вплотную, без скачков */
+  transform: translateX(-50%);
   width: max-content;
   max-width: min(360px, 88vw);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 10px 22px;
+  border-radius: 20px;
+  background: rgba(52, 211, 153, .18);
+  box-shadow: 0 6px 24px rgba(16, 122, 87, .18);
   text-align: center;
   font-size: 15px;
   font-weight: 700;
@@ -3642,7 +3646,8 @@ body.modal-open { overflow: hidden; }
   transition: opacity .4s ease;
 }
 .feat-deck.has-badge .feat-default,
-.feat-deck.hint-off .feat-default { opacity: 0; }
+.feat-deck.hint-off .feat-default,
+.feat-default:empty { opacity: 0; }   /* пустой текст (не-Home экраны) - не показывать зелёный пилюль */
 
 /* ===== Header - переключатель языка + вход ===== */
 .lang-switch { position: relative; }

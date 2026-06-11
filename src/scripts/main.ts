@@ -279,11 +279,11 @@ document.querySelectorAll('.faq__q').forEach(function (q) {
   // ── Дека возможностей: плашки прилетают по событиям из экранов ──
   var deck = document.getElementById('featDeck');
   var BADGES: Record<string, { label: string }> = {
-    native:    { label: 'Pick a language' },
-    translate: { label: 'Every question has a translation into Russian' },
+    native:    { label: 'After you pick a language' },
+    translate: { label: 'Every text has a translation into Russian' },
     dict:      { label: 'Check unknown terms' },
     explain:   { label: 'Everything is translated into Russian' },
-    card:      { label: 'Term cards' },
+    card:      { label: 'A card with a detailed term description' },
     audio:     { label: 'Listen questions hands free' }
   };
   var shown: Record<string, boolean> = {};
@@ -326,7 +326,7 @@ document.querySelectorAll('.faq__q').forEach(function (q) {
   }
 
   function load(which: string) {
-    clearDeck();   // при любой смене экрана дека пустеет (плашка предыдущего экрана не тянется на следующий)
+    clearDeck();   // при смене экрана текущая плашка мгновенно снимается (не тянется на следующий)
     // Подпись «Pick a language» висит над телефоном только на экране-каталоге (Home),
     // до выбора языка. На каждом заходе в Home подпись возвращается (демо зациклено
     // Quiz → Home), на остальных экранах слот пуст. Снимаем флаг скрытия после выбора.

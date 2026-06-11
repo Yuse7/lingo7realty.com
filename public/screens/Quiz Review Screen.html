@@ -833,53 +833,59 @@
   function badge(id) { try { window.parent.postMessage({ __l7demo: true, action: 'badge', id: id }, '*'); } catch (e) {} }
 
   async function run() {
-    await sleep(1150);
+    await sleep(2150);
     finger.style.opacity = '1';
     await sleep(520);
 
-    // двуязычный вопрос на экране → плашка «Параллельный перевод»
+    // ПРАВИЛО: плашка-подсказка показывается ДО действия, которое она описывает.
+    // Схема каждого блока: badge('id') → пауза «дать прочитать» → само действие → дочитать результат.
+
+    // двуязычный вопрос уже на экране → подсказка про перевод (до любых действий)
     badge('translate');
     await sleep(2450);
 
+    // подсказка ДО действия: проверить незнакомый термин и сохранить его
+    badge('dict');
+    await sleep(900);                                  // дать прочитать подсказку
     // 1. tap the word "claim" → word toolbar
     await tap(q('#qEN .tw[data-ru="q-claim"]'), 1700);
-
-    // 2. add it to the L7 dictionary → toast + плашка «Словарь + повторение»
+    // 2. add it to the L7 dictionary → toast
     await tap(document.getElementById('addBtn'), 760);
-    badge('dict');
-    await sleep(2950);
+    await sleep(1400);                                 // дочитать тост
 
     // 3. close the toolbar silently (no finger tap on the cross) and lead straight to the answer
     try { closeBar(ev0()); } catch (e) {}
 
-    // 4. choose answer "a deed" → reveal explanation + плашка «Разбор на вашем языке»
-    await tap(document.getElementById('opt3'), 940);
+    // подсказка ДО действия: разбор будет переведён
     badge('explain');
-    await sleep(3150);
+    await sleep(900);                                  // дать прочитать подсказку
+    // 4. choose answer "a deed" → reveal explanation
+    await tap(document.getElementById('opt3'), 940);
+    await sleep(2200);                                 // прочитать разбор
 
+    // подсказка ДО действия: карточка термина
+    badge('card');
+    await sleep(900);                                  // дать прочитать подсказку
     // 5. tap the key term "lien" in the explanation → toolbar
     var lien = q('#exEN .tw[data-ru="ru-lien"]');
     scrollInto(lien);
     await sleep(680);
     await tap(lien, 1700);
-
-    // 6. open the word card + плашка «Карточка термина»
+    // 6. open the word card
     await tap(q('#wbar button[title="Word card"]'), 1020);
-    badge('card');
-    await sleep(2750);
+    await sleep(2800);                                 // translation is shown right away - dwell to read it
 
-    // 7. translation is shown right away inside the card - just dwell to read it
-    await sleep(2800);
-
-    // 8. close the word card
+    // 7. close the word card
     await tap(q('#wcSheet button[title="Close"]'), 1300);
 
-    // 9. scroll back to the question, then tap "play" → auto-read karaokes EN → site language (~5s, TTS muted)
+    // подсказка ДО действия: озвучка вопроса
+    badge('audio');
+    await sleep(900);                                  // дать прочитать подсказку
+    // 8. scroll back to the question, then tap "play" → auto-read karaokes EN → site language (~5s, TTS muted)
     var sa = document.getElementById('scrollArea');
     if (sa) { sa.scrollTop = 0; }
     await sleep(600);
     await tap(document.getElementById('autoBtn'), 1100);
-    badge('audio');
     await sleep(4400);
 
     // 10. back arrow → return to the home menu (loops the demo)
