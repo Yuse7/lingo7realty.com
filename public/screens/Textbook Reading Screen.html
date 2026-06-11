@@ -196,10 +196,7 @@
           </span>
           <div id="wcTr" style="font-size:18px; font-weight:600; color:#1a1a2e; margin-top:10px;"></div>
           <p id="wcDefEN" style="font-size:13.5px; color:#3a3a4a; line-height:1.5; margin:9px 0 0;"></p>
-          <p id="wcDefRU" style="display:none; font-size:12px; color:#6b7280; line-height:1.45; margin:7px 0 0;"></p>
-          <button id="wcRuToggle" onclick="toggleCardRu(event)" style="margin-top:11px; display:inline-flex; align-items:center; gap:5px; border:1.5px solid #d6dbe0; background:#fff; color:#3a3a4a; font-family:inherit; font-size:11.5px; font-weight:700; padding:5px 11px; border-radius:999px; cursor:pointer;">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="3" y1="12" x2="21" y2="12"></line><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"></path></svg><span id="wcToggleLabel">RU translation</span>
-          </button>
+          <p id="wcDefRU" style="font-size:12px; color:#6b7280; line-height:1.45; margin:7px 0 0;"></p>
         </div>
 
         <div id="wcCommon" style="display:none; margin-top:12px;">
@@ -519,10 +516,7 @@
   }
   function setCardRu(on) {
     cardRuOn = on;
-    document.getElementById('wcDefRU').style.display = on ? 'block' : 'none';
-    var t = document.getElementById('wcRuToggle');
-    if (on) { t.style.background = '#34D399'; t.style.borderColor = '#34D399'; t.style.color = '#fff'; }
-    else { t.style.background = '#fff'; t.style.borderColor = '#d6dbe0'; t.style.color = '#3a3a4a'; }
+    document.getElementById('wcDefRU').style.display = 'block';
     positionSheet();
   }
   function toggleCardRu(ev) { if (ev) { ev.stopPropagation(); } setCardRu(!cardRuOn); }
@@ -566,7 +560,6 @@
       document.getElementById('wcDefEN').textContent = EN_DEF[key] || '';
       var dru = document.getElementById('wcDefRU');
       dru.textContent = pdata.def || ''; dru.setAttribute('dir', dir);
-      document.getElementById('wcToggleLabel').textContent = LMETA[curLang].label + ' translation';
       setCardRu(false);
     } else {
       common.style.display = 'block'; pro.style.display = 'none';

@@ -278,22 +278,21 @@ document.querySelectorAll('.faq__q').forEach(function (q) {
 
   // ── Дека возможностей: плашки прилетают по событиям из экранов ──
   var deck = document.getElementById('featDeck');
-  var BADGES: Record<string, { label: string }> = (lang === 'ru') ? {
-    native:    { label: 'Вы выбираете свой язык' },
-    translate: { label: 'Читайте каждый вопрос на английском с параллельным переводом' },
-    dict:      { label: 'Сохранённые термины возвращаются по интервальному повторению, чтобы запомниться' },
-    explain:   { label: 'Каждый ответ разобран на вашем языке, и суть понятна сразу' },
-    card:      { label: 'Умные флеш-карточки превращают термины в быстрое повторение' },
-    audio:     { label: 'Слушайте вопросы и переводы на двух языках, не отрываясь от дел' }
-  } : {
-    native:    { label: 'Pick your language' },
-    translate: { label: 'Read English questions with a parallel translation' },
-    dict:      { label: 'Save words to repeat them later' },
-    explain:   { label: 'Every answer is explained in your language' },
-    card:      { label: 'Smart flashcards turn each saved term into quick review' },
-    audio:     { label: 'Listen to questions and translations in two languages, hands-free' }
+  var BADGES: Record<string, { label: string }> = {
+    native:    { label: 'Pick a language' },
+    translate: { label: 'Every question has a translation into Russian' },
+    dict:      { label: 'Check unknown terms' },
+    explain:   { label: 'Everything is translated into Russian' },
+    card:      { label: 'Term cards' },
+    audio:     { label: 'Listen questions hands free' }
   };
   var shown: Record<string, boolean> = {};
+  // Подсказка «Pick your language» видна в слоте сразу при загрузке (плейсхолдер
+  // в HTML пустой) и в паузах демо - до того, как стартует процесс выбора.
+  if (deck) {
+    var dflt = deck.querySelector('.feat-default');
+    if (dflt) { dflt.textContent = BADGES.native.label; }
+  }
   function clearDeck() {
     if (deck) {
       Array.prototype.forEach.call(deck.querySelectorAll('.feat-chip'), function (c: Element) {
@@ -328,6 +327,14 @@ document.querySelectorAll('.faq__q').forEach(function (q) {
 
   function load(which: string) {
     clearDeck();   // при любой смене экрана дека пустеет (плашка предыдущего экрана не тянется на следующий)
+    // Подпись «Pick a language» висит над телефоном только на экране-каталоге (Home),
+    // до выбора языка. На каждом заходе в Home подпись возвращается (демо зациклено
+    // Quiz → Home), на остальных экранах слот пуст. Снимаем флаг скрытия после выбора.
+    if (deck) {
+      deck.classList.remove('hint-off');
+      var dflt2 = deck.querySelector('.feat-default');
+      if (dflt2) { dflt2.textContent = which === HOME ? BADGES.native.label : ''; }
+    }
     frame!.style.opacity = '0';
     setTimeout(function () { frame!.src = which + '?lang=' + lang; }, 170);
   }
@@ -339,6 +346,8 @@ document.querySelectorAll('.faq__q').forEach(function (q) {
     if (d.action === 'toQuiz') { load(QUIZ); }
     else if (d.action === 'toHome') { load(HOME); }
     else if (d.action === 'badge') { addBadge(d.id); }
+    // язык выбран - гасим подпись «Pick a language» (плавно, через .hint-off)
+    else if (d.action === 'langPicked') { if (deck) { deck.classList.add('hint-off'); } }
   });
 
   // первичная загрузка с нужным языком (overrides статический src)

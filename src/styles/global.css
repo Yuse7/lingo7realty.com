@@ -219,16 +219,30 @@ a { text-decoration: none; color: inherit; }
 .hero__inner {
   position: relative;
   z-index: 1;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 560px) 1fr;
   align-items: center;
-  gap: 60px;
+  column-gap: 60px;
   padding-top: 60px;
   padding-bottom: 60px;
 }
 
+/* Левая колонка: заголовок + пикер (ряд 1), кнопка (ряд 2).
+   Телефон-демо справа тянется на оба ряда. */
 .hero__content {
-  flex: 1;
+  grid-column: 1;
+  grid-row: 1;
   max-width: 560px;
+}
+
+.hero__showcase {
+  grid-column: 2;
+  grid-row: 1 / 3;
+}
+
+.hero__actions {
+  grid-column: 1;
+  grid-row: 2;
 }
 
 .hero__title {
@@ -2345,6 +2359,12 @@ a { text-decoration: none; color: inherit; }
 .pricing .guarantee { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 18px; font-size: 14px; font-weight: 600; color: #6b7280; }
 .pricing .guarantee svg { color: #34D399; }
 .pricing .plans-note { text-align: center; font-size: 12px; color: #aab0b6; font-weight: 500; margin: 13px 0 2px; }
+/* Узкие экраны: ужать карточку и плашку плана, чтобы бейдж «Most popular» не вылезал за строку */
+@media (max-width: 480px) {
+  .pricing .card { padding: 32px 22px 26px; }
+  .pricing .plan { gap: 10px; padding: 15px 14px; }
+  .pricing .badge { font-size: 10px; letter-spacing: .02em; padding: 5px 8px; }
+}
 
 .final-cta__title {
   font-size: 36px;
@@ -2582,12 +2602,27 @@ a { text-decoration: none; color: inherit; }
   .nav__link { font-size: 14px; }
 
   .hero__inner {
+    display: flex;
     flex-direction: column;
     text-align: center;
-    gap: 40px;
+    gap: 14px;
   }
 
+  /* Столбец: заголовок+пикер → демо → кнопка → реплика маскота */
+  .hero__content { order: 1; }
+  .hero__showcase { order: 2; }
+  .hero__actions { order: 3; }
+  .hero__speech { order: 4; }
+
   .hero__content { max-width: 100%; }
+
+  /* Слот плашек демо: подпись «Pick your language» над телефоном. Узкий,
+     чтобы строка выбора языка читалась как подпись прямо над демо. */
+  .hero__showcase .feat-deck { height: 52px; margin-bottom: 4px; }
+
+  /* На десктопе этот отступ отделяет пикер от кнопки Start (ряд 2 grid).
+     В столбце кнопка уехала под телефон - убираем зазор, пикер липнет к подписи+демо. */
+  .hero__lang-line { margin-bottom: 0; }
 
   .hero__title { font-size: 38px; }
 
@@ -2683,13 +2718,12 @@ a { text-decoration: none; color: inherit; }
 
   .hero__title {
     font-size: 40px;
-    margin-bottom: 0;
+    margin-bottom: 18px;
   }
 
-  .hero__content .hero__subtitle,
-  .hero__content .hero__trust {
-    display: none;
-  }
+  /* На мобиле подзаголовок «Pick your language…» виден - это шаг 2 потока */
+  .hero__content .hero__subtitle { display: block; margin-bottom: 10px; }
+  .hero__content .hero__trust { display: none; }
 
   .hero__speech {
     display: flex;
@@ -2739,10 +2773,11 @@ a { text-decoration: none; color: inherit; }
     color: #888;
   }
 
-  /* Кнопка остаётся видимой на мобиле: главное действие сразу под H1 */
+  /* Кнопка под демо: главное действие после того, как человек увидел превью */
+  .hero__actions { margin-top: 4px; }
   .hero__cta {
     display: inline-block;
-    margin-top: 22px;
+    margin-top: 0;
     margin-bottom: 14px;
   }
 
@@ -2763,10 +2798,12 @@ a { text-decoration: none; color: inherit; }
   }
 
   /* Плашки на мобиле - та же логика одного слота (из базы), только чуть мельче.
-     Префикс .hero__showcase - чтобы перебить базовую .feat-deck ниже по файлу. */
+     Префикс .hero__showcase - чтобы перебить базовую .feat-deck ниже по файлу.
+     Слот узкий: телефон-демо должен идти сразу под строкой выбора языка, без дыры. */
   .hero__showcase .feat-deck {
     max-width: 100%;
-    height: 124px;
+    height: 46px;
+    margin-bottom: 4px;
   }
   .feat-deck .feat-chip { padding: 14px 20px; max-width: 88vw; }
   .feat-deck .feat-chip__label { font-size: 15px; }
@@ -3574,7 +3611,7 @@ body.modal-open { overflow: hidden; }
   padding: 16px 26px;
   border-radius: 22px;
   background: rgba(52, 211, 153, .18);
-  border: 1.5px solid rgba(52, 211, 153, .5);
+  border: 1.5px solid transparent;
   box-shadow: 0 6px 24px rgba(16, 122, 87, .2);
   opacity: 0;
   transform: translate(-50%, -50%) translateY(11px) scale(.9);
@@ -3584,22 +3621,28 @@ body.modal-open { overflow: hidden; }
 .feat-chip.is-in  { opacity: 1; transform: translate(-50%, -50%) translateY(0) scale(1); }
 .feat-chip.is-out { opacity: 0; transform: translate(-50%, -50%) translateY(-11px) scale(.92); }
 .feat-chip__label { font-size: 16.5px; font-weight: 700; color: #047857; line-height: 1.4; white-space: normal; text-align: center; }
-/* Титульная заглушка: видна, пока в слоте нет плашек (старт демо и пауза между циклами) */
+/* Титульная подсказка «Pick a language»: видна на экране-каталоге до выбора языка.
+   Просто текст-призыв над телефоном, без зелёной плашки. */
 .feat-default {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   width: max-content;
-  max-width: 280px;
+  max-width: min(360px, 88vw);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 22px;
   text-align: center;
-  font-size: 13.5px;
-  font-weight: 600;
-  color: #6f9285;
+  font-size: 15px;
+  font-weight: 700;
+  color: #047857;
   line-height: 1.35;
   transition: opacity .4s ease;
 }
-.feat-deck.has-badge .feat-default { opacity: 0; }
+.feat-deck.has-badge .feat-default,
+.feat-deck.hint-off .feat-default { opacity: 0; }
 
 /* ===== Header - переключатель языка + вход ===== */
 .lang-switch { position: relative; }
