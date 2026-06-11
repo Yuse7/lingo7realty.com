@@ -107,15 +107,15 @@
         var role = activeRole ? (activeRole.getAttribute('data-role') || '') : '';
         // Meta: логируем сумму покупки в value.
         try {
-          (window as any).fbq && (window as any).fbq('track', 'InitiateCheckout', {
-            value: price, currency: 'USD', content_name: plan
-          });
+          var fbqParams = { value: price, currency: 'USD', content_name: plan };
+          console.log('[Meta] fbq track InitiateCheckout', fbqParams);
+          (window as any).fbq && (window as any).fbq('track', 'InitiateCheckout', fbqParams);
         } catch (err) { /* пиксель ещё не загрузился */ }
         // Яндекс.Метрика: логируем тип (план + роль) в параметры цели.
         try {
-          (window as any).ym && (window as any).ym(109780177, 'reachGoal', 'checkout', {
-            plan: plan, role: role, price: price
-          });
+          var ymParams = { plan: plan, role: role, price: price };
+          console.log('[Yandex] ym reachGoal checkout', ymParams);
+          (window as any).ym && (window as any).ym(109780177, 'reachGoal', 'checkout', ymParams);
         } catch (err) { /* метрика ещё не загрузилась */ }
         return;
       }
