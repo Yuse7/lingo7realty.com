@@ -2718,11 +2718,11 @@ a { text-decoration: none; color: inherit; }
 
   .hero__title {
     font-size: 40px;
-    margin-bottom: 18px;
+    margin-bottom: 30px;   /* воздух после заголовка */
   }
 
   /* На мобиле подзаголовок «Pick your language…» виден - это шаг 2 потока */
-  .hero__content .hero__subtitle { display: block; margin-bottom: 10px; }
+  .hero__content .hero__subtitle { display: block; margin-bottom: 22px; }   /* воздух перед строкой выбора языка */
   .hero__content .hero__trust { display: none; }
 
   .hero__speech {
@@ -2795,6 +2795,9 @@ a { text-decoration: none; color: inherit; }
     max-width: 300px;
     margin-bottom: 0;
     padding-bottom: 0;
+    /* Подтягиваем демо вплотную к строке выбора языка (перебивает gap:40px у
+       .hero__inner) - пикер языка и телефон читаются как один элемент. */
+    margin-top: -34px;
   }
 
   /* Плашки на мобиле - та же логика одного слота (из базы), только чуть мельче.

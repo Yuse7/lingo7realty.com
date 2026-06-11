@@ -105,7 +105,8 @@
         var plan = activePlan ? (activePlan.getAttribute('data-plan') || '') : '';
         var price = activePlan ? Number(activePlan.getAttribute('data-price')) || 0 : 0;
         var role = activeRole ? (activeRole.getAttribute('data-role') || '') : '';
-        // Meta: логируем сумму покупки в value.
+        // Meta: начало покупки. Имя события - стандартное InitiateCheckout;
+        // value/currency/content_name - ожидаемые параметры этого события.
         try {
           var fbqParams = { value: price, currency: 'USD', content_name: plan };
           console.log('[Meta] fbq track InitiateCheckout', fbqParams);
@@ -279,7 +280,7 @@ document.querySelectorAll('.faq__q').forEach(function (q) {
   // ── Дека возможностей: плашки прилетают по событиям из экранов ──
   var deck = document.getElementById('featDeck');
   var BADGES: Record<string, { label: string }> = {
-    native:    { label: 'After you pick a language' },
+    native:    { label: 'Let me walk you though the interface' },
     translate: { label: 'Every text has a translation into Russian' },
     dict:      { label: 'Check unknown terms' },
     explain:   { label: 'Everything is translated into Russian' },
