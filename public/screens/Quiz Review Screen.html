@@ -829,72 +829,91 @@
     await sleep(dwell || 600);
   }
 
+  // Подсветить элемент (строку перевода) без тапа: палец подъезжает слева,
+  // строка мягко загорается зелёным. «Смотри сюда» - визуальная опора под текстовую подсказку.
+  async function flash(el, dwell) {
+    if (!el) { await sleep(dwell || 1200); return; }
+    scrollInto(el);
+    await sleep(180);
+    var fr = frame.getBoundingClientRect(), r = el.getBoundingClientRect();
+    finger.style.left = (r.left - fr.left + 10) + 'px';   // слева от строки, не накрывая текст
+    finger.style.top = (r.top - fr.top + r.height / 2) + 'px';
+    await sleep(1080);                                     // дать пальцу доехать (видно движение)
+    finger.style.transform = 'translate(-50%,-50%) scale(1.14)';
+    var pbg = el.style.background, psh = el.style.boxShadow, pbr = el.style.borderRadius, ptr = el.style.transition;
+    el.style.transition = 'background .3s ease, box-shadow .3s ease';
+    el.style.borderRadius = '7px';
+    el.style.background = 'rgba(52,211,153,.16)';
+    el.style.boxShadow = '0 0 0 5px rgba(52,211,153,.16)';   // halo через box-shadow - без сдвига вёрстки
+    await sleep(220);
+    finger.style.transform = 'translate(-50%,-50%) scale(1)';
+    await sleep(dwell || 1200);                            // держим подсветку - дать рассмотреть
+    el.style.background = pbg; el.style.boxShadow = psh;
+    setTimeout(function () { el.style.borderRadius = pbr; el.style.transition = ptr; }, 320);
+  }
+
   function q(sel) { return document.querySelector(sel); }
   function badge(id) { try { window.parent.postMessage({ __l7demo: true, action: 'badge', id: id }, '*'); } catch (e) {} }
 
   async function run() {
-    await sleep(2150);
+    await sleep(1700);                                  // дать экрану прорисоваться и «осмотреться»
     finger.style.opacity = '1';
-    await sleep(520);
+    await sleep(450);
 
-    // ПРАВИЛО: плашка-подсказка показывается ДО действия, которое она описывает.
-    // Схема каждого блока: badge('id') → пауза «дать прочитать» → само действие → дочитать результат.
+    // РИТМ: подсказка показывается ДО действия, которое она описывает, с паузой
+    // «прочитать». Потом палец делает действие (его видно), затем пауза «увидеть
+    // результат». Текст плашки всегда совпадает с тем, что сейчас на экране.
 
-    // двуязычный вопрос уже на экране → подсказка про перевод (до любых действий)
+    // 1. ПЕРЕВОД. Двуязычный вопрос уже на экране → подсказка про перевод; палец
+    //    подъезжает к строке перевода, и она мягко подсвечивается (опора для взгляда).
     badge('translate');
-    await sleep(1200);
-    // «Everything is translated into Russian» показываем рано - вторым сообщением.
-    // Сумма пауз (1200+1250=2450) = прежней, поэтому старт всех действий не сдвигается.
-    badge('explain');
-    await sleep(1250);
+    await sleep(1600);                                  // дать прочитать подсказку
+    await flash(q('#qRU'), 1700);                       // подсветить строку перевода под вопросом
+    await sleep(350);
 
-    // подсказка ДО действия: проверить незнакомый термин и сохранить его
+    // 2. СЛОВАРЬ. Сначала подсказка, потом тап по незнакомому слову и добавление.
     badge('dict');
-    await sleep(900);                                  // дать прочитать подсказку
-    // 1. tap the word "claim" → word toolbar
-    await tap(q('#qEN .tw[data-ru="q-claim"]'), 1700);
-    // 2. add it to the L7 dictionary → toast
-    await tap(document.getElementById('addBtn'), 760);
-    await sleep(1400);                                 // дочитать тост
-
-    // 3. close the toolbar silently (no finger tap on the cross) and lead straight to the answer
+    await sleep(1700);                                  // прочитать подсказку ДО действия
+    await tap(q('#qEN .tw[data-ru="q-claim"]'), 1500);  // тап по слову → тулбар
+    await tap(document.getElementById('addBtn'), 900);  // добавить в словарь → тост
+    await sleep(1500);                                  // дочитать тост
     try { closeBar(ev0()); } catch (e) {}
 
-    // 4. choose answer "a deed" → reveal explanation (пауза сохранена, без своей плашки)
-    await sleep(900);
-    await tap(document.getElementById('opt3'), 940);
-    await sleep(2200);                                 // прочитать разбор
+    // 3. ОТВЕТ + РАЗБОР. Выбираем вариант → раскрывается разбор (текст + перевод).
+    //    Подсказку про перевод разбора даём, когда он уже на экране, и подсвечиваем его.
+    await sleep(700);
+    await tap(document.getElementById('opt3'), 900);    // выбрать вариант → разбор
+    await sleep(1700);                                  // увидеть, что разбор раскрылся
+    badge('explain');
+    await sleep(1000);                                  // прочитать подсказку
+    await flash(q('#exRU'), 1800);                      // подсветить перевод разбора
 
-    // подсказка ДО действия: карточка термина
+    // 4. КАРТОЧКА СЛОВА. Подсказка, потом тап по термину и открытие карточки.
     badge('card');
-    await sleep(900);                                  // дать прочитать подсказку
-    // 5. tap the key term "lien" in the explanation → toolbar
+    await sleep(1800);                                  // прочитать подсказку ДО действия
     var lien = q('#exEN .tw[data-ru="ru-lien"]');
     scrollInto(lien);
-    await sleep(680);
-    await tap(lien, 1700);
-    // 6. open the word card
-    await tap(q('#wbar button[title="Word card"]'), 1020);
-    await sleep(2800);                                 // translation is shown right away - dwell to read it
+    await sleep(650);
+    await tap(lien, 1400);                              // тап по «lien» → тулбар
+    await tap(q('#wbar button[title="Word card"]'), 1000); // открыть карточку
+    await sleep(2600);                                  // перевод виден сразу - дать прочитать
 
-    // 7. close the word card
-    await tap(q('#wcSheet button[title="Close"]'), 1300);
+    await tap(q('#wcSheet button[title="Close"]'), 1200);
 
-    // подсказка ДО действия: озвучка вопроса
+    // 5. ОЗВУЧКА. Подсказка, потом проигрывание караоке (в hero TTS замьючен).
     badge('audio');
-    await sleep(900);                                  // дать прочитать подсказку
-    // 8. scroll back to the question, then tap "play" → auto-read karaokes EN → site language (~5s, TTS muted)
+    await sleep(1800);                                  // прочитать подсказку ДО действия
     var sa = document.getElementById('scrollArea');
     if (sa) { sa.scrollTop = 0; }
     await sleep(600);
-    await tap(document.getElementById('autoBtn'), 1100);
+    await tap(document.getElementById('autoBtn'), 1000); // play → караоке по словам
     await sleep(4400);
 
-    // 10. back arrow → return to the home menu (loops the demo)
-    await tap(q('.hdr-back'), 880);
+    // назад на каталог → демо зацикливается
+    await tap(q('.hdr-back'), 850);
 
     finger.style.opacity = '0';
-    await sleep(470);
+    await sleep(450);
     try { window.parent.postMessage({ __l7demo: true, action: 'toHome', lang: lang }, '*'); } catch (e) {}
   }
 

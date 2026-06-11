@@ -280,12 +280,12 @@ document.querySelectorAll('.faq__q').forEach(function (q) {
   // ── Дека возможностей: плашки прилетают по событиям из экранов ──
   var deck = document.getElementById('featDeck');
   var BADGES: Record<string, { label: string }> = {
-    native:    { label: 'Let me walk you though the interface' },
-    translate: { label: 'Every text has a translation into Russian' },
+    native:    { label: 'Let me walk you through the interface' },
+    translate: { label: 'Every text has a translation' },
     dict:      { label: "Tap any word you don't know" },
-    explain:   { label: 'Everything is translated into Russian' },
+    explain:   { label: 'The explanation is translated too' },
     card:      { label: 'A card with a detailed term description' },
-    audio:     { label: 'Listen questions hands free' }
+    audio:     { label: 'Listen to questions hands-free' }
   };
   var shown: Record<string, boolean> = {};
   // Подсказка «Pick your language» видна в слоте сразу при загрузке (плейсхолдер
