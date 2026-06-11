@@ -96,6 +96,29 @@
   (function () {
     function ctaIcon() { return ' <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>'; }
     document.addEventListener('click', function (e) {
+      // Кнопка покупки внизу карточки: шлём событие в оба пикселя (Meta + Яндекс.Метрика).
+      var cta = (e.target as Element).closest('.pricing .cta');
+      if (cta) {
+        var card0 = cta.closest('.pricing')!;
+        var activePlan = card0.querySelector('.plan.active');
+        var activeRole = card0.querySelector('.role.active');
+        var plan = activePlan ? (activePlan.getAttribute('data-plan') || '') : '';
+        var price = activePlan ? Number(activePlan.getAttribute('data-price')) || 0 : 0;
+        var role = activeRole ? (activeRole.getAttribute('data-role') || '') : '';
+        // Meta: логируем сумму покупки в value.
+        try {
+          (window as any).fbq && (window as any).fbq('track', 'InitiateCheckout', {
+            value: price, currency: 'USD', content_name: plan
+          });
+        } catch (err) { /* пиксель ещё не загрузился */ }
+        // Яндекс.Метрика: логируем тип (план + роль) в параметры цели.
+        try {
+          (window as any).ym && (window as any).ym(109780177, 'reachGoal', 'checkout', {
+            plan: plan, role: role, price: price
+          });
+        } catch (err) { /* метрика ещё не загрузилась */ }
+        return;
+      }
       var role = (e.target as Element).closest('.pricing .role');
       if (role) {
         var card = role.closest('.pricing')!;
