@@ -282,7 +282,7 @@ document.querySelectorAll('.faq__q').forEach(function (q) {
   var BADGES: Record<string, { label: string }> = {
     native:    { label: 'Let me walk you though the interface' },
     translate: { label: 'Every text has a translation into Russian' },
-    dict:      { label: 'Check unknown terms' },
+    dict:      { label: "Tap any word you don't know" },
     explain:   { label: 'Everything is translated into Russian' },
     card:      { label: 'A card with a detailed term description' },
     audio:     { label: 'Listen questions hands free' }

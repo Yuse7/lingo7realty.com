@@ -842,7 +842,11 @@
 
     // двуязычный вопрос уже на экране → подсказка про перевод (до любых действий)
     badge('translate');
-    await sleep(2450);
+    await sleep(1200);
+    // «Everything is translated into Russian» показываем рано - вторым сообщением.
+    // Сумма пауз (1200+1250=2450) = прежней, поэтому старт всех действий не сдвигается.
+    badge('explain');
+    await sleep(1250);
 
     // подсказка ДО действия: проверить незнакомый термин и сохранить его
     badge('dict');
@@ -856,10 +860,8 @@
     // 3. close the toolbar silently (no finger tap on the cross) and lead straight to the answer
     try { closeBar(ev0()); } catch (e) {}
 
-    // подсказка ДО действия: разбор будет переведён
-    badge('explain');
-    await sleep(900);                                  // дать прочитать подсказку
-    // 4. choose answer "a deed" → reveal explanation
+    // 4. choose answer "a deed" → reveal explanation (пауза сохранена, без своей плашки)
+    await sleep(900);
     await tap(document.getElementById('opt3'), 940);
     await sleep(2200);                                 // прочитать разбор
 
