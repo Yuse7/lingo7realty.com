@@ -370,14 +370,6 @@ a { text-decoration: none; color: inherit; }
 
 
 
-.hero__mascot {
-  position: absolute;
-  height: 299px;
-  left: -210px;
-  bottom: -24px;
-  z-index: -1;
-}
-
 .phone__shell {
   position: absolute;
   width: 333px;
@@ -2873,18 +2865,8 @@ a { text-decoration: none; color: inherit; }
 
   .hero__speech {
     display: flex;
-    align-items: center;
-    gap: 0;
     width: 100%;
     padding: 0 8px;
-  }
-
-  .hero__speech-mascot {
-    width: 80px;
-    height: auto;
-    flex-shrink: 0;
-    margin-right: -6px;
-    z-index: 1;
   }
 
   .hero__speech-bubble {
@@ -2897,19 +2879,6 @@ a { text-decoration: none; color: inherit; }
     color: #444;
     line-height: 1.5;
     flex: 1;
-  }
-
-  .hero__speech-bubble::before {
-    content: '';
-    position: absolute;
-    left: -8px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 0;
-    height: 0;
-    border-top: 8px solid transparent;
-    border-bottom: 8px solid transparent;
-    border-right: 8px solid #f0fdf4;
   }
 
   .hero__speech-trust {
@@ -2956,10 +2925,6 @@ a { text-decoration: none; color: inherit; }
   }
   .feat-deck .feat-chip { padding: 14px 20px; max-width: 88vw; }
   .feat-deck .feat-chip__label { font-size: 15px; }
-
-  .hero__mascot {
-    display: none;
-  }
 
   .reader__popup {
     gap: 2px;
