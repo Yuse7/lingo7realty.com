@@ -1,73 +1,82 @@
 ---
-// 11. Reviews - testimonials (placeholder copy per project brief).
+// 11. Reviews - testimonials with a photo per person (placeholder copy per project brief).
+// photo: path under /pics/reviews/ when a real photo exists; otherwise an initials placeholder is rendered.
+const reviews = [
+  {
+    name: 'Carmen R.',
+    lang: 'Spanish',
+    photo: '/pics/reviews/carmen.jpg',
+    photoPos: '58% center',
+    licensed: true,
+    text: 'In my country I sold real estate for years, so the ideas were familiar. The English was the wall. With Spanish next to every question, I was finally answering with what I know, not fighting the words. I passed.',
+  },
+  {
+    name: 'Polina R.',
+    lang: 'Русский',
+    photo: '/pics/reviews/polina.jpg',
+    licensed: true,
+    text: 'I never doubted the material, only my English. The legal terms would dissolve the second I looked away from them. What changed everything was saving a word with one tap and having it resurface just before it slipped, so by exam day the whole vocabulary had quietly become my own.',
+  },
+  {
+    name: 'Giulia M.',
+    lang: 'Italian',
+    photo: '/pics/reviews/giulia.jpg',
+    licensed: true,
+    text: 'What intimidated me was never the real estate, it was reading a dense legal sentence in English and second-guessing half the words in it. Having the Italian beside each line dissolved that anxiety entirely. At some point I stopped translating in my head and simply understood.',
+  },
+  {
+    name: 'João P.',
+    lang: 'Portuguese',
+    photo: '/pics/reviews/joao.jpg',
+    licensed: true,
+    text: 'I almost gave up. Three years here and my English still felt small. Then I read the explanation line by line in Portuguese and finally understood why, not just the letter. The day I passed I called my mother and I cried. I did it.',
+  },
+  {
+    name: 'Jean B.',
+    lang: 'Haitian Creole',
+    photo: '/pics/reviews/jean.jpg',
+    licensed: true,
+    text: 'I work long days, so I listened to the questions and the Creole on my breaks. To hear the word and understand it the same moment, finally everything made sense. I passed on the first try. Thank you for not making me choose between my language and my license.',
+  },
+  {
+    name: 'Sofia V.',
+    lang: 'Spanish',
+    photo: '/pics/reviews/sofia.jpg',
+    licensed: true,
+    text: 'Hundreds of terms in a language that is not mine, I honestly thought this was not for me. But the test was never the real problem, the English was. With the translation on every screen it became clear, and the day I passed I sat in my car and cried. Thank you for believing people like us can do this.',
+  },
+];
+
+const initials = (name) => name.split(' ').map((p) => p[0]).join('').slice(0, 2).toUpperCase();
 ---
 <section class="reviews" id="reviews">
   <div class="container">
     <h2 class="section__title" data-i18n="reviews.title">What people who passed are saying</h2>
     <p class="section__subtitle" data-i18n="reviews.subtitle">They started exactly where you are now.</p>
-    <div class="reviews__featured">
-      <div class="reviews__featured-photo">
-        <img src="/pics/license-success.jpg" alt="A newly licensed Florida real estate agent holding her license outside the DBPR Division of Real Estate office" loading="lazy" width="1100" height="825" />
-      </div>
-      <div class="reviews__featured-body">
-        <div class="reviews__featured-badge"><span class="reviews__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span> Success story</div>
-        <h3 class="reviews__featured-title">This is what passing looks&nbsp;like</h3>
-        <p class="reviews__featured-text">A brand-new Florida real estate license, straight from the DBPR. Hundreds of legal terms, an exam in English, a language that wasn't her first. She walked out licensed. <strong>You're next.</strong></p>
-        <div class="reviews__featured-meta">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"></path><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.5 0 2.91.37 4.15 1.02"></path></svg>
-          <span>Florida &middot; Department of Business &amp; Professional Regulation</span>
-        </div>
-      </div>
-    </div>
     <div class="reviews__grid">
-      <div class="reviews__card">
-        <div class="reviews__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <p class="reviews__text" data-i18n="reviews.card1.text">I failed the test twice. The ideas were not the problem, the English words were. Once every question had a translation next to it, it all made sense. I passed.</p>
-        <div class="reviews__author">
-          <strong>Carmen R.</strong>
-          <span class="reviews__source" data-i18n="reviews.card1.source">Spanish</span>
-        </div>
-      </div>
-      <div class="reviews__card">
-        <div class="reviews__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <p class="reviews__text" data-i18n="reviews.card2.text">I was afraid I would never remember hundreds of terms. My saved words came back to me just before I forgot them. On exam day I remembered them all.</p>
-        <div class="reviews__author">
-          <strong>Dmitry K.</strong>
-          <span class="reviews__source">Русский</span>
-        </div>
-      </div>
-      <div class="reviews__card">
-        <div class="reviews__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <p class="reviews__text" data-i18n="reviews.card3.text">The legal terms in English were too hard for me. With the audio and the translation together, you hear it and understand it right away. The material stopped being scary.</p>
-        <div class="reviews__author">
-          <strong>Mei L.</strong>
-          <span class="reviews__source" data-i18n="reviews.card3.source">Chinese</span>
-        </div>
-      </div>
-      <div class="reviews__card">
-        <div class="reviews__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <p class="reviews__text" data-i18n="reviews.card4.text">In other apps the answers were only in English, and I understood about half. Here the reason is shown line by line with a translation. You learn why, instead of just memorizing the right letter.</p>
-        <div class="reviews__author">
-          <strong>João P.</strong>
-          <span class="reviews__source" data-i18n="reviews.card4.source">Portuguese</span>
-        </div>
-      </div>
-      <div class="reviews__card">
-        <div class="reviews__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <p class="reviews__text" data-i18n="reviews.card5.text">Between work and family, I had almost no time to study. I listened to questions on my way to work and at the gym, and the hours added up on their own. I passed.</p>
-        <div class="reviews__author">
-          <strong>Aisha M.</strong>
-          <span class="reviews__source" data-i18n="reviews.card5.source">Arabic</span>
-        </div>
-      </div>
-      <div class="reviews__card">
-        <div class="reviews__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <p class="reviews__text" data-i18n="reviews.card6.text">I did not know where to start. There was so much to learn, and it scared me. The app found my weak spots and told me what to study next. I passed on my first try.</p>
-        <div class="reviews__author">
-          <strong>Sofia V.</strong>
-          <span class="reviews__source" data-i18n="reviews.card6.source">Spanish</span>
-        </div>
-      </div>
+      {reviews.map((r) => (
+        <article class="reviews__card">
+          <div class="reviews__photo">
+            {r.photo
+              ? <img src={r.photo} alt={`${r.name}, licensed real estate agent`} loading="lazy" style={r.photoPos ? `object-position:${r.photoPos}` : undefined} />
+              : <span class="reviews__photo-ph" aria-hidden="true">{initials(r.name)}</span>}
+            {r.licensed && (
+              <span class="reviews__badge">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>
+                Licensed
+              </span>
+            )}
+          </div>
+          <div class="reviews__body">
+            <div class="reviews__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <p class="reviews__text">{r.text}</p>
+            <div class="reviews__author">
+              <strong>{r.name}</strong>
+              <span class="reviews__source">{r.lang}</span>
+            </div>
+          </div>
+        </article>
+      ))}
     </div>
   </div>
 </section>

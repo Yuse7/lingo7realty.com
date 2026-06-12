@@ -1,8 +1,9 @@
 ---
 // Checkout page - landing after the user picks a plan and presses «Get …».
 // The order summary is filled from the URL query (role/plan/price), so the page
-// is shareable/refresh-safe. The final «Buy» button fires the Purchase event
-// into both pixels (Meta + Yandex), then hands off to the payment provider.
+// is shareable/refresh-safe. On load it fires InitiateCheckout (Meta) + a
+// `checkout` goal (Yandex) - reaching this page = starting checkout. The final
+// «Buy» button fires the Purchase event into both pixels, then hands off to pay.
 import Head from '../components/Head.astro';
 import '../styles/global.css';
 ---
@@ -102,6 +103,21 @@ import '../styles/global.css';
       setText('[data-co-sub]', priceStr);
       setText('[data-co-total]', priceStr);
       setText('[data-co-btnprice]', priceStr);
+
+      // Попадание на /checkout/ = начало оформления. Стандартное событие Meta
+      // InitiateCheckout + цель Яндекс.Метрики «checkout» с параметрами заказа,
+      // один раз при загрузке страницы. (Раньше слалось по клику «Get …» на
+      // лендинге; перенесено сюда, чтобы не задваивать счёт.)
+      try {
+        var icParams = { value: price, currency: 'USD', content_name: plan };
+        console.log('[Meta] fbq track InitiateCheckout', icParams);
+        (window as any).fbq && (window as any).fbq('track', 'InitiateCheckout', icParams);
+      } catch (err) { /* пиксель ещё не загрузился */ }
+      try {
+        var icYm = { plan: plan, role: role, price: price };
+        console.log('[Yandex] ym reachGoal checkout', icYm);
+        (window as any).ym && (window as any).ym(109780177, 'reachGoal', 'checkout', icYm);
+      } catch (err) { /* метрика ещё не загрузилась */ }
 
       var buy = document.querySelector('[data-checkout-buy]');
       if (buy) {
