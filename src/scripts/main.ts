@@ -32,6 +32,29 @@
   if (loginForm) { loginForm.addEventListener('submit', function (e) { e.preventDefault(); /* TODO: подключить авторизацию */ }); }
 })();
 
+// ── Переход на страницу оплаты ──
+//    Клик по «Get …» в карточке тарифа уводит на отдельную страницу /checkout/
+//    со сводкой заказа и финальной кнопкой Buy. Параметры заказа (роль/тариф/
+//    цена) передаём в адресе - страница их читает. Аналитика InitiateCheckout
+//    остаётся в блоке оплаты ниже, событие Purchase - уже на самой странице.
+(function () {
+  document.addEventListener('click', function (e) {
+    var cta = (e.target as Element).closest('.pricing .cta');
+    if (!cta) { return; }
+    var card = cta.closest('.pricing')!;
+    var activePlan = card.querySelector('.plan.active');
+    var activeRole = card.querySelector('.role.active');
+    var plan = activePlan ? (activePlan.getAttribute('data-plan') || '') : '';
+    var price = activePlan ? Number(activePlan.getAttribute('data-price')) || 0 : 0;
+    var role = activeRole ? (activeRole.getAttribute('data-role') || '') : '';
+    var params = new URLSearchParams({ role: role, plan: plan, price: String(price) });
+    // Сохранить язык демо (?lang), если он задан в адресе.
+    var lang = new URLSearchParams(location.search).get('lang');
+    if (lang) { params.set('lang', lang); }
+    location.href = '/checkout/?' + params.toString();
+  });
+})();
+
 // ── Sticky CTA (mobile) ──
 (function () {
   var stickyCta = document.getElementById('stickyCta');
