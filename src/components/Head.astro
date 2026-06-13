@@ -15,7 +15,7 @@ const {
   description,
   canonicalUrl,
   keywords,
-  ogImage = 'https://lingo7realty.com/icon-512.png',
+  ogImage = 'https://lingo7realty.com/og-cover.jpg',
   ogType = 'website',
   noindex = false,
 } = Astro.props;
@@ -34,6 +34,9 @@ const {
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={ogImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="A newly licensed Florida real estate agent holding her license outside the DBPR Division of Real Estate office" />
 <meta property="og:locale" content="en_US" />
 <meta property="og:site_name" content="Lingo7 Realty" />
 
