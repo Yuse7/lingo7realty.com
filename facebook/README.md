@@ -20,11 +20,20 @@ facebook/
     profile.html   avatar (square, shown as a circle)
     languages.html "10 languages" graphic
     ad.html        promotional/ad creative (CTA + guarantee)
+    ad-photo.html  minimal photo ad (one review photo + one phrase, 2 styles)
     gen.py         emits the 5 feature posts (screen + headline) for render.sh
+    ads.py         emits the photo-ad variants for render.sh
   posts/         ready-to-publish captions (one .txt per post, no em-dashes)
-  images/        generated PNGs (committed output)
+  images/        generated PNGs: cover, avatar, feature posts, ad
+  ads/           photo-ad variants (minimal text, image + one phrase)
   automation/    Playwright (CDP) scripts that drive Facebook to publish
 ```
+
+**Photo ads** (`ads/`): image-led creatives, one short phrase each, built from the
+review photos in `public/pics/reviews/`. Edit/add variants in `templates/ads.py`
+(photo, phrase, style `a`=full-bleed scrim / `b`=photo + emerald band, object-position).
+Note: the review photos are illustrative, not real customers, keep phrases aspirational
+and swap in real success stories before running paid ads.
 
 ## 1. Regenerate / create images
 

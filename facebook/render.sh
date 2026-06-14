@@ -50,4 +50,16 @@ if [ -f "$TPL/ad.html" ]; then
   shoot "$TPLURL/ad.html" "$TMP/ad.png" 1080 1350; sips -z 1350 1080 "$TMP/ad.png" --out "$OUT/09-ad.png" >/dev/null; echo "  ✓ 09-ad.png"
 fi
 
-echo "✓ done -> $OUT"
+# Photo ad variants (minimal text: one review photo + one phrase) -> facebook/ads/
+if [ -f "$TPL/ad-photo.html" ]; then
+  echo "▶ photo ads -> facebook/ads"
+  mkdir -p facebook/ads
+  L7_ORIGIN="http://localhost:$PORT" python3 "$TPL/ads.py" |
+  while IFS=$'\t' read -r name hash; do
+    shoot "$TPLURL/ad-photo.html#$hash" "$TMP/ad-$name.png" 1080 1350
+    sips -z 1350 1080 "$TMP/ad-$name.png" --out "facebook/ads/$name.png" >/dev/null
+    echo "  ✓ ads/$name.png"
+  done
+fi
+
+echo "✓ done -> $OUT  (+ facebook/ads)"
