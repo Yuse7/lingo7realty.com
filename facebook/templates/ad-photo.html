@@ -12,35 +12,28 @@
     background:#03221a; color:#fff; overflow:hidden; position:relative; }
   .photo { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 22%; }
 
-  /* brand mark top-left */
-  .brand { position:absolute; top:46px; left:52px; display:flex; align-items:center; gap:13px; z-index:4;
-    filter:drop-shadow(0 2px 10px rgba(0,0,0,.45)); }
-  .brand svg { width:44px; height:44px; }
-  .brand .wm { font-size:26px; font-weight:800; letter-spacing:-.4px; }
-  .brand .wm i { font-style:normal; color:#5ee0a8; }
-
-  .phrase { position:absolute; left:56px; right:56px; font-weight:800; letter-spacing:-1.6px;
-    font-size:74px; line-height:1.02; z-index:4; }
-  .phrase .ac { color:#34D399; }
-  .url { position:absolute; left:58px; z-index:4; font-size:24px; font-weight:700; color:rgba(255,255,255,.92); }
-  .url .g { color:rgba(255,255,255,.6); font-weight:600; }
+  .lower { position:absolute; left:60px; right:60px; z-index:4; }
+  .title { font-weight:900; letter-spacing:-1.6px; line-height:.98; font-size:70px; }
+  .title .ac { color:#34D399; }
+  .sub { margin-top:20px; font-size:33px; font-weight:600; line-height:1.22; color:rgba(255,255,255,.94); max-width:21ch; }
+  .sub .ac { color:#34D399; font-weight:700; }
+  .url { margin-top:22px; font-size:23px; font-weight:700; letter-spacing:.2px; color:rgba(255,255,255,.78); }
 
   /* Style A: full-bleed photo + bottom scrim */
   body[data-style="a"] .scrim { position:absolute; inset:0; z-index:2;
-    background:linear-gradient(to top, rgba(3,30,22,.96) 0%, rgba(3,30,22,.74) 24%, rgba(3,30,22,0) 52%); }
-  body[data-style="a"] .phrase { bottom:150px; text-shadow:0 2px 22px rgba(0,0,0,.4); }
-  body[data-style="a"] .url { bottom:84px; }
+    background:linear-gradient(to top, rgba(3,30,22,.97) 0%, rgba(3,30,22,.86) 24%, rgba(3,30,22,.28) 48%, rgba(3,30,22,0) 64%); }
+  body[data-style="a"] .lower { bottom:80px; }
+  body[data-style="a"] .title, body[data-style="a"] .sub { text-shadow:0 2px 24px rgba(0,0,0,.4); }
 
   /* Style B: photo panel on top + emerald band below */
-  body[data-style="b"] .photo { height:838px; }
-  body[data-style="b"] .band { position:absolute; left:0; right:0; bottom:0; height:512px; z-index:2;
+  body[data-style="b"] .photo { height:760px; }
+  body[data-style="b"] .band { position:absolute; left:0; right:0; bottom:0; height:590px; z-index:2;
     background:
-      radial-gradient(circle at 84% 14%, rgba(52,211,153,.22), transparent 46%),
+      radial-gradient(circle at 86% 12%, rgba(52,211,153,.22), transparent 46%),
       linear-gradient(158deg, #074231 0%, #053527 52%, #03221a 100%); }
-  body[data-style="b"] .photo-fade { position:absolute; left:0; right:0; top:700px; height:180px; z-index:2;
+  body[data-style="b"] .photo-fade { position:absolute; left:0; right:0; top:628px; height:170px; z-index:2;
     background:linear-gradient(to bottom, rgba(7,66,49,0), #074231); }
-  body[data-style="b"] .phrase { bottom:150px; }
-  body[data-style="b"] .url { bottom:80px; }
+  body[data-style="b"] .lower { bottom:84px; }
 </style>
 </head>
 <body>
@@ -48,19 +41,19 @@
   <div class="scrim"></div>
   <div class="band"></div>
   <div class="photo-fade"></div>
-  <div class="brand">
-    <svg viewBox="0 0 48 48" fill="none"><path d="M0 24C0 10.7452 10.7452 0 24 0C37.2548 0 48 10.7452 48 24C48 37.2548 37.2548 48 24 48C10.7452 48 0 37.2548 0 24Z" fill="url(#g)"/><path d="M22.6638 17.4485C25.3541 14.4235 27.62 11.2739 29.4615 8L22.345 8C21.159 10.1443 19.808 12.193 18.292 14.1458C16.7518 16.1179 15.0356 18.042 13.1432 19.9183C11.2509 21.7946 9.20315 23.6614 7 25.5185L9.24009 28.8689H22.2695L23.987 26.8699L25.3674 25.2888H14.3841C17.4004 22.8902 20.1603 20.2768 22.6638 17.4485Z" fill="white"/><path d="M25.8524 29.8005C23.1621 32.8256 20.8962 35.975 19.0547 39.249H26.1712C27.3572 37.1046 28.7082 35.056 30.2242 33.1031C31.7644 31.1311 33.4806 29.207 35.3729 27.3307C37.2653 25.4544 39.313 23.5877 41.5162 21.7305L39.2761 18.3801L26.2736 18.6961L23.1488 21.9602L34.1321 21.9602C31.1158 24.3588 28.3559 26.9723 25.8524 29.8005Z" fill="white"/><defs><linearGradient id="g" x1="0" y1="24" x2="48" y2="24" gradientUnits="userSpaceOnUse"><stop stop-color="#07D494"/><stop offset="1" stop-color="#00C2B2"/></linearGradient></defs></svg>
-    <span class="wm">Lingo7 <i>Realty</i></span>
+  <div class="lower">
+    <div class="title" id="title">Florida Real Estate<br><span class="ac">License Exam</span></div>
+    <div class="sub" id="sub"></div>
+    <div class="url" id="url">lingo7realty.com</div>
   </div>
-  <div class="phrase" id="phrase"></div>
-  <div class="url" id="url">lingo7realty.com</div>
 <script>
   var d = JSON.parse(decodeURIComponent(location.hash.slice(1)));
   document.body.setAttribute('data-style', d.style || 'a');
   var img = document.getElementById('photo');
   img.src = d.photo;
   if (d.pos) img.style.objectPosition = d.pos;
-  document.getElementById('phrase').innerHTML = d.phrase;
+  if (d.title) document.getElementById('title').innerHTML = d.title;
+  document.getElementById('sub').innerHTML = d.sub || '';
   if (d.url) document.getElementById('url').innerHTML = d.url;
 </script>
 </body>
