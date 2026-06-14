@@ -2388,6 +2388,11 @@ a { text-decoration: none; color: inherit; }
 .pricing .cta:active { transform: translateY(0) scale(.99); }
 .pricing .guarantee { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 18px; font-size: 14px; font-weight: 600; color: #6b7280; }
 .pricing .guarantee svg { color: #34D399; }
+/* Оплата временно недоступна (техработы): сообщение раскрывается по клику «Get …» */
+.pricing .pay-msg { display: none; align-items: flex-start; gap: 10px; margin-top: 16px; padding: 14px 16px; border-radius: 13px; background: #FEF3C7; border: 1px solid #FDE68A; color: #92400E; font-size: 13.5px; font-weight: 600; line-height: 1.5; text-align: left; }
+.pricing .pay-msg.show { display: flex; animation: payMsgIn .24s ease; }
+.pricing .pay-msg svg { flex: 0 0 auto; margin-top: 1px; color: #D97706; }
+@keyframes payMsgIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 .pricing .plans-note { text-align: center; font-size: 12px; color: #aab0b6; font-weight: 500; margin: 13px 0 2px; }
 /* Узкие экраны: ужать карточку и плашку плана, чтобы бейдж «Most popular» не вылезал за строку */
 @media (max-width: 480px) {
