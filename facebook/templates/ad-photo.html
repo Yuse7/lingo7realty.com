@@ -17,7 +17,6 @@
   .title .ac { color:#34D399; }
   .sub { margin-top:20px; font-size:33px; font-weight:600; line-height:1.22; color:rgba(255,255,255,.94); max-width:21ch; }
   .sub .ac { color:#34D399; font-weight:700; }
-  .url { margin-top:22px; font-size:23px; font-weight:700; letter-spacing:.2px; color:rgba(255,255,255,.78); }
 
   /* Style A: full-bleed photo + bottom scrim */
   body[data-style="a"] .scrim { position:absolute; inset:0; z-index:2;
@@ -44,7 +43,6 @@
   <div class="lower">
     <div class="title" id="title">Florida Real Estate<br><span class="ac">License Exam</span></div>
     <div class="sub" id="sub"></div>
-    <div class="url" id="url">lingo7realty.com</div>
   </div>
 <script>
   var d = JSON.parse(decodeURIComponent(location.hash.slice(1)));
@@ -54,7 +52,6 @@
   if (d.pos) img.style.objectPosition = d.pos;
   if (d.title) document.getElementById('title').innerHTML = d.title;
   document.getElementById('sub').innerHTML = d.sub || '';
-  if (d.url) document.getElementById('url').innerHTML = d.url;
 </script>
 </body>
 </html>

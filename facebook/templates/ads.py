@@ -16,8 +16,8 @@ def photo(name): return f"{ORIGIN}/pics/reviews/{name}.jpg"
 TITLE_EN = "Florida Real Estate<br><span class='ac'>License Exam</span>"
 TITLE_ES = "Examen de Licencia<br><span class='ac'>Inmobiliaria de Florida</span>"
 
-SUB_EN = "Pass on your first try, <span class='ac'>even if English isn't your first language.</span>"
-SUB_ES = "Apru&eacute;balo a la primera, <span class='ac'>aunque el ingl&eacute;s no sea tu idioma.</span>"
+SUB_EN = "Pass on your first try, even if English isn't your first language."
+SUB_ES = "Apru&eacute;balo a la primera, aunque el ingl&eacute;s no sea tu idioma."
 
 # (output-name, review-photo, title, sub-line, style a|b, object-position)
 VARIANTS = [
