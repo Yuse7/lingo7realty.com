@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:1640px; height:624px; }
+  body { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background:#04261b; color:#fff; overflow:hidden; position:relative; }
+  .stage { position:absolute; inset:0;
+    background:
+      radial-gradient(circle at 50% -20%, rgba(52,211,153,.30), transparent 46%),
+      radial-gradient(circle at 8% 110%, rgba(6,182,140,.20), transparent 44%),
+      radial-gradient(circle at 92% 110%, rgba(6,182,140,.20), transparent 44%),
+      linear-gradient(160deg, #074231 0%, #053527 48%, #03221a 100%);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+  .brand { display:flex; align-items:center; gap:16px; margin-bottom:22px; }
+  .brand svg { width:54px; height:54px; }
+  .brand .wm { font-size:40px; font-weight:800; letter-spacing:-.5px; }
+  .brand .wm i { font-style:normal; color:#34D399; }
+  h1 { font-size:62px; line-height:1.04; font-weight:800; letter-spacing:-2px; max-width:20ch; }
+  h1 .ac { color:#34D399; }
+  .sub { margin-top:20px; font-size:27px; font-weight:500; color:rgba(255,255,255,.78); }
+  .flags { margin-top:26px; display:flex; gap:9px; align-items:center; }
+  .flags svg { width:30px; height:30px; border-radius:50%; box-shadow:0 2px 8px rgba(0,0,0,.3); display:block; }
+  .site { margin-top:22px; font-size:21px; font-weight:700; color:rgba(255,255,255,.6);
+    border:1px solid rgba(255,255,255,.18); border-radius:999px; padding:9px 22px; }
+  /* decorative edge phones */
+  .device { position:absolute; width:320px; height:600px; opacity:.92; }
+  .device .screen { position:absolute; inset:0; width:320px; height:600px; overflow:hidden;
+    border-radius:30px; box-shadow:0 30px 70px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.05); background:#f7faf9; }
+  .device .screen iframe { position:absolute; left:-220px; top:0; width:760px; height:700px; border:0; }
+  .left { left:-70px; top:120px; transform:rotate(-9deg) scale(.92); }
+  .right { right:-70px; top:120px; transform:rotate(9deg) scale(.92); }
+  .vign { position:absolute; inset:0; background:radial-gradient(ellipse 52% 80% at 50% 50%, rgba(3,34,26,.0) 40%, rgba(3,34,26,.66) 100%); pointer-events:none; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="device left"><div class="screen"><iframe scrolling="no" src="http://localhost:4399/screens/Textbook%20Reading%20Screen.html?lang=es"></iframe></div></div>
+    <div class="device right"><div class="screen"><iframe scrolling="no" src="http://localhost:4399/screens/Quiz%20Review%20Screen.html?lang=es&mode=static"></iframe></div></div>
+    <div class="vign"></div>
+    <div style="position:relative; z-index:3; display:flex; flex-direction:column; align-items:center;">
+      <div class="brand">
+        <svg viewBox="0 0 48 48" fill="none"><path d="M0 24C0 10.7452 10.7452 0 24 0C37.2548 0 48 10.7452 48 24C48 37.2548 37.2548 48 24 48C10.7452 48 0 37.2548 0 24Z" fill="url(#g)"/><path d="M22.6638 17.4485C25.3541 14.4235 27.62 11.2739 29.4615 8L22.345 8C21.159 10.1443 19.808 12.193 18.292 14.1458C16.7518 16.1179 15.0356 18.042 13.1432 19.9183C11.2509 21.7946 9.20315 23.6614 7 25.5185L9.24009 28.8689H22.2695L23.987 26.8699L25.3674 25.2888H14.3841C17.4004 22.8902 20.1603 20.2768 22.6638 17.4485Z" fill="white"/><path d="M25.8524 29.8005C23.1621 32.8256 20.8962 35.975 19.0547 39.249H26.1712C27.3572 37.1046 28.7082 35.056 30.2242 33.1031C31.7644 31.1311 33.4806 29.207 35.3729 27.3307C37.2653 25.4544 39.313 23.5877 41.5162 21.7305L39.2761 18.3801L26.2736 18.6961L23.1488 21.9602L34.1321 21.9602C31.1158 24.3588 28.3559 26.9723 25.8524 29.8005Z" fill="white"/><defs><linearGradient id="g" x1="0" y1="24" x2="48" y2="24" gradientUnits="userSpaceOnUse"><stop stop-color="#07D494"/><stop offset="1" stop-color="#00C2B2"/></linearGradient></defs></svg>
+        <span class="wm">Lingo7 <i>Realty</i></span>
+      </div>
+      <h1>Pass the Florida real estate exam.<br><span class="ac">No language barrier.</span></h1>
+      <p class="sub">Study in your language. Take the exam in English.</p>
+      <div class="flags">
+        <svg viewBox="0 0 36 36"><rect width="36" height="36" fill="#c60b1e"/><rect y="9" width="36" height="18" fill="#ffc400"/></svg>
+        <svg viewBox="0 0 36 36"><rect width="36" height="36" fill="#009b3a"/><polygon points="18,5 32,18 18,31 4,18" fill="#fedf00"/><circle cx="18" cy="18" r="6.5" fill="#002776"/></svg>
+        <svg viewBox="0 0 36 36"><rect width="36" height="18" fill="#00209f"/><rect y="18" width="36" height="18" fill="#d21034"/></svg>
+        <svg viewBox="0 0 36 36"><rect width="36" height="12" fill="#fff"/><rect y="12" width="36" height="12" fill="#0039a6"/><rect y="24" width="36" height="12" fill="#d52b1e"/></svg>
+        <svg viewBox="0 0 36 36"><rect width="12" height="36" fill="#0055a4"/><rect x="12" width="12" height="36" fill="#fff"/><rect x="24" width="12" height="36" fill="#ef4135"/></svg>
+        <svg viewBox="0 0 36 36"><rect width="36" height="12" fill="#000"/><rect y="12" width="36" height="12" fill="#dd0000"/><rect y="24" width="36" height="12" fill="#ffce00"/></svg>
+        <svg viewBox="0 0 36 36"><rect width="12" height="36" fill="#009246"/><rect x="12" width="12" height="36" fill="#fff"/><rect x="24" width="12" height="36" fill="#ce2b37"/></svg>
+        <svg viewBox="0 0 36 36"><rect width="36" height="36" fill="#de2910"/><g fill="#ffde00"><text x="2.5" y="16.5" font-size="13" font-family="Arial">★</text><text x="15" y="6.5" font-size="5.5" font-family="Arial">★</text><text x="19.5" y="10.5" font-size="5.5" font-family="Arial">★</text><text x="19.5" y="16" font-size="5.5" font-family="Arial">★</text><text x="15" y="20" font-size="5.5" font-family="Arial">★</text></g></svg>
+        <svg viewBox="0 0 36 36"><rect width="36" height="36" fill="#006c35"/><rect x="6" y="16.5" width="24" height="2.4" rx="1.2" fill="#fff"/></svg>
+        <svg viewBox="0 0 36 36"><rect width="36" height="18" fill="#0038a8"/><rect y="18" width="36" height="18" fill="#ce1126"/><polygon points="0,0 20,18 0,36" fill="#fff"/><circle cx="6.5" cy="18" r="2.6" fill="#fcd116"/></svg>
+      </div>
+      <div class="site">10 languages · lingo7realty.com</div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,12 @@
+import { chromium } from 'playwright-core';
+const keyName = process.argv[2] || 'Escape';
+const browser = await chromium.connectOverCDP('http://localhost:9222');
+const ctx = browser.contexts()[0];
+const pages = ctx.pages();
+const fb = pages.find(p => p.url().includes('facebook.com')) || pages[0];
+await fb.bringToFront();
+await fb.keyboard.press(keyName);
+await fb.waitForTimeout(1500);
+console.log('pressed', keyName, '| URL:', fb.url());
+await fb.screenshot({ path: '/tmp/l7fb/shot.png' }).catch(() => {});
+await browser.close();
