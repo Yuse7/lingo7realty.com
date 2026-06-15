@@ -57,12 +57,43 @@ function resolveLang(urlValid: string[]): string {
 //    для клона карточки в модалке (делегирование). Чтобы вернуть оплату -
 //    восстанови редирект на /checkout/ из истории git и убери .pay-msg
 //    (FinalCta.astro + .pricing .pay-msg в global.css).
+//    NB: раз /checkout/ недостижим, намерение купить иначе вообще не фиксируется,
+//    поэтому аналитику начала оформления (Meta InitiateCheckout + одноимённая
+//    цель Яндекса «InitiateCheckout») шлём прямо здесь, по клику «Get …», с параметрами выбранного
+//    плана/роли - те же, что слал /checkout/ при загрузке. Один раз за заход
+//    (флаг icSent), чтобы повторные тычки по неработающей кнопке не задваивали
+//    счёт. Когда вернёте оплату и редирект на /checkout/ - уберите этот блок
+//    отправки, иначе InitiateCheckout посчитается дважды (клик + загрузка
+//    /checkout/).
 (function () {
+  var icSent = false;
   document.addEventListener('click', function (e) {
     var cta = (e.target as Element).closest('.pricing .cta');
     if (!cta) { return; }
     var card = cta.closest('.pricing');
     if (!card) { return; }
+
+    if (!icSent) {
+      icSent = true;
+      var planEl = card.querySelector('.plan.active');
+      var roleEl = card.querySelector('.role.active');
+      var plan = (planEl && planEl.getAttribute('data-plan')) || '1 Month';
+      var price = Number(planEl && planEl.getAttribute('data-price')) || 69;
+      var role = (roleEl && roleEl.getAttribute('data-role')) || 'sa';
+      // Meta: начало оформления.
+      try {
+        var icParams = { value: price, currency: 'USD', content_name: plan };
+        console.log('[Meta] fbq track InitiateCheckout', icParams);
+        (window as any).fbq && (window as any).fbq('track', 'InitiateCheckout', icParams);
+      } catch (err) { /* пиксель ещё не загрузился */ }
+      // Яндекс.Метрика: цель с тем же именем, что у Meta-события.
+      try {
+        var icYm = { plan: plan, role: role, price: price };
+        console.log('[Yandex] ym reachGoal InitiateCheckout', icYm);
+        (window as any).ym && (window as any).ym(109780177, 'reachGoal', 'InitiateCheckout', icYm);
+      } catch (err) { /* метрика ещё не загрузилась */ }
+    }
+
     var msg = card.querySelector('.pay-msg');
     if (msg) {
       msg.classList.add('show');
@@ -126,9 +157,10 @@ function resolveLang(urlValid: string[]): string {
   (function () {
     function ctaIcon() { return ' <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>'; }
     document.addEventListener('click', function (e) {
-      // Аналитику начала оформления (InitiateCheckout + цель checkout) перенесли
-      // на страницу /checkout/ - стреляет при её загрузке. Здесь остаётся только
-      // выбор роли/плана; переход на /checkout/ - в отдельном обработчике выше.
+      // Здесь - только выбор роли/плана (подсветка + текст кнопки «Get …»).
+      // Аналитику начала оформления (InitiateCheckout) теперь шлёт обработчик
+      // «Оплата временно недоступна» выше - по клику «Get …», пока оплата
+      // отключена и /checkout/ недостижим.
       var role = (e.target as Element).closest('.pricing .role');
       if (role) {
         var card = role.closest('.pricing')!;
