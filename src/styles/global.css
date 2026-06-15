@@ -958,7 +958,7 @@ a { text-decoration: none; color: inherit; }
   grid-template-columns: 1fr 1fr;
   max-width: 760px;
   margin: 0 auto;
-  opacity: 1; /* SCREENSHOT-TEMP was: 0 */
+  opacity: 0;
   transform: translateY(30px);
   transition: opacity 0.6s ease, transform 0.6s ease;
 }
@@ -968,10 +968,15 @@ a { text-decoration: none; color: inherit; }
   transform: translateY(0);
 }
 
-/* Подложка-выделение правого столбца («рекомендованный план») */
+/* Подложка-выделение правого столбца («рекомендованный план»).
+   Absolute, а не grid-cell: grid-row: 1 / -1 не растягивается по implicit-строкам
+   (-1 ссылается на последнюю ЯВНУЮ линию, которой нет), и auto-placement ломается. */
 .compare__colbg {
-  grid-column: 2;
-  grid-row: 1 / -1;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  right: 0;
   background: #fff;
   border: 2px solid #34D399;
   border-radius: 20px;
