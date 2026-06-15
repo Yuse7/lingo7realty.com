@@ -2,7 +2,7 @@
 // Inline demo screen: a flashcard ("term card") with parallel translation, card
 // flip (front = recall prompt / back = answer), spaced-repetition grade buttons
 // (Again / Hard / Got it), a tappable example word with a floating toolbar
-// (Listen / Translate / Add to L7 Dictionary) and a "Saved" toast.
+// (Listen / Translate / Add to Dictionary) and a "Saved" toast.
 // Was public/screens/Term Card Screen.html (an iframe). Inlined into the light
 // DOM so Yandex Webvisor can record it.
 //
@@ -86,9 +86,9 @@ const { demo = false } = Astro.props;
             <span style="font-size:11.5px; color:#3a3a4a; font-weight:600;">Translate</span>
           </button>
           <span style="width:1px; height:16px; background:#eef0f0;"></span>
-          <button data-el="addBtn" class="wmini" title="Add to L7 Dictionary" style="display:flex; align-items:center; gap:4px; border:none; background:none; cursor:pointer; font-family:inherit; padding:4px 7px; border-radius:8px;">
+          <button data-el="addBtn" class="wmini" title="Add to Dictionary" style="display:flex; align-items:center; gap:4px; border:none; background:none; cursor:pointer; font-family:inherit; padding:4px 7px; border-radius:8px;">
             <span data-el="addIcon" style="font-size:14px; line-height:1; color:#3a3a4a;">＋</span>
-            <span data-el="addLabel" style="font-size:11.5px; color:#3a3a4a; font-weight:600;">L7 Dictionary</span>
+            <span data-el="addLabel" style="font-size:11.5px; color:#3a3a4a; font-weight:600;">Dictionary</span>
           </button>
           <span data-el="warrow" style="position:absolute; top:100%; left:50%; transform:translateX(-50%); width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:6px solid #fff; filter:drop-shadow(0 2px 1px rgba(26,26,46,.08));"></span>
         </div>
@@ -282,11 +282,11 @@ const { demo = false } = Astro.props;
       var icon = q('addIcon'), label = q('addLabel');
       if (added) {
         if (icon) { icon.textContent = '✓'; icon.style.color = '#34D399'; }
-        if (label) { label.textContent = 'In L7 Dictionary'; label.style.color = '#047857'; }
+        if (label) { label.textContent = 'In Dictionary'; label.style.color = '#047857'; }
         showToast();
       } else {
         if (icon) { icon.textContent = '＋'; icon.style.color = '#3a3a4a'; }
-        if (label) { label.textContent = 'L7 Dictionary'; label.style.color = '#3a3a4a'; }
+        if (label) { label.textContent = 'Dictionary'; label.style.color = '#3a3a4a'; }
       }
     }
     function showToast() {
