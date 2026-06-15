@@ -943,116 +943,118 @@ a { text-decoration: none; color: inherit; }
   line-height: 1.3;
 }
 
-/* ===== 3. Compare-block ===== */
+/* ===== 3. Compare-block (two-column comparison table) ===== */
 .compare {
   padding: 100px 0;
   background: #f9fafb;
 }
 
-.compare__list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
 /* Маркер в заголовке секции сохраняет вес заголовка (иначе .hero__hl утончил бы до 600) */
 .section__title .hero__hl { font-weight: inherit; }
 
-.compare__row {
-  display: flex;
-  align-items: stretch;
-  gap: 0;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-  border: 1px solid #eee;
-  opacity: 0;
+.compare__table {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 760px;
+  margin: 0 auto;
+  opacity: 1; /* SCREENSHOT-TEMP was: 0 */
   transform: translateY(30px);
   transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
-.compare__row.is-revealed {
+.compare__table.is-revealed {
   opacity: 1;
   transform: translateY(0);
 }
 
-.compare__old,
-.compare__new {
-  flex: 1;
-  padding: 24px 28px;
-}
-
-.compare__old {
-  background: #f7f5f5;
-}
-
-.compare__new {
-  background: rgba(52, 211, 153, 0.05);
-}
-
-.compare__arrow {
-  display: flex;
-  align-items: center;
-  font-size: 24px;
-  color: #34D399;
-  font-weight: 700;
-  padding: 0 12px;
+/* Подложка-выделение правого столбца («рекомендованный план») */
+.compare__colbg {
+  grid-column: 2;
+  grid-row: 1 / -1;
   background: #fff;
+  border: 2px solid #34D399;
+  border-radius: 20px;
+  box-shadow: 0 14px 36px rgba(52, 211, 153, 0.18);
+  z-index: 0;
 }
 
-.compare__label {
-  display: inline-block;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 3px 10px;
-  border-radius: 6px;
-  margin-bottom: 10px;
+/* Шапки колонок */
+.compare__hcell {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  padding: 26px 26px 18px;
+  text-align: center;
 }
 
-.compare__label--old {
-  background: #e8e8e8;
-  color: #666;
-}
-
-.compare__label--new {
-  background: rgba(52, 211, 153, 0.15);
-  color: #0d9668;
-}
-
-.compare__old strong {
-  display: block;
+.compare__hlabel {
   font-size: 15px;
   font-weight: 700;
-  color: #1a1a2e;
-  margin-bottom: 6px;
-  line-height: 1.3;
+  letter-spacing: 0.01em;
 }
 
-.compare__old p {
-  font-size: 14px;
-  color: #555;
-  line-height: 1.4;
-}
+.compare__hcell--old .compare__hlabel { color: #9ca3af; }
+.compare__hcell--new .compare__hlabel { color: #0d9668; }
 
-.compare__new strong {
-  display: block;
-  font-size: 15px;
+.compare__icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
   font-weight: 700;
-  color: #1a1a2e;
-  margin-bottom: 6px;
-  line-height: 1.3;
+  line-height: 1;
 }
 
-.compare__new p {
-  font-size: 14px;
-  color: #555;
-  line-height: 1.4;
-  font-weight: 500;
+.compare__icon--old { background: #e5e7eb; color: #9ca3af; }
+.compare__icon--new { background: #34D399; color: #fff; }
+
+/* Ячейки фич */
+.compare__cell {
+  position: relative;
+  z-index: 1;
+  padding: 20px 26px;
 }
+
+.compare__cell--old { padding-right: 34px; }
+.compare__cell--new { padding-left: 30px; }
+
+/* Inset-разделители между рядами */
+.compare__cell::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 26px;
+  right: 26px;
+  height: 1px;
+  background: #ececec;
+}
+
+.compare__cell--new::before { background: rgba(13, 150, 104, 0.14); }
+
+.compare__cell strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+
+.compare__cell p {
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.compare__cell--old strong { color: #9ca3af; }
+.compare__cell--old p { color: #b3b3b3; }
+.compare__cell--new strong { color: #1a1a2e; }
+.compare__cell--new p { color: #555; }
 
 /* ===== 4. Method (Orbital) ===== */
 .method {
@@ -2737,16 +2739,6 @@ a { text-decoration: none; color: inherit; }
 
   .section__title { font-size: 32px; }
 
-  .compare__row {
-    flex-direction: column;
-  }
-  .compare__arrow {
-    justify-content: center;
-    padding: 8px 0;
-    transform: rotate(90deg);
-    background: transparent;
-  }
-
   .method__layout { gap: 48px; }
   .method__diagram { width: 360px; height: 360px; }
   .method__ring { inset: 25px; }
@@ -2920,10 +2912,16 @@ a { text-decoration: none; color: inherit; }
   .section__title { font-size: 26px; }
   .section__subtitle { font-size: 16px; margin-bottom: 36px; }
 
-  .compare__old,
-  .compare__new {
-    padding: 18px 20px;
-  }
+  .compare__colbg { border-radius: 16px; }
+  .compare__hcell { padding: 18px 12px 14px; gap: 7px; }
+  .compare__hlabel { font-size: 13px; }
+  .compare__icon { width: 22px; height: 22px; font-size: 11px; }
+  .compare__cell { padding: 16px 14px; }
+  .compare__cell--old { padding-right: 16px; }
+  .compare__cell--new { padding-left: 16px; }
+  .compare__cell::before { left: 14px; right: 14px; }
+  .compare__cell strong { font-size: 14px; }
+  .compare__cell p { font-size: 12.5px; line-height: 1.4; }
 
   /* Method: switch to mobile cards */
   .method { padding: 40px 0; }

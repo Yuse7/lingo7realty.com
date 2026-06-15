@@ -220,9 +220,8 @@
       }
     });
   }, { threshold: 0.15 });
-  document.querySelectorAll<HTMLElement>('.compare__row').forEach(function (row, i) {
-    row.style.transitionDelay = (i * 0.15) + 's';
-    revealObserver.observe(row);
+  document.querySelectorAll<HTMLElement>('.compare__table').forEach(function (table) {
+    revealObserver.observe(table);
   });
   document.querySelectorAll<HTMLElement>('.audience__card').forEach(function (card, i) {
     card.style.transitionDelay = (i * 0.1) + 's';
