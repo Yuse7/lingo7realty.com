@@ -1,0 +1,390 @@
+---
+// Inline demo screen: exam math problem with parallel translation, step-by-step
+// solution and a mini practice. Was public/screens/Math Problem Screen.html
+// (an iframe). Inlined into the light DOM so Yandex Webvisor can record it.
+//
+// PATTERN (shared by all inline screens):
+//  - root <div data-screen="math"> ; language is read at runtime from ?lang
+//  - all former id="x" → data-el="x"; JS reaches them via root.querySelector
+//  - styles in one <style is:global> block, every selector prefixed with
+//    [data-screen="math"] (isolates from other screens AND covers elements
+//    created in JS, which Astro's scoped CSS would miss); @keyframes prefixed
+//  - script is a module (runs once); initMath(root) holds all state/functions
+//    in a closure and is mapped over every [data-screen="math"] instance
+---
+<div class="screen" data-screen="math" style="width:320px; height:600px; overflow:hidden; border-radius:24px; background:#fff; position:relative; color:#1a1a2e; font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; box-shadow:0 12px 40px rgba(0,0,0,.12); display:flex; flex-direction:column;">
+
+  <!-- Header -->
+  <div style="display:flex; align-items:center; gap:9px; padding:16px 16px 13px; border-bottom:1px solid #eef0f0; flex-shrink:0;">
+    <span style="font-size:20px; line-height:1; flex-shrink:0;">🔢</span>
+    <span style="flex:1; min-width:0; line-height:1.15;">
+      <span style="display:block; font-size:14px; font-weight:700; color:#1a1a2e;">Math · Commission</span>
+      <span data-el="secTR" class="tr-line" style="display:block; font-size:11px; color:#a3a8af; margin-top:1px;"></span>
+    </span>
+    <div style="position:relative; flex-shrink:0;">
+      <button data-el="langChip" title="Translation language" style="display:flex; align-items:center; gap:4px; border:1.5px solid #34D399; background:#34D399; color:#fff; font-family:inherit; font-size:11px; font-weight:700; padding:0 9px; height:28px; border-radius:999px; cursor:pointer; white-space:nowrap;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="3" y1="12" x2="21" y2="12"></line><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"></path></svg>
+        <span data-el="langLabel">RU</span><span style="font-size:8px;">▾</span>
+      </button>
+      <div data-el="langMenu" style="display:none; position:absolute; top:calc(100% + 6px); right:0; background:#fff; border:1px solid #eef0f0; border-radius:13px; box-shadow:0 8px 26px rgba(26,26,46,.18); padding:5px; min-width:170px; max-height:420px; overflow-y:auto; z-index:60;"></div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="body-scroll" style="flex:1; min-height:0; overflow-y:auto; padding:18px 20px 18px;">
+
+    <!-- Problem statement -->
+    <div style="font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:#34D399; margin-bottom:9px;">Problem</div>
+    <p style="margin:0; font-size:16px; font-weight:700; line-height:1.45; color:#1a1a2e;">A home sells for $250,000. The commission rate is 6%. What is the total commission?</p>
+    <p data-el="probTR" class="tr-line" style="margin:9px 0 0; font-size:12.5px; line-height:1.5; color:#a3a8af;"><span data-el="probBadge" class="ru-badge">RU</span><span data-el="probText"></span></p>
+
+    <!-- In plain words -->
+    <div style="margin-top:16px; background:#f0fdf4; border:1px solid rgba(52,211,153,.25); border-radius:14px; padding:13px 15px;">
+      <div style="display:flex; align-items:center; gap:7px; margin-bottom:6px;">
+        <span style="font-size:14px;">💡</span>
+        <span data-el="plainKicker" style="font-size:11px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; color:#047857;">In plain words</span>
+      </div>
+      <p data-el="plainText" style="margin:0; font-size:13.5px; line-height:1.5; color:#2b2f3a;"></p>
+    </div>
+
+    <!-- Percentage visual -->
+    <div style="margin-top:16px;">
+      <div style="position:relative; height:30px; background:#eef0f0; border-radius:9px; overflow:hidden;">
+        <div style="position:absolute; left:0; top:0; bottom:0; width:6%; background:linear-gradient(135deg,#34D399,#059669);"></div>
+        <span style="position:absolute; right:11px; top:50%; transform:translateY(-50%); font-size:12px; font-weight:700; color:#9aa1a0;" class="mono">$250,000</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:6px; margin-top:7px;">
+        <span style="width:10px; height:10px; border-radius:3px; background:#34D399; flex-shrink:0;"></span>
+        <span data-el="barCap" style="font-size:11.5px; color:#8a909a; line-height:1.35;"></span>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div style="height:1px; background:#eef0f0; margin:18px 0 14px;"></div>
+
+    <!-- Solution -->
+    <div style="font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:#9aa1a0; margin-bottom:12px;">Solution</div>
+
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <!-- Step 1 -->
+      <div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="flex-shrink:0; width:22px; height:22px; border-radius:50%; background:#f3f5f7; color:#6b7280; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;">1</span>
+          <div style="flex:1; background:#f3f5f7; border-radius:12px; padding:13px 15px; font-size:16px; font-weight:600; color:#2b2f3a;" class="mono">$250,000 × 6%</div>
+        </div>
+        <div data-el="cap1" class="step-cap"></div>
+      </div>
+
+      <!-- Conversion (animated) -->
+      <div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="flex-shrink:0; width:22px; height:22px; border-radius:50%; background:#fef3c7; color:#b45309; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;">★</span>
+          <div data-el="conv" class="conv" style="position:relative; flex:1; background:#fffdf5; border:1px solid #fde9b8; border-radius:12px; padding:11px 15px; cursor:pointer; display:flex; align-items:center; gap:12px; overflow:hidden;">
+            <span style="font-size:17px; font-weight:800; color:#1a1a2e;" class="mono">6%</span>
+            <svg width="20" height="14" viewBox="0 0 24 14" fill="none" stroke="#caa53a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="2" y1="7" x2="20" y2="7"></line><polyline points="14 2 20 7 14 12"></polyline></svg>
+            <span class="conv-to mono" style="font-size:17px; font-weight:800; color:#047857;">0.06</span>
+            <span class="hopdot"></span>
+            <span style="margin-left:auto; font-size:10px; color:#caa53a; display:flex; align-items:center; gap:3px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#caa53a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+            </span>
+          </div>
+        </div>
+        <div data-el="convCap" class="step-cap"></div>
+      </div>
+
+      <!-- Step 2 -->
+      <div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="flex-shrink:0; width:22px; height:22px; border-radius:50%; background:#f3f5f7; color:#6b7280; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;">2</span>
+          <div style="flex:1; background:#f3f5f7; border-radius:12px; padding:13px 15px; font-size:16px; font-weight:600; color:#2b2f3a;" class="mono">= $250,000 × 0.06</div>
+        </div>
+        <div data-el="cap2" class="step-cap"></div>
+      </div>
+
+      <!-- Step 3 - answer -->
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="flex-shrink:0; width:22px; height:22px; border-radius:50%; background:#34D399; color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </span>
+        <div style="flex:1; background:rgba(52,211,153,.12); border:1px solid rgba(52,211,153,.32); border-radius:12px; padding:13px 15px;">
+          <div style="font-size:20px; font-weight:800; color:#047857;" class="mono">= $15,000</div>
+          <div data-el="ansLabel" style="font-size:11px; font-weight:600; color:#059669; margin-top:2px;">Total commission</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Common mistake -->
+    <div style="margin-top:18px; display:flex; gap:10px; background:#fff7f5; border:1px solid #f7d9cf; border-radius:14px; padding:12px 14px;">
+      <span style="font-size:14px; flex-shrink:0; line-height:1.3;">⚠️</span>
+      <div>
+        <div data-el="mistakeT" style="font-size:11.5px; font-weight:800; color:#c2410c; margin-bottom:3px;">Common mistake</div>
+        <p data-el="mistakeText" style="margin:0; font-size:12.5px; line-height:1.45; color:#8a6552;"></p>
+      </div>
+    </div>
+
+    <!-- Mini practice -->
+    <div style="margin-top:18px; background:#fff; border:1.5px solid #34D399; border-radius:16px; padding:14px 15px 15px; box-shadow:0 4px 16px rgba(52,211,153,.12);">
+      <div style="display:flex; align-items:center; gap:7px; margin-bottom:8px;">
+        <span style="font-size:14px;">✍️</span>
+        <span data-el="prTitle" style="font-size:11px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; color:#047857;">Now you try</span>
+      </div>
+      <p style="margin:0; font-size:14px; font-weight:700; line-height:1.4; color:#1a1a2e;">Same home - but the rate is <span style="color:#047857;">5%</span>. What is the commission?</p>
+      <p data-el="prQTR" class="tr-line" style="margin:6px 0 0; font-size:12px; line-height:1.45; color:#a3a8af;"><span data-el="prBadge" class="ru-badge">RU</span><span data-el="prQText"></span></p>
+      <div data-el="prOpts" style="display:flex; gap:8px; margin-top:12px;"></div>
+      <div data-el="prFeedback" style="display:none; margin-top:11px; padding:10px 13px; border-radius:11px; font-size:12.5px; line-height:1.45;"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<style is:global>
+  [data-screen="math"] .ru-badge { display: inline-flex; align-items: center; font-size: 8.5px; font-weight: 800; letter-spacing: .04em; color: #047857; background: rgba(52,211,153,.14); border-radius: 4px; padding: 1px 5px; margin-right: 6px; vertical-align: middle; position: relative; top: -1px; }
+  [data-screen="math"] .mono { font-variant-numeric: tabular-nums; }
+  [data-screen="math"] .langOpt { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; border: none; background: none; cursor: pointer; font-family: inherit; font-size: 12.5px; font-weight: 600; color: #1a1a2e; padding: 0 10px; min-height: 36px; line-height: 1.15; border-radius: 9px; text-align: left; }
+  [data-screen="math"] .langOpt:hover { background: #f3f5f7; }
+  [data-screen="math"] [data-el="langMenu"]::-webkit-scrollbar { width: 0; }
+  [data-screen="math"] .body-scroll::-webkit-scrollbar { width: 0; }
+  [data-screen="math"] .step-cap { font-size: 11.5px; color: #8a909a; line-height: 1.35; margin: 5px 0 0 34px; }
+  /* decimal-hop animation */
+  [data-screen="math"] .hopdot { position: absolute; width: 9px; height: 9px; border-radius: 50%; background: #f5b301; top: 6px; left: 16px; opacity: 0; }
+  [data-screen="math"] .conv.play .hopdot { animation: math-hop 1.5s ease-in-out forwards; }
+  @keyframes math-hop {
+    0%   { left: 20px; top: 6px; opacity: 0; }
+    8%   { opacity: 1; }
+    25%  { left: 52px; top: -8px; }
+    42%  { left: 84px; top: 6px; }
+    58%  { left: 84px; top: -8px; }
+    75%  { left: 116px; top: 6px; }
+    92%  { opacity: 1; }
+    100% { left: 116px; top: 6px; opacity: 0; }
+  }
+  [data-screen="math"] .conv.play .conv-to { animation: math-pop 1.5s ease forwards; }
+  @keyframes math-pop { 0%,55% { color: #c0c5c9; transform: scale(.96); } 78% { color: #047857; transform: scale(1.08); } 100% { color: #047857; transform: scale(1); } }
+</style>
+
+<script>
+  function initMath(root: HTMLElement) {
+    var LMETA: Record<string, { label: string; native: string; dir: string }> = {
+      off: { label: 'Translate', native: 'English only', dir: 'ltr' },
+      es:  { label: 'ES', native: 'Español', dir: 'ltr' },
+      pt:  { label: 'PT', native: 'Português', dir: 'ltr' },
+      ht:  { label: 'HT', native: 'Kreyòl Ayisyen', dir: 'ltr' },
+      ru:  { label: 'RU', native: 'Русский', dir: 'ltr' },
+      fr:  { label: 'FR', native: 'Français', dir: 'ltr' },
+      de:  { label: 'DE', native: 'Deutsch', dir: 'ltr' },
+      it:  { label: 'IT', native: 'Italiano', dir: 'ltr' },
+      zh:  { label: '中文', native: '中文（普通话）', dir: 'ltr' },
+      ar:  { label: 'AR', native: 'العربية', dir: 'rtl' },
+      tl:  { label: 'TL', native: 'Tagalog', dir: 'ltr' }
+    };
+    var LANG_ORDER = ['off', 'es', 'pt', 'ht', 'ru', 'fr', 'de', 'it', 'zh', 'ar', 'tl'];
+
+    // English defaults (shown when translation is off)
+    var EN: Record<string, string> = {
+      plainKicker: 'In plain words',
+      plain: 'An agent earns a small slice of the sale price. We just need to find how big that slice is.',
+      barCap: '6% just means $6 out of every $100.',
+      cap1: 'Start with the sale price and the commission rate.',
+      convCap: 'Turn 6% into a number - slide the dot 2 places left. Tap to replay.',
+      cap2: 'Now just multiply. That’s the whole trick.',
+      mistakeT: 'Common mistake',
+      mistake: 'Don’t multiply by 6. First turn 6% into 0.06, then multiply.',
+      prTitle: 'Now you try',
+      prQ: 'Tip: 5% = 0.05.',
+      prRight: 'Exactly! $250,000 × 0.05 = $12,500.',
+      prWrong: 'Not quite. 5% = 0.05, so $250,000 × 0.05 = $12,500.',
+      ans: 'Total commission'
+    };
+
+    // sec/prob always-bilingual (shown under the English original)
+    var T: Record<string, Record<string, string>> = {
+      es: { sec: 'Matemáticas · Comisión', prob: 'Una casa se vende por $250,000. La tasa de comisión es del 6%. ¿Cuál es la comisión total?', ans: 'Comisión total',
+        plainKicker: 'En palabras simples', plain: 'El agente se queda con una pequeña parte del precio de venta. Solo hay que calcular qué tan grande es esa parte.',
+        barCap: '6% significa $6 de cada $100.', cap1: 'Empieza con el precio de venta y la tasa de comisión.',
+        convCap: 'Convierte 6% en número: mueve el punto 2 lugares a la izquierda. Toca para repetir.', cap2: 'Ahora solo multiplica. Ese es todo el truco.',
+        mistakeT: 'Error común', mistake: 'No multipliques por 6. Primero convierte 6% en 0.06 y luego multiplica.',
+        prTitle: 'Ahora inténtalo', prQ: 'Pista: 5% = 0.05.', prRight: '¡Exacto! $250,000 × 0.05 = $12,500.', prWrong: 'Casi. 5% = 0.05, así que $250,000 × 0.05 = $12,500.' },
+      pt: { sec: 'Matemática · Comissão', prob: 'Uma casa é vendida por $250.000. A taxa de comissão é de 6%. Qual é a comissão total?', ans: 'Comissão total',
+        plainKicker: 'Em palavras simples', plain: 'O corretor fica com uma pequena parte do preço de venda. Só precisamos descobrir o tamanho dessa parte.',
+        barCap: '6% significa $6 a cada $100.', cap1: 'Comece com o preço de venda e a taxa de comissão.',
+        convCap: 'Transforme 6% em número: mova o ponto 2 casas para a esquerda. Toque para repetir.', cap2: 'Agora é só multiplicar. Esse é todo o truque.',
+        mistakeT: 'Erro comum', mistake: 'Não multiplique por 6. Primeiro transforme 6% em 0,06 e depois multiplique.',
+        prTitle: 'Agora tente', prQ: 'Dica: 5% = 0,05.', prRight: 'Exato! $250.000 × 0,05 = $12.500.', prWrong: 'Quase. 5% = 0,05, então $250.000 × 0,05 = $12.500.' },
+      ht: { sec: 'Matematik · Komisyon', prob: 'Yon kay vann pou $250,000. To komisyon an se 6%. Ki kantite komisyon total la?', ans: 'Komisyon total',
+        plainKicker: 'An mo senp', plain: 'Ajan an pran yon ti pòsyon nan pri vant lan. Nou jis bezwen konnen ki gwosè pòsyon sa a.',
+        barCap: '6% vle di $6 sou chak $100.', cap1: 'Kòmanse ak pri vant lan ak to komisyon an.',
+        convCap: 'Vire 6% an yon nonm: deplase pwen an 2 plas sou goch. Tape pou repete.', cap2: 'Kounye a annik miltipliye. Se tout sekrè a.',
+        mistakeT: 'Erè komen', mistake: 'Pa miltipliye pa 6. Premye vire 6% an 0.06, apre miltipliye.',
+        prTitle: 'Kounye a eseye', prQ: 'Konsèy: 5% = 0.05.', prRight: 'Egzakteman! $250,000 × 0.05 = $12,500.', prWrong: 'Prèske. 5% = 0.05, donk $250,000 × 0.05 = $12,500.' },
+      ru: { sec: 'Математика · Комиссия', prob: 'Дом продан за $250,000. Ставка комиссии - 6%. Какова общая комиссия?', ans: 'Общая комиссия',
+        plainKicker: 'По-простому', plain: 'Агент получает небольшую часть от цены продажи. Нужно лишь посчитать, насколько большая эта часть.',
+        barCap: '6% - это $6 с каждых $100.', cap1: 'Берём цену продажи и ставку комиссии.',
+        convCap: 'Превращаем 6% в число - двигаем точку на 2 знака влево. Нажмите, чтобы повторить.', cap2: 'Теперь просто умножаем. Вот и весь секрет.',
+        mistakeT: 'Частая ошибка', mistake: 'Не умножайте на 6. Сначала превратите 6% в 0.06, потом умножайте.',
+        prTitle: 'Теперь попробуйте', prQ: 'Подсказка: 5% = 0.05.', prRight: 'Точно! $250,000 × 0.05 = $12,500.', prWrong: 'Почти. 5% = 0.05, значит $250,000 × 0.05 = $12,500.' },
+      fr: { sec: 'Mathématiques · Commission', prob: 'Une maison se vend 250 000 $. Le taux de commission est de 6 %. Quelle est la commission totale ?', ans: 'Commission totale',
+        plainKicker: 'En mots simples', plain: 'L’agent touche une petite part du prix de vente. Il suffit de trouver la taille de cette part.',
+        barCap: '6 %, c’est 6 $ sur chaque 100 $.', cap1: 'Pars du prix de vente et du taux de commission.',
+        convCap: 'Transforme 6 % en nombre : déplace le point de 2 rangs vers la gauche. Touche pour rejouer.', cap2: 'Maintenant, il suffit de multiplier. C’est toute l’astuce.',
+        mistakeT: 'Erreur fréquente', mistake: 'Ne multiplie pas par 6. Transforme d’abord 6 % en 0,06, puis multiplie.',
+        prTitle: 'À toi de jouer', prQ: 'Indice : 5 % = 0,05.', prRight: 'Exact ! 250 000 $ × 0,05 = 12 500 $.', prWrong: 'Presque. 5 % = 0,05, donc 250 000 $ × 0,05 = 12 500 $.' },
+      de: { sec: 'Mathematik · Provision', prob: 'Ein Haus wird für 250.000 $ verkauft. Der Provisionssatz beträgt 6 %. Wie hoch ist die Gesamtprovision?', ans: 'Gesamtprovision',
+        plainKicker: 'Einfach gesagt', plain: 'Der Makler erhält einen kleinen Teil des Verkaufspreises. Wir müssen nur herausfinden, wie groß dieser Teil ist.',
+        barCap: '6 % bedeutet 6 $ von je 100 $.', cap1: 'Beginne mit dem Verkaufspreis und dem Provisionssatz.',
+        convCap: 'Mach aus 6 % eine Zahl - schiebe den Punkt 2 Stellen nach links. Zum Wiederholen tippen.', cap2: 'Jetzt einfach multiplizieren. Das ist der ganze Trick.',
+        mistakeT: 'Häufiger Fehler', mistake: 'Multipliziere nicht mit 6. Wandle 6 % zuerst in 0,06 um, dann multipliziere.',
+        prTitle: 'Jetzt du', prQ: 'Tipp: 5 % = 0,05.', prRight: 'Genau! 250.000 $ × 0,05 = 12.500 $.', prWrong: 'Fast. 5 % = 0,05, also 250.000 $ × 0,05 = 12.500 $.' },
+      it: { sec: 'Matematica · Provvigione', prob: 'Una casa viene venduta a $250.000. L’aliquota della provvigione è del 6%. Qual è la provvigione totale?', ans: 'Provvigione totale',
+        plainKicker: 'In parole semplici', plain: 'L’agente riceve una piccola parte del prezzo di vendita. Dobbiamo solo capire quanto è grande quella parte.',
+        barCap: '6% significa $6 ogni $100.', cap1: 'Parti dal prezzo di vendita e dall’aliquota della provvigione.',
+        convCap: 'Trasforma 6% in un numero: sposta il punto di 2 posti a sinistra. Tocca per ripetere.', cap2: 'Ora basta moltiplicare. È tutto qui il trucco.',
+        mistakeT: 'Errore comune', mistake: 'Non moltiplicare per 6. Prima trasforma 6% in 0,06, poi moltiplica.',
+        prTitle: 'Ora prova tu', prQ: 'Suggerimento: 5% = 0,05.', prRight: 'Esatto! $250.000 × 0,05 = $12.500.', prWrong: 'Quasi. 5% = 0,05, quindi $250.000 × 0,05 = $12.500.' },
+      zh: { sec: '数学 · 佣金', prob: '一套房子以 $250,000 出售，佣金比例为 6%。总佣金是多少？', ans: '总佣金',
+        plainKicker: '通俗地说', plain: '经纪人从售价中获得一小部分。我们只需算出这部分有多大。',
+        barCap: '6% 就是每 $100 里的 $6。', cap1: '从售价和佣金比例开始。',
+        convCap: '把 6% 变成数字--把小数点向左移两位。点击可重播。', cap2: '现在只要相乘就行了。诀窍就这么简单。',
+        mistakeT: '常见错误', mistake: '不要乘以 6。先把 6% 变成 0.06，再相乘。',
+        prTitle: '现在试试', prQ: '提示：5% = 0.05。', prRight: '完全正确！$250,000 × 0.05 = $12,500。', prWrong: '差一点。5% = 0.05，所以 $250,000 × 0.05 = $12,500。' },
+      ar: { sec: 'الرياضيات · العمولة', prob: 'يُباع منزل بمبلغ 250,000 دولار. نسبة العمولة 6٪. ما هي العمولة الإجمالية؟', ans: 'إجمالي العمولة',
+        plainKicker: 'بكلمات بسيطة', plain: 'يحصل الوكيل على جزء صغير من سعر البيع. كل ما علينا هو معرفة حجم هذا الجزء.',
+        barCap: '6٪ تعني 6 دولارات من كل 100 دولار.', cap1: 'ابدأ بسعر البيع ونسبة العمولة.',
+        convCap: 'حوّل 6٪ إلى رقم - حرّك الفاصلة منزلتين إلى اليسار. انقر للإعادة.', cap2: 'الآن فقط اضرب. هذه هي الحيلة كلها.',
+        mistakeT: 'خطأ شائع', mistake: 'لا تضرب في 6. حوّل 6٪ أولاً إلى 0.06 ثم اضرب.',
+        prTitle: 'الآن جرّب بنفسك', prQ: 'تلميح: 5٪ = 0.05.', prRight: 'بالضبط! 250,000 × 0.05 = 12,500 دولار.', prWrong: 'تقريباً. 5٪ = 0.05، أي 250,000 × 0.05 = 12,500 دولار.' },
+      tl: { sec: 'Matematika · Komisyon', prob: 'Naibenta ang isang bahay sa halagang $250,000. Ang komisyon ay 6%. Magkano ang kabuuang komisyon?', ans: 'Kabuuang komisyon',
+        plainKicker: 'Sa simpleng salita', plain: 'Kumikita ang ahente ng maliit na bahagi ng presyo ng benta. Kailangan lang nating malaman kung gaano kalaki ang bahaging iyon.',
+        barCap: 'Ang 6% ay $6 sa bawat $100.', cap1: 'Magsimula sa presyo ng benta at sa rate ng komisyon.',
+        convCap: 'Gawing numero ang 6% - igalaw ang tuldok ng 2 hakbang pakaliwa. I-tap para ulitin.', cap2: 'Ngayon, i-multiply na lang. Iyon na ang buong trick.',
+        mistakeT: 'Karaniwang pagkakamali', mistake: 'Huwag i-multiply sa 6. Gawin munang 0.06 ang 6%, tapos i-multiply.',
+        prTitle: 'Subukan mo ngayon', prQ: 'Pahiwatig: 5% = 0.05.', prRight: 'Tama! $250,000 × 0.05 = $12,500.', prWrong: 'Halos. 5% = 0.05, kaya $250,000 × 0.05 = $12,500.' }
+    };
+
+    function q(name: string) { return root.querySelector('[data-el="' + name + '"]') as HTMLElement | null; }
+
+    // Demo language comes from ?lang on the page URL (site default: Spanish).
+    var curLang = 'es', parallelOn = true;
+    var l = (new URLSearchParams(location.search).get('lang') || 'es').toLowerCase();
+    if (l === 'off' || l === 'en') { parallelOn = false; } else if (LMETA[l]) { curLang = l; }
+    var langLabel = q('langLabel'), langChip = q('langChip'), langMenu = q('langMenu');
+    if (langLabel) { langLabel.textContent = parallelOn ? LMETA[curLang].label : (l === 'en' ? 'EN' : 'Translate'); }
+    if (!parallelOn && langChip) { langChip.style.background = '#fff'; langChip.style.color = '#047857'; langChip.style.borderColor = 'rgba(52,211,153,.55)'; }
+
+    var practiceState: string | null = null;
+    var practicePicked = -1;
+
+    function applyLang() {
+      var dir = LMETA[curLang].dir, t = T[curLang];
+      var sec = q('secTR'); if (sec) { sec.textContent = t.sec; sec.setAttribute('dir', dir); }
+      var pb = q('probBadge'); if (pb) { pb.textContent = LMETA[curLang].label; }
+      var pt = q('probText'); if (pt) { pt.textContent = t.prob; pt.setAttribute('dir', dir); }
+      var ptr = q('probTR'); if (ptr) { ptr.style.textAlign = (dir === 'rtl') ? 'right' : 'left'; }
+      var L = parallelOn ? t : EN, sdir = parallelOn ? dir : 'ltr';
+      function set(name: string, val: string, applyDir: boolean) { var el = q(name); if (!el) { return; } el.textContent = val; if (applyDir) { el.setAttribute('dir', sdir); el.style.textAlign = (sdir === 'rtl') ? 'right' : ''; } }
+      set('plainKicker', L.plainKicker, false);
+      set('plainText', L.plain, true);
+      set('barCap', L.barCap, true);
+      set('cap1', L.cap1, true);
+      set('convCap', L.convCap, true);
+      set('cap2', L.cap2, true);
+      set('mistakeT', L.mistakeT, false);
+      set('mistakeText', L.mistake, true);
+      var ans = q('ansLabel'); if (ans) { ans.textContent = L.ans || (parallelOn ? t.ans : 'Total commission'); }
+      var prT = q('prTitle'); if (prT) { prT.textContent = L.prTitle; }
+      var prB = q('prBadge'); if (prB) { prB.textContent = LMETA[curLang].label; }
+      var pq = q('prQText'); if (pq) { pq.textContent = t.prQ; if (parallelOn) { pq.setAttribute('dir', dir); pq.style.textAlign = (dir === 'rtl') ? 'right' : ''; } }
+      if (practiceState) { showPracticeFeedback(); }
+      root.querySelectorAll<HTMLElement>('.tr-line').forEach(function (e) { e.style.display = parallelOn ? '' : 'none'; });
+    }
+    function buildLangMenu() {
+      if (!langMenu) { return; }
+      langMenu.innerHTML = '';
+      LANG_ORDER.forEach(function (code) {
+        var m = LMETA[code];
+        var b = document.createElement('button');
+        b.className = 'langOpt';
+        if (code === 'ar') { b.setAttribute('dir', 'rtl'); }
+        var active = (code === 'off') ? !parallelOn : (parallelOn && curLang === code);
+        b.innerHTML = '<span>' + m.native + '</span><span style="color:#34D399; font-weight:800; display:' + (active ? 'inline' : 'none') + ';">✓</span>';
+        b.onclick = function (e) { e.stopPropagation(); pickLang(code); };
+        langMenu!.appendChild(b);
+      });
+    }
+    function toggleLangMenu(e: Event) {
+      e.stopPropagation();
+      if (!langMenu) { return; }
+      if (langMenu.style.display === 'block') { langMenu.style.display = 'none'; return; }
+      buildLangMenu(); langMenu.style.display = 'block';
+    }
+    function pickLang(code: string) {
+      if (code === 'off') { parallelOn = false; } else { parallelOn = true; curLang = code; }
+      applyLang();
+      if (langLabel) { langLabel.textContent = parallelOn ? LMETA[curLang].label : 'Translate'; }
+      if (langChip) {
+        if (parallelOn) { langChip.style.background = '#34D399'; langChip.style.color = '#fff'; langChip.style.borderColor = '#34D399'; }
+        else { langChip.style.background = '#fff'; langChip.style.color = '#047857'; langChip.style.borderColor = 'rgba(52,211,153,.55)'; }
+      }
+      if (langMenu) { langMenu.style.display = 'none'; }
+    }
+
+    // decimal-hop replay
+    function playConv() {
+      var c = q('conv'); if (!c) { return; }
+      c.classList.remove('play'); void c.offsetWidth; c.classList.add('play');
+    }
+
+    // ── mini practice (active recall) ──
+    var PR_OPTS = ['$10,000', '$12,500', '$15,000'];
+    var PR_CORRECT = 1;
+    function renderPractice() {
+      var box = q('prOpts'); if (!box) { return; }
+      box.innerHTML = '';
+      PR_OPTS.forEach(function (v, i) {
+        var b = document.createElement('button');
+        b.className = 'pr-opt mono';
+        b.setAttribute('data-i', String(i));
+        b.textContent = v;
+        b.style.cssText = 'flex:1; border:1.5px solid #e3e7e9; background:#fff; color:#1a1a2e; font-family:inherit; font-size:14px; font-weight:700; padding:11px 4px; border-radius:12px; cursor:pointer; transition:all .15s;';
+        b.onclick = function (e) { e.stopPropagation(); checkPractice(i); };
+        box.appendChild(b);
+      });
+    }
+    function checkPractice(i: number) {
+      practicePicked = i;
+      practiceState = (i === PR_CORRECT) ? 'right' : 'wrong';
+      var btns = root.querySelectorAll<HTMLElement>('[data-el="prOpts"] .pr-opt');
+      btns.forEach(function (b, idx) {
+        if (idx === PR_CORRECT) { b.style.borderColor = '#34D399'; b.style.background = 'rgba(52,211,153,.12)'; b.style.color = '#047857'; }
+        else if (idx === i) { b.style.borderColor = '#d05656'; b.style.background = '#fdecec'; b.style.color = '#c2410c'; }
+        else { b.style.borderColor = '#e3e7e9'; b.style.background = '#fff'; b.style.color = '#1a1a2e'; }
+      });
+      showPracticeFeedback();
+    }
+    function showPracticeFeedback() {
+      if (!practiceState) { return; }
+      var L = parallelOn ? T[curLang] : EN, dir = parallelOn ? LMETA[curLang].dir : 'ltr';
+      var fb = q('prFeedback'); if (!fb) { return; }
+      var ok = practiceState === 'right';
+      fb.style.display = 'block';
+      fb.style.background = ok ? 'rgba(52,211,153,.1)' : '#fff7f5';
+      fb.style.color = ok ? '#047857' : '#8a6552';
+      fb.style.border = ok ? '1px solid rgba(52,211,153,.3)' : '1px solid #f7d9cf';
+      fb.setAttribute('dir', dir); fb.style.textAlign = (dir === 'rtl') ? 'right' : '';
+      fb.innerHTML = '<span style="font-weight:800; margin-right:5px;">' + (ok ? '✓' : '→') + '</span>' + (ok ? L.prRight : L.prWrong);
+    }
+
+    // wire events (former inline on* handlers)
+    if (langChip) { langChip.addEventListener('click', toggleLangMenu); }
+    if (langMenu) { langMenu.addEventListener('click', function (e) { e.stopPropagation(); }); }
+    var conv = q('conv'); if (conv) { conv.addEventListener('click', function () { playConv(); }); }
+    document.addEventListener('click', function () { if (langMenu) { langMenu.style.display = 'none'; } });
+
+    applyLang();
+    renderPractice();
+    // gentle auto-demo of the conversion shortly after load
+    setTimeout(playConv, 600);
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-screen="math"]').forEach(initMath);
+</script>

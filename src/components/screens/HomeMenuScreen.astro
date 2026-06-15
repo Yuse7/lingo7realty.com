@@ -1,0 +1,302 @@
+---
+// Inline demo screen: the exam-prep home catalog (Florida Sales Associate),
+// with a Translate-language picker and a hero autoplay that taps Translate →
+// picks the site language → opens Tests, then hands off to the Quiz screen.
+// Was public/screens/Home Menu Screen.html (an iframe). Inlined into the light
+// DOM so Yandex Webvisor can record it.
+//
+// PATTERN (shared by all inline screens):
+//  - root <div data-screen="home"> ; language is read at runtime from ?lang
+//  - all former id="x" → data-el="x"; JS reaches them via root.querySelector
+//  - styles in one <style is:global> block, every selector prefixed with
+//    [data-screen="home"] (isolates from other screens AND covers elements
+//    created in JS, which Astro's scoped CSS would miss); @keyframes prefixed
+//  - script is a module (runs once); initHome(root) holds all state/functions
+//    in a closure and is mapped over every [data-screen="home"] instance
+//  - parent postMessage handoffs become bubbling CustomEvents on root
+//    (l7:langPicked, l7:nav{to})
+---
+<div class="screen" data-screen="home" style="width:320px; height:600px; overflow:hidden; border-radius:24px; background:#f7faf9; position:relative; color:#1a1a2e; font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; box-shadow:0 12px 40px rgba(0,0,0,.12); display:flex; flex-direction:column;">
+
+  <!-- Header chips -->
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:16px 18px 0; position:relative; z-index:20;">
+    <span style="display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; color:#047857; background:rgba(52,211,153,.12); border-radius:999px; padding:5px 11px; white-space:nowrap;">
+      <span style="font-size:10px;">📍</span>Florida Sales Associate
+    </span>
+    <div style="position:relative; flex-shrink:0;">
+      <button data-el="langChip" style="display:inline-flex; align-items:center; gap:4px; border:1px solid #eef0f0; background:#fff; color:#8a909a; font-family:inherit; font-size:12px; font-weight:700; padding:5px 10px; border-radius:999px; cursor:pointer;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="3" y1="12" x2="21" y2="12"></line><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"></path></svg>
+        <span data-el="langLabel">Translate</span> <span style="font-size:9px;">▾</span>
+      </button>
+      <div data-el="langMenu" class="langMenu" style="display:none; position:absolute; top:calc(100% + 6px); right:0; background:#fff; border:1px solid #eef0f0; border-radius:13px; box-shadow:0 8px 26px rgba(26,26,46,.16); padding:5px; min-width:158px; max-height:420px; overflow-y:auto; z-index:30;"></div>
+    </div>
+  </div>
+
+  <!-- Title -->
+  <div style="padding:12px 18px 0;">
+    <h1 style="margin:0; font-size:24px; font-weight:800; letter-spacing:-.02em; line-height:1.05;">Exam Prep</h1>
+    <div data-el="trTitle" class="tr" style="display:none; font-size:12.5px; color:#8a909a; margin-top:3px;"></div>
+  </div>
+
+  <!-- Progress -->
+  <div style="padding:12px 18px 6px;">
+    <div style="display:flex; align-items:baseline; justify-content:space-between; margin-bottom:7px;">
+      <span style="font-size:12px; font-weight:600; color:#6b7280;">Exam readiness</span>
+      <span style="font-size:13px; font-weight:800; color:#059669; font-variant-numeric:tabular-nums;">42%</span>
+    </div>
+    <div style="height:8px; background:#eef0f0; border-radius:999px; overflow:hidden;">
+      <div style="width:42%; height:100%; background:linear-gradient(90deg,#34D399,#059669); border-radius:999px;"></div>
+    </div>
+  </div>
+
+  <!-- Menu list -->
+  <div style="flex:1; overflow-y:auto; padding:8px 18px 0; display:flex; flex-direction:column; gap:5px;">
+
+    <!-- 1. Textbook (selected by default) -->
+    <div class="mi sel" style="display:flex; align-items:center; gap:13px; background:#fff; border:2px solid #34D399; border-radius:14px; padding:8px 13px; cursor:pointer; box-shadow:0 4px 16px rgba(52,211,153,.16);">
+      <span style="width:36px; height:36px; border-radius:11px; background:rgba(52,211,153,.12); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">📘</span>
+      <span style="flex:1; min-width:0; line-height:1.2;"><span style="display:block; font-size:14.5px; font-weight:700; color:#1a1a2e;">Interactive Textbook</span><span data-el="trTextbook" class="tr" style="display:none; font-size:11px; color:#8a909a; margin-top:1px;"></span></span>
+      <span class="mi-chev" style="color:#34D399; font-size:18px; flex-shrink:0;">›</span>
+    </div>
+
+    <!-- 2. Tests -->
+    <div class="mi" style="display:flex; align-items:center; gap:13px; background:#fff; border:2px solid #eef0f0; border-radius:14px; padding:8px 13px; cursor:pointer;">
+      <span style="width:36px; height:36px; border-radius:11px; background:#f3f5f7; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">✅</span>
+      <span style="flex:1; min-width:0; line-height:1.2;"><span style="display:block; font-size:14.5px; font-weight:700; color:#1a1a2e;">Tests</span><span data-el="trTests" class="tr" style="display:none; font-size:11px; color:#8a909a; margin-top:1px;"></span></span>
+      <span class="mi-chev" style="color:#c4cacf; font-size:18px; flex-shrink:0;">›</span>
+    </div>
+
+    <!-- 3. Term Cards -->
+    <div class="mi" style="display:flex; align-items:center; gap:13px; background:#fff; border:2px solid #eef0f0; border-radius:14px; padding:8px 13px; cursor:pointer;">
+      <span style="width:36px; height:36px; border-radius:11px; background:#f3f5f7; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">🗂️</span>
+      <span style="flex:1; min-width:0; line-height:1.2;"><span style="display:block; font-size:14.5px; font-weight:700; color:#1a1a2e;">Term Cards</span><span data-el="trTerms" class="tr" style="display:none; font-size:11px; color:#8a909a; margin-top:1px;"></span></span>
+      <span class="mi-chev" style="color:#c4cacf; font-size:18px; flex-shrink:0;">›</span>
+    </div>
+
+    <!-- 4. L7 Dictionary -->
+    <div class="mi mi-l7" style="background:#fff; border:2px solid #eef0f0; border-radius:14px; padding:10px 14px; cursor:pointer;">
+      <div style="display:flex; align-items:center; gap:13px;">
+        <span style="width:36px; height:36px; border-radius:11px; background:rgba(52,211,153,.12); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">📚</span>
+        <span style="flex:1; min-width:0; line-height:1.2;"><span style="display:block; font-size:14.5px; font-weight:700; color:#1a1a2e;">L7 Dictionary</span><span data-el="trL7" class="tr" style="display:none; font-size:11px; color:#8a909a; margin-top:1px;"></span></span>
+        <span style="display:inline-flex; align-items:center; gap:4px; flex-shrink:0; background:rgba(52,211,153,.14); color:#047857; font-size:10.5px; font-weight:800; padding:4px 9px; border-radius:999px; white-space:nowrap;">
+          <span style="width:6px; height:6px; border-radius:50%; background:#34D399;"></span>5 to review
+        </span>
+      </div>
+      <div style="margin-top:9px; padding-top:9px; border-top:1px solid #f1f4f3;">
+        <span style="font-size:11.5px; color:#6b7280; line-height:1.3;">Train your saved words with SRS</span><span data-el="trL7sub" class="tr" style="display:none; font-size:11.5px; color:#a3a8af; line-height:1.3;"></span>
+      </div>
+    </div>
+
+    <!-- 5. Math -->
+    <div class="mi" style="display:flex; align-items:center; gap:13px; background:#fff; border:2px solid #eef0f0; border-radius:14px; padding:8px 13px; cursor:pointer;">
+      <span style="width:36px; height:36px; border-radius:11px; background:#f3f5f7; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">🔢</span>
+      <span style="flex:1; min-width:0; line-height:1.2;"><span style="display:block; font-size:14.5px; font-weight:700; color:#1a1a2e;">Math</span><span data-el="trMath" class="tr" style="display:none; font-size:11px; color:#8a909a; margin-top:1px;"></span></span>
+      <span class="mi-chev" style="color:#c4cacf; font-size:18px; flex-shrink:0;">›</span>
+    </div>
+
+  </div>
+
+  <!-- Continue button -->
+  <div style="padding:8px 18px 14px; flex-shrink:0;">
+    <button style="width:100%; border:none; cursor:pointer; font-family:inherit; font-size:15px; font-weight:700; color:#fff; background:linear-gradient(135deg,#34D399,#059669); border-radius:14px; padding:14px; box-shadow:0 4px 16px rgba(52,211,153,.32);">Continue learning</button>
+  </div>
+
+</div>
+
+<style is:global>
+  [data-screen="home"] .langOpt { display: flex; align-items: center; justify-content: space-between; width: 100%; border: none; background: none; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 600; color: #1a1a2e; padding: 0 10px; min-height: 36px; line-height: 1.15; border-radius: 9px; text-align: left; }
+  [data-screen="home"] .langOpt:hover { background: #f3f5f7; }
+  [data-screen="home"] .langMenu::-webkit-scrollbar { width: 0; }
+  [data-screen="home"] .tr[dir="rtl"] { text-align: right; }
+</style>
+
+<script>
+  function initHome(root: HTMLElement) {
+    // ── Language model (order per product spec) ──
+    var LANGS = [
+      { code: 'off', label: 'Translate', native: 'English only' },
+      { code: 'es', label: 'ES', native: 'Español' },
+      { code: 'pt', label: 'PT', native: 'Português' },
+      { code: 'ht', label: 'HT', native: 'Kreyòl Ayisyen' },
+      { code: 'ru', label: 'RU', native: 'Русский' },
+      { code: 'fr', label: 'FR', native: 'Français' },
+      { code: 'de', label: 'DE', native: 'Deutsch' },
+      { code: 'it', label: 'IT', native: 'Italiano' },
+      { code: 'zh', label: '中文', native: '中文（普通话）' },
+      { code: 'ar', label: 'AR', native: 'العربية' },
+      { code: 'tl', label: 'TL', native: 'Tagalog' }
+    ];
+
+    // ── Translations per UI string ──
+    var T: Record<string, Record<string, string>> = {
+      trTitle:    { es: 'Preparación para el examen', pt: 'Preparação para o exame', ht: 'Preparasyon pou egzamen', ru: 'Подготовка к экзамену', fr: 'Préparation à l’examen', de: 'Prüfungsvorbereitung', it: 'Preparazione all’esame', zh: '考试备考', ar: 'التحضير للامتحان', tl: 'Paghahanda sa Pagsusulit' },
+      trTextbook: { es: 'Libro de texto interactivo', pt: 'Livro didático interativo', ht: 'Liv entèraktif', ru: 'Интерактивный учебник', fr: 'Manuel interactif', de: 'Interaktives Lehrbuch', it: 'Libro di testo interattivo', zh: '互动教材', ar: 'كتاب تفاعلي', tl: 'Interactive na Aklat-aralin' },
+      trTests:    { es: 'Pruebas', pt: 'Testes', ht: 'Tès', ru: 'Тесты', fr: 'Tests', de: 'Tests', it: 'Test', zh: '测验', ar: 'الاختبارات', tl: 'Mga Pagsusulit' },
+      trTerms:    { es: 'Tarjetas de términos', pt: 'Cartões de termos', ht: 'Kat tèm', ru: 'Карточки терминов', fr: 'Fiches de termes', de: 'Begriffskarten', it: 'Schede dei termini', zh: '术语卡片', ar: 'بطاقات المصطلحات', tl: 'Mga Term Card' },
+      trL7:       { es: 'Diccionario L7', pt: 'Dicionário L7', ht: 'Diksyonè L7', ru: 'Словарь L7', fr: 'Dictionnaire L7', de: 'L7-Wörterbuch', it: 'Dizionario L7', zh: 'L7 词典', ar: 'قاموس L7', tl: 'Diksyunaryo ng L7' },
+      trMath:     { es: 'Matemáticas', pt: 'Matemática', ht: 'Matematik', ru: 'Математика', fr: 'Mathématiques', de: 'Mathematik', it: 'Matematica', zh: '数学', ar: 'الرياضيات', tl: 'Matematika' },
+      trL7sub:    { es: 'Repaso inteligente de palabras guardadas', pt: 'Revisão inteligente das palavras salvas', ht: 'Repetisyon entèlijan mo ou anrejistre yo', ru: 'Умное повторение сохранённых слов', fr: 'Révision intelligente de vos mots enregistrés', de: 'Intelligente Wiederholung gespeicherter Wörter', it: 'Ripasso intelligente delle parole salvate', zh: '智能复习已保存的单词', ar: 'مراجعة ذكية للكلمات المحفوظة', tl: 'Matalinong pag-uulit ng mga naka-save na salita' }
+    };
+
+    var currentLang = 'off';
+
+    var langChip = root.querySelector('[data-el="langChip"]') as HTMLElement | null;
+    var langMenu = root.querySelector('[data-el="langMenu"]') as HTMLElement | null;
+    var langLabel = root.querySelector('[data-el="langLabel"]') as HTMLElement | null;
+
+    // build the language menu
+    function buildMenu() {
+      if (!langMenu) { return; }
+      LANGS.forEach(function (l) {
+        var b = document.createElement('button');
+        b.className = 'langOpt';
+        b.setAttribute('data-lang', l.code);
+        b.setAttribute('data-label', l.label);
+        if (l.code === 'ar') { b.setAttribute('dir', 'rtl'); }
+        b.innerHTML = '<span>' + l.native + '</span><span class="langTick" style="color:#34D399; font-weight:800; display:' + (l.code === 'off' ? 'inline' : 'none') + ';">✓</span>';
+        b.onclick = function () { pickLang(b); };
+        langMenu!.appendChild(b);
+      });
+    }
+
+    function toggleLangMenu(e: Event) {
+      e.stopPropagation();
+      if (!langMenu) { return; }
+      langMenu.style.display = langMenu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function pickLang(btn: HTMLElement) {
+      var lang = btn.getAttribute('data-lang') || 'off';
+      currentLang = lang;
+      var on = lang !== 'off';
+      Object.keys(T).forEach(function (id) {
+        var el = root.querySelector('[data-el="' + id + '"]') as HTMLElement | null;
+        if (!el) { return; }
+        if (!on) { el.style.display = 'none'; return; }
+        el.textContent = T[id][lang] || '';
+        el.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+        el.style.display = (id === 'trL7sub') ? 'block' : 'block';
+      });
+      if (langLabel) { langLabel.textContent = btn.getAttribute('data-label') || ''; }
+      if (langChip) {
+        if (on) { langChip.style.background = 'rgba(52,211,153,.12)'; langChip.style.borderColor = '#34D399'; langChip.style.color = '#047857'; }
+        else { langChip.style.background = '#fff'; langChip.style.borderColor = '#eef0f0'; langChip.style.color = '#8a909a'; }
+      }
+      root.querySelectorAll<HTMLElement>('.langOpt').forEach(function (o) {
+        var tick = o.querySelector('.langTick') as HTMLElement | null;
+        if (tick) { tick.style.display = (o === btn) ? 'inline' : 'none'; }
+      });
+      if (langMenu) { langMenu.style.display = 'none'; }
+      // language picked - tell the lander to drop its "Pick a language" caption
+      root.dispatchEvent(new CustomEvent('l7:langPicked', { bubbles: true }));
+    }
+
+    function selectMenu(el: HTMLElement) {
+      root.querySelectorAll<HTMLElement>('.mi').forEach(function (m) {
+        var on = m === el;
+        m.style.borderColor = on ? '#34D399' : '#eef0f0';
+        m.style.boxShadow = on ? '0 4px 16px rgba(52,211,153,.16)' : 'none';
+        var chev = m.querySelector('.mi-chev') as HTMLElement | null;
+        if (chev) { chev.style.color = on ? '#34D399' : '#c4cacf'; }
+      });
+    }
+
+    // wire events (former inline on* handlers)
+    if (langChip) { langChip.addEventListener('click', toggleLangMenu); }
+    if (langMenu) { langMenu.addEventListener('click', function (e) { e.stopPropagation(); }); }
+    root.querySelectorAll<HTMLElement>('.mi').forEach(function (m) {
+      m.addEventListener('click', function () { selectMenu(m); });
+    });
+    document.addEventListener('click', function () {
+      if (langMenu) { langMenu.style.display = 'none'; }
+    });
+
+    buildMenu();
+
+    // ── Lingo7 hero-demo autoplay (Home Menu → Tests) ──
+    //    Driven by l7:play / l7:pause from the hero orchestrator. The inlined
+    //    screens no longer reload (they used to restart their demo when the
+    //    iframe src was swapped), so the orchestrator (re)plays the screen it
+    //    shows and pauses the one it hides; a run token cancels stale loops.
+    (function () {
+      var lang = (new URLSearchParams(location.search).get('lang') || 'es').toLowerCase();
+      var frame = root;
+
+      var finger = document.createElement('div');
+      finger.setAttribute('aria-hidden', 'true');
+      finger.style.cssText = 'position:absolute; left:50%; top:62%; width:30px; height:30px; border-radius:50%; background:radial-gradient(circle at 50% 38%, rgba(52,211,153,.62), rgba(52,211,153,.22)); border:2px solid rgba(255,255,255,.92); box-shadow:0 3px 12px rgba(26,26,46,.35); transform:translate(-50%,-50%) scale(1); transition:left .55s cubic-bezier(.4,.1,.25,1), top .55s cubic-bezier(.4,.1,.25,1), transform .16s ease, opacity .3s ease; opacity:0; pointer-events:none; z-index:9999;';
+      frame.appendChild(finger);
+
+      var runToken = 0;   // bumped on every play/pause to cancel stale async loops
+
+      function sleep(ms: number) { return new Promise(function (r) { setTimeout(r, ms); }); }
+      function centerOf(el: HTMLElement) {
+        var fr = frame.getBoundingClientRect(), r = el.getBoundingClientRect();
+        return { x: r.left - fr.left + r.width / 2, y: r.top - fr.top + r.height / 2 };
+      }
+      async function moveTo(el: HTMLElement) {
+        var c = centerOf(el);
+        finger.style.left = c.x + 'px'; finger.style.top = c.y + 'px';
+        await sleep(580);
+      }
+      async function press() {
+        finger.style.transform = 'translate(-50%,-50%) scale(.72)';
+        await sleep(150);
+        finger.style.transform = 'translate(-50%,-50%) scale(1)';
+      }
+      async function tap(el: HTMLElement | null, dwell?: number) {
+        if (!el) { await sleep(dwell || 600); return; }
+        await moveTo(el);
+        await press();
+        try { el.click(); } catch (e) {}
+        await sleep(dwell || 600);
+      }
+
+      // Restore the first-load look (translation off, Textbook selected) so each
+      // replay of the Home screen starts clean, like the old iframe reload did.
+      function resetUI() {
+        currentLang = 'off';
+        Object.keys(T).forEach(function (id) { var el = root.querySelector('[data-el="' + id + '"]') as HTMLElement | null; if (el) { el.style.display = 'none'; } });
+        if (langLabel) { langLabel.textContent = 'Translate'; }
+        if (langChip) { langChip.style.background = '#fff'; langChip.style.borderColor = '#eef0f0'; langChip.style.color = '#8a909a'; }
+        root.querySelectorAll<HTMLElement>('.langOpt').forEach(function (o) { var t = o.querySelector('.langTick') as HTMLElement | null; if (t) { t.style.display = (o.getAttribute('data-lang') === 'off') ? 'inline' : 'none'; } });
+        if (langMenu) { langMenu.style.display = 'none'; }
+        var mis = root.querySelectorAll<HTMLElement>('.mi'); if (mis[0]) { selectMenu(mis[0]); }
+        finger.style.opacity = '0';
+      }
+
+      async function run(token: number) {
+        await sleep(300); if (token !== runToken) { return; }
+        finger.style.opacity = '1';
+        await sleep(140); if (token !== runToken) { return; }
+
+        // 1. open the Translate menu (the "Pick a language" caption already hangs above the phone)
+        await tap(langChip, 0); if (token !== runToken) { return; }
+
+        // 2. pick the site language
+        var menu = langMenu;
+        var opt = (root.querySelector('.langOpt[data-lang="' + (lang === 'en' ? 'off' : lang) + '"]') ||
+                  root.querySelector('.langOpt[data-lang="ru"]')) as HTMLElement | null;
+        if (menu && opt) { menu.scrollTop = Math.max(0, opt.offsetTop - menu.clientHeight / 2 + opt.offsetHeight / 2); }
+        await sleep(950); if (token !== runToken) { return; }
+        await tap(opt, 850); if (token !== runToken) { return; }
+
+        // 3. open Tests (2nd menu item)
+        await tap(root.querySelectorAll<HTMLElement>('.mi')[1], 850); if (token !== runToken) { return; }
+
+        // hand off to the Quiz screen
+        finger.style.opacity = '0';
+        await sleep(260); if (token !== runToken) { return; }
+        root.dispatchEvent(new CustomEvent('l7:nav', { detail: { to: 'quiz' }, bubbles: true }));
+      }
+
+      function startDemo() { runToken++; resetUI(); run(runToken); }
+      function stopDemo() { runToken++; finger.style.opacity = '0'; }
+
+      root.addEventListener('l7:play', startDemo);
+      root.addEventListener('l7:pause', stopDemo);
+    })();
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-screen="home"]').forEach(initHome);
+</script>

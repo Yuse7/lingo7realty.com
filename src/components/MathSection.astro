@@ -1,5 +1,6 @@
 ---
-// 8. Math - exam math demo screen.
+// 8. Math - exam math demo screen (inlined component, was an iframe).
+import MathProblemScreen from './screens/MathProblemScreen.astro';
 ---
 <section class="mathsec" id="math">
   <div class="container mathsec__inner">
@@ -17,7 +18,7 @@
       <div class="phone-cased">
         <img src="/pics/phone-clean.svg" alt="" class="phone__shell" />
         <div class="phone__frame phone__frame--hero">
-          <iframe data-src="/screens/Math%20Problem%20Screen.html" title="Демо: математика экзамена - задача с переводом, разбором и практикой" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
+          <MathProblemScreen />
         </div>
       </div>
     </div>

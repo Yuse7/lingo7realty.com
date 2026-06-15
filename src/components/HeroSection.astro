@@ -2,6 +2,10 @@
 // 1. Hero - headline with an inline language picker, CTA, and the phone demo.
 // Picking a language reloads the page with ?lang=xx; every demo screen then
 // renders in that language (wired in main.ts: #heroLang... + hero orchestrator).
+// The phone holds the Home and Quiz screens inlined side by side (was a single
+// iframe whose src swapped); the orchestrator shows one and plays it.
+import HomeMenuScreen from './screens/HomeMenuScreen.astro';
+import QuizReviewScreen from './screens/QuizReviewScreen.astro';
 ---
 <section class="hero">
   <div class="hero__bg">
@@ -52,8 +56,9 @@
       <div class="vocab-deck feat-deck" id="featDeck" aria-hidden="true"><span class="feat-default" data-i18n="hero.feat-default"></span></div>
       <div class="hero__phone-wrap">
         <img src="/pics/phone-clean.svg" alt="" class="phone__shell" />
-        <div class="phone__frame phone__frame--hero">
-          <iframe id="heroDemo" src="/screens/Home%20Menu%20Screen.html" title="Демо: подготовка к экзамену с переводом" style="width:100%; height:100%; border:none; display:block; transition:opacity .25s ease; pointer-events:none;" scrolling="no"></iframe>
+        <div class="phone__frame phone__frame--hero" id="heroDemo">
+          <div class="hero-screen" data-hero-screen="home" style="width:100%; height:100%; transition:opacity .25s ease; pointer-events:none;"><HomeMenuScreen /></div>
+          <div class="hero-screen" data-hero-screen="quiz" style="width:100%; height:100%; transition:opacity .25s ease; pointer-events:none; display:none;"><QuizReviewScreen /></div>
         </div>
       </div>
     </div>

@@ -5,6 +5,25 @@
 // orchestrator. The language switcher is decorative - it reloads with a
 // ?lang code but the page content always stays English (as in the original).
 
+// ── Эффективный язык страницы (общий для заголовка hero и демо-экранов) ──
+//    Приоритет: явный ?lang (если поддержан) → язык браузера → испанский.
+//    Браузерный язык матчим только против PICKER_LANGS (без английского), чтобы
+//    надпись «My language is …» и язык демо в телефоне всегда совпадали. Если у
+//    человека браузер на английском или языке не из списка - остаётся испанский
+//    (главный сегмент не-носителей, на который нацелен лендинг).
+var PICKER_LANGS = ['es', 'pt', 'ht', 'ru', 'fr', 'de', 'it', 'zh', 'ar', 'tl'];
+function resolveLang(urlValid: string[]): string {
+  var urlLang = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
+  if (urlValid.indexOf(urlLang) >= 0) { return urlLang; }
+  var navs = (navigator.languages && navigator.languages.length)
+    ? navigator.languages : [navigator.language || ''];
+  for (var i = 0; i < navs.length; i++) {
+    var base = (navs[i] || '').toLowerCase().split('-')[0];
+    if (PICKER_LANGS.indexOf(base) >= 0) { return base; }
+  }
+  return 'es';
+}
+
 // ── Pricing & login modals ──
 (function () {
   var pricingModal = document.getElementById('pricingModal');
@@ -88,28 +107,18 @@
   });
 })();
 
-// ── Site language for demo iframes + supporting UI ──
+// ── Library demo screens + supporting UI ──
 (function () {
-  var urlLang = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
-  var VALID = ['en', 'es', 'pt', 'ht', 'ru', 'fr', 'de', 'it', 'zh', 'ar', 'tl'];
-  var cur = VALID.indexOf(urlLang) >= 0 ? urlLang : 'es';
-
-  // Язык сайта (?lang) подставляем в src экранов-iframe ОДИН раз (data-src → src),
-  // чтобы каждый экран сразу грузился на нужном языке (hero - через оркестратор демо).
-  document.querySelectorAll('iframe[data-src]').forEach(function (f) {
-    var src = f.getAttribute('data-src');
-    if (!src) { return; }
-    (f as HTMLIFrameElement).src = src + (src.indexOf('?') >= 0 ? '&' : '?') + 'lang=' + cur;
-  });
-
-  // Экраны библиотеки: анимация стартует, когда экран попадает в зону видимости (play/pause)
+  // Экраны библиотеки инлайн ([data-screen]); язык каждый экран берёт сам из ?lang.
+  // Демо стартует, когда экран попадает в зону видимости, и встаёт на паузу, когда
+  // уходит (l7:play / l7:pause - раньше слалось в iframe через postMessage).
   if ('IntersectionObserver' in window) {
-    document.querySelectorAll('.library__panel iframe[data-src]').forEach(function (lf) {
+    document.querySelectorAll<HTMLElement>('.library__panel [data-screen]').forEach(function (root) {
       new IntersectionObserver(function (entries) {
         entries.forEach(function (en) {
-          try { (lf as HTMLIFrameElement).contentWindow!.postMessage({ __l7: 'libdemo', action: en.isIntersecting ? 'play' : 'pause' }, '*'); } catch (e) {}
+          root.dispatchEvent(new CustomEvent(en.isIntersecting ? 'l7:play' : 'l7:pause'));
         });
-      }, { threshold: 0.4 }).observe(lf);
+      }, { threshold: 0.4 }).observe(root);
     });
   }
 
@@ -156,10 +165,8 @@
   var nameEl = document.getElementById('heroLangName');
   if (!dd || !btn || !menu) { return; }
 
-  // Текущий язык: ?lang из адреса, если поддержан, иначе испанский (как везде).
-  var VALID = ['es', 'pt', 'ht', 'ru', 'fr', 'de', 'it', 'zh', 'ar', 'tl'];
-  var urlLang = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
-  var cur = VALID.indexOf(urlLang) >= 0 ? urlLang : 'es';
+  // Текущий язык: ?lang из адреса → язык браузера → испанский (см. resolveLang вверху).
+  var cur = resolveLang(PICKER_LANGS);
 
   // Подсветить активный язык и подставить его английское имя в заголовок.
   var curOpt = menu.querySelector('.hero-lang__opt[data-lang="' + cur + '"]');
@@ -263,18 +270,19 @@ document.querySelectorAll('.faq__q').forEach(function (q) {
   });
 });
 
-// ── Hero demo orchestrator: swaps the two generated screens, passes site language ──
+// ── Hero demo orchestrator: Home and Quiz are inlined side by side in the phone.
+//    Show one screen, hide the other, and (re)play the shown one via l7:play /
+//    l7:pause - the screens used to reload as an iframe (which restarted their
+//    demo); now they persist. Screens bubble l7:nav / l7:badge / l7:langPicked
+//    up to the host (#heroDemo). Demo language is read by each screen from ?lang.
 (function () {
-  var frame = document.getElementById('heroDemo') as HTMLIFrameElement | null;
-  if (!frame) { return; }
-  var HOME = '/screens/Home%20Menu%20Screen.html';
-  var QUIZ = '/screens/Quiz%20Review%20Screen.html';
-  // Язык демо в телефоне. Дефолт - испанский (главная позиционируется как испанская версия).
-  // Приоритет: ?lang=xx в адресе → DEMO_DEFAULT. Русскую подстановку посмотреть: /?lang=ru
-  var DEMO_LANGS = ['en', 'es', 'pt', 'ht', 'ru', 'fr', 'de', 'it', 'zh', 'ar', 'tl'];
-  var DEMO_DEFAULT = 'es';
-  var urlLang = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
-  var lang = DEMO_LANGS.indexOf(urlLang) >= 0 ? urlLang : DEMO_DEFAULT;
+  var host = document.getElementById('heroDemo');
+  if (!host) { return; }
+  var homeWrap = host.querySelector('[data-hero-screen="home"]') as HTMLElement | null;
+  var quizWrap = host.querySelector('[data-hero-screen="quiz"]') as HTMLElement | null;
+  if (!homeWrap || !quizWrap) { return; }
+  var homeRoot = homeWrap.querySelector('[data-screen="home"]') as HTMLElement | null;
+  var quizRoot = quizWrap.querySelector('[data-screen="quiz"]') as HTMLElement | null;
 
   // ── Дека возможностей: плашки прилетают по событиям из экранов ──
   var deck = document.getElementById('featDeck');
@@ -325,31 +333,45 @@ document.querySelectorAll('.faq__q').forEach(function (q) {
     }
   }
 
-  function load(which: string) {
-    clearDeck();   // при смене экрана текущая плашка мгновенно снимается (не тянется на следующий)
-    // Подпись «Pick a language» висит над телефоном только на экране-каталоге (Home),
-    // до выбора языка. На каждом заходе в Home подпись возвращается (демо зациклено
-    // Quiz → Home), на остальных экранах слот пуст. Снимаем флаг скрытия после выбора.
+  // Показать один экран, спрятать другой; (пере)играть показанный, поставить на
+  // паузу скрытый. Подпись «Pick a language» возвращается только на Home.
+  function show(which: string) {
+    var toQuiz = which === 'quiz';
+    var showWrap = toQuiz ? quizWrap! : homeWrap!;
+    var hideWrap = toQuiz ? homeWrap! : quizWrap!;
+    var showRoot = toQuiz ? quizRoot : homeRoot;
+    var hideRoot = toQuiz ? homeRoot : quizRoot;
+    clearDeck();
     if (deck) {
       deck.classList.remove('hint-off');
-      var dflt2 = deck.querySelector('.feat-default');
-      if (dflt2) { dflt2.textContent = which === HOME ? BADGES.native.label : ''; }
+      var d2 = deck.querySelector('.feat-default');
+      if (d2) { d2.textContent = toQuiz ? '' : BADGES.native.label; }
     }
-    frame!.style.opacity = '0';
-    setTimeout(function () { frame!.src = which + '?lang=' + lang; }, 170);
+    if (hideRoot) { hideRoot.dispatchEvent(new CustomEvent('l7:pause')); }
+    hideWrap.style.opacity = '0';
+    setTimeout(function () {
+      hideWrap.style.display = 'none';
+      showWrap.style.display = '';
+      showWrap.style.opacity = '0';
+      requestAnimationFrame(function () { showWrap.style.opacity = '1'; });
+      if (showRoot) { showRoot.dispatchEvent(new CustomEvent('l7:play')); }
+    }, 200);
   }
-  frame.addEventListener('load', function () { frame!.style.opacity = '1'; });
 
-  window.addEventListener('message', function (e) {
-    var d = e.data;
-    if (!d || d.__l7demo !== true) { return; }
-    if (d.action === 'toQuiz') { load(QUIZ); }
-    else if (d.action === 'toHome') { load(HOME); }
-    else if (d.action === 'badge') { addBadge(d.id); }
-    // язык выбран - гасим подпись «Pick a language» (плавно, через .hint-off)
-    else if (d.action === 'langPicked') { if (deck) { deck.classList.add('hint-off'); } }
-  });
+  host.addEventListener('l7:nav', function (e) { show((e as CustomEvent).detail.to); });
+  host.addEventListener('l7:badge', function (e) { addBadge((e as CustomEvent).detail.id); });
+  host.addEventListener('l7:langPicked', function () { if (deck) { deck.classList.add('hint-off'); } });
 
-  // первичная загрузка с нужным языком (overrides статический src)
-  load(HOME);
+  // Старт: Home показан и играет, Quiz скрыт. Шлём play на load, когда скрипты
+  // экранов уже навесили свои l7:play-слушатели.
+  function boot() {
+    quizWrap!.style.display = 'none';
+    homeWrap!.style.display = '';
+    homeWrap!.style.opacity = '1';
+    if (homeRoot) { homeRoot.dispatchEvent(new CustomEvent('l7:play')); }
+  }
+  // На DOMContentLoaded, а не на window.load: ждать загрузки ВСЕХ картинок страницы
+  // не нужно (это давало секундную задержку старта демо на image-heavy лендинге).
+  // К DOMContentLoaded скрипты экранов уже навесили свои l7:play-слушатели.
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', boot); } else { boot(); }
 })();

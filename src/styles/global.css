@@ -356,6 +356,11 @@ a { text-decoration: none; color: inherit; }
   margin-bottom: -58px;
 }
 
+/* Inlined demo screens live in the light DOM now (were isolated iframes): reset
+   text alignment so they don't inherit the centered hero/section layout. Each
+   screen sets its own per-element alignment (incl. RTL) inline where needed. */
+[data-screen] { text-align: left; }
+
 
 .phone__frame--hero {
   width: 320px;

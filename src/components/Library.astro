@@ -1,7 +1,10 @@
 ---
-// 6. Library - exam-prep tools, each panel embeds a demo screen (iframe).
-// data-src is upgraded to src (with ?lang) by main.ts so the screen loads in
-// the chosen language and play/pause is driven by an IntersectionObserver.
+// 6. Library - exam-prep tools, each panel inlines a demo screen component
+// (was an iframe). Each screen reads ?lang itself; play/pause is driven by an
+// IntersectionObserver in main.ts (visibility → l7:play / l7:pause).
+import TextbookReadingScreen from './screens/TextbookReadingScreen.astro';
+import QuizReviewScreen from './screens/QuizReviewScreen.astro';
+import TermCardScreen from './screens/TermCardScreen.astro';
 ---
 <section class="library" id="library">
   <div class="container">
@@ -23,7 +26,7 @@
           <div class="phone-cased">
             <img src="/pics/phone-clean.svg" alt="" class="phone__shell" />
             <div class="phone__frame phone__frame--hero">
-              <iframe data-src="/screens/Textbook%20Reading%20Screen.html?demo=1" title="Демо: интерактивный учебник - параллельный перевод, озвучка, тап → словарь" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
+              <TextbookReadingScreen demo={true} />
             </div>
           </div>
         </div>
@@ -43,7 +46,7 @@
           <div class="phone-cased">
             <img src="/pics/phone-clean.svg" alt="" class="phone__shell" />
             <div class="phone__frame phone__frame--hero">
-              <iframe data-src="/screens/Quiz%20Review%20Screen.html?mode=static" title="Демо: тест с вариантами ответа и переведённым разбором" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
+              <QuizReviewScreen mode="static" />
             </div>
           </div>
         </div>
@@ -63,7 +66,7 @@
           <div class="phone-cased">
             <img src="/pics/phone-clean.svg" alt="" class="phone__shell" />
             <div class="phone__frame phone__frame--hero">
-              <iframe data-src="/screens/Term%20Card%20Screen.html?demo=1" title="Демо: умная карточка термина - перевод, аудио, пример, оценка усвоения" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
+              <TermCardScreen demo={true} />
             </div>
           </div>
         </div>
@@ -83,7 +86,7 @@
           <div class="phone-cased">
             <img src="/pics/phone-clean.svg" alt="" class="phone__shell" />
             <div class="phone__frame phone__frame--hero">
-              <iframe data-src="/screens/Quiz%20Review%20Screen.html?mode=audio" title="Демо: аудио-режим - озвучка вопроса и перевода (караоке)" style="width:100%; height:100%; border:none; display:block;" scrolling="no"></iframe>
+              <QuizReviewScreen mode="audio" />
             </div>
           </div>
         </div>

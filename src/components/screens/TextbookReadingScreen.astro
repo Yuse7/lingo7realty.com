@@ -1,0 +1,921 @@
+---
+// Inline demo screen: interactive textbook page with parallel translation,
+// tap-to-translate words, a word-card bottom sheet, read-aloud auto mode and a
+// bookmark. Was public/screens/Textbook Reading Screen.html (an iframe).
+// Inlined into the light DOM so Yandex Webvisor can record it.
+//
+// PATTERN (shared by all inline screens):
+//  - root <div data-screen="textbook"> ; language is read at runtime from ?lang
+//  - all former id="x" → data-el="x"; JS reaches them via root.querySelector
+//  - styles in one <style is:global> block, every selector prefixed with
+//    [data-screen="textbook"] (isolates from other screens AND covers elements
+//    created in JS, which Astro's scoped CSS would miss); @keyframes prefixed
+//  - script is a module (runs once); initTextbook(root) holds all state/functions
+//    in a closure and is mapped over every [data-screen="textbook"] instance
+//  - demo auto-play mode is opt-in via the `demo` prop (was ?demo=1); it listens
+//    for l7:play / l7:pause CustomEvents on root instead of window postMessage
+const { demo = false } = Astro.props;
+---
+<div class="book" data-screen="textbook" data-demo={demo ? '1' : undefined} style="width:320px; height:600px; overflow:hidden; border-radius:24px; background:#fff; position:relative; color:#1a1a2e; font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; box-shadow:0 12px 40px rgba(0,0,0,.12); display:flex; flex-direction:column;">
+
+  <!-- Header -->
+  <div data-el="appHeader" style="display:flex; align-items:center; gap:9px; padding:14px 14px 12px; flex-shrink:0; border-bottom:1px solid #eef0f0;">
+    <button class="hdr-back" title="Back to contents">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3a3a4a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <span style="flex:1; min-width:0; line-height:1.15;">
+      <span style="display:block; font-size:13.5px; font-weight:700; color:#1a1a2e; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Liens &amp; Encumbrances</span>
+      <span style="display:block; font-size:10px; color:#b3b8bf;">Chapter 4 · Title &amp; Ownership</span>
+    </span>
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0;">
+      <div style="position:relative; flex-shrink:0;">
+        <button data-el="langChip" title="Translation language" style="display:flex; align-items:center; gap:4px; border:1.5px solid #34D399; background:#34D399; color:#fff; font-family:inherit; font-size:11px; font-weight:700; padding:0 8px; height:28px; border-radius:999px; cursor:pointer; white-space:nowrap;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="3" y1="12" x2="21" y2="12"></line><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"></path></svg>
+          <span data-el="langLabel">RU</span><span style="font-size:8px;">▾</span>
+        </button>
+        <div data-el="langMenu" style="display:none; position:absolute; top:calc(100% + 6px); right:0; background:#fff; border:1px solid #eef0f0; border-radius:13px; box-shadow:0 8px 26px rgba(26,26,46,.18); padding:5px; min-width:170px; max-height:420px; overflow-y:auto; z-index:60;"></div>
+      </div>
+      <button data-el="autoBtn" title="Listen / Read aloud" style="display:flex; align-items:center; justify-content:center; border:1.5px solid rgba(52,211,153,.55); background:#fff; color:#047857; font-family:inherit; width:28px; height:28px; border-radius:50%; cursor:pointer; padding:0; flex-shrink:0;">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="#047857"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
+      </button>
+      <span style="width:1px; height:18px; background:#e3e7e9; flex-shrink:0;"></span>
+      <button data-el="saveBtn" title="Bookmark page" style="display:flex; align-items:center; justify-content:center; border:none; background:none; cursor:pointer; width:26px; height:28px; padding:0; flex-shrink:0;">
+        <svg data-el="bm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c9ced2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:all .16s;"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Book page -->
+  <div data-el="scrollArea" class="scroll" style="flex:1; min-height:0; overflow-y:auto; padding:18px 20px 14px;">
+
+    <div style="font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:#34D399;">Chapter 4 · Section 2</div>
+    <h1 data-el="tEN" style="margin:5px 0 2px; font-size:22px; font-weight:800; letter-spacing:-.02em; line-height:1.15;">Liens &amp; Encumbrances</h1>
+    <div data-el="tTR" class="ru-line" style="font-size:12.5px; color:#a3a8af; margin-bottom:16px;"></div>
+
+    <!-- Para 1 - definition -->
+    <p data-el="p1EN" class="en">An <span class="tw" data-ru="p1-enc">encumbrance</span> is any <span class="tw" data-ru="p1-claim">claim</span>, charge, or <span class="tw" data-ru="p1-liab">liability</span> attached to real <span class="tw" data-ru="p1-prop">property</span> - a right held by someone who is not the owner. Every <span class="tw" data-ru="p1-lien">lien</span> is an encumbrance, but not every encumbrance is a lien.</p>
+    <p data-el="p1TR" class="ru ru-line"></p>
+
+    <!-- Subheading: two families -->
+    <h2 data-el="h2EN" style="margin:22px 0 0; font-size:16px; font-weight:800; letter-spacing:-.01em;">Two families of encumbrances</h2>
+    <div data-el="h2TR" class="ru-line" style="font-size:11.5px; color:#a3a8af; margin-bottom:10px;"></div>
+
+    <!-- Figure 4.2 - taxonomy diagram -->
+    <div style="background:#f9fbfa; border:1px solid #eef0f0; border-radius:14px; padding:13px 13px 12px;">
+      <div style="text-align:center; margin-bottom:9px;">
+        <span style="display:inline-block; background:#1a1a2e; color:#fff; font-size:10.5px; font-weight:700; padding:5px 14px; border-radius:8px;">Encumbrances</span>
+      </div>
+      <div style="display:flex; gap:9px;">
+        <div style="flex:1;">
+          <div style="background:rgba(52,211,153,.14); border:1px solid rgba(52,211,153,.4); border-radius:9px; padding:6px; text-align:center; font-size:10px; font-weight:800; color:#047857; margin-bottom:7px;">Financial · Liens</div>
+          <div style="display:flex; flex-direction:column; gap:5px;">
+            <div class="figchip">Mortgage<div class="figchip-tr ru-line" data-chip="mortgage"></div></div>
+            <div class="figchip">Property tax<div class="figchip-tr ru-line" data-chip="propertyTax"></div></div>
+            <div class="figchip">Mechanic’s<div class="figchip-tr ru-line" data-chip="mechanics"></div></div>
+            <div class="figchip">Judgment<div class="figchip-tr ru-line" data-chip="judgment"></div></div>
+          </div>
+        </div>
+        <div style="flex:1;">
+          <div style="background:#eef0f2; border:1px solid #e0e4e6; border-radius:9px; padding:6px; text-align:center; font-size:10px; font-weight:800; color:#6b7280; margin-bottom:7px;">Non-financial</div>
+          <div style="display:flex; flex-direction:column; gap:5px;">
+            <div class="figchip">Easements<div class="figchip-tr ru-line" data-chip="easements"></div></div>
+            <div class="figchip">Encroachments<div class="figchip-tr ru-line" data-chip="encroachments"></div></div>
+            <div class="figchip">Deed restrictions<div class="figchip-tr ru-line" data-chip="deedRestrictions"></div></div>
+          </div>
+        </div>
+      </div>
+      <div data-el="figCap" class="ru-line" style="font-size:10.5px; color:#a3a8af; text-align:center; margin-top:10px; line-height:1.35;"></div>
+    </div>
+
+    <!-- Para 2 - split -->
+    <p data-el="p2EN" class="en" style="margin-top:14px;">Encumbrances split into two groups. <span class="tw" data-ru="p2-fin">Financial</span> ones - <span class="tw" data-ru="p2-lien">liens</span> - secure a debt. Non-financial ones, like <span class="tw" data-ru="p2-ease">easements</span> and encroachments, limit how the land is used.</p>
+    <p data-el="p2TR" class="ru ru-line"></p>
+
+    <!-- Subheading: types of liens -->
+    <h2 data-el="h3EN" style="margin:22px 0 0; font-size:16px; font-weight:800; letter-spacing:-.01em;">Types of liens</h2>
+    <div data-el="h3TR" class="ru-line" style="font-size:11.5px; color:#a3a8af; margin-bottom:9px;"></div>
+
+    <!-- Para 3 - lien definition -->
+    <p data-el="p3EN" class="en">A <span class="tw" data-ru="p3-lien">lien</span> is a financial claim that secures the payment of a <span class="tw" data-ru="p3-debt">debt</span>. If the debt is not paid, the lien holder can force the property to be <span class="tw" data-ru="p3-sold">sold</span>. A lien is only a claim on value - it is not <span class="tw" data-ru="p3-own">ownership</span>.</p>
+    <p data-el="p3TR" class="ru ru-line"></p>
+
+    <!-- Para 4 - classifications -->
+    <p data-el="p4EN" class="en" style="margin-top:14px;">Every lien is either <span class="tw" data-ru="p4-vol">voluntary</span> or <span class="tw" data-ru="p4-invol">involuntary</span>, and either <span class="tw" data-ru="p4-spec">specific</span> (one named property) or <span class="tw" data-ru="p4-gen">general</span> (all the owner’s property). A <span class="tw" data-ru="p4-mort">mortgage</span> is voluntary and specific; a property-tax lien is involuntary and specific; a <span class="tw" data-ru="p4-judg">judgment</span> lien is involuntary and general.</p>
+    <p data-el="p4TR" class="ru ru-line"></p>
+
+    <!-- Para 5 - priority & clearing -->
+    <p data-el="p5EN" class="en" style="margin-top:14px;">When several liens exist, <span class="tw" data-ru="p5-prio">priority</span> usually follows “first in time, first in right” - the order they were recorded. The key exception: property-<span class="tw" data-ru="p5-tax">tax</span> liens are paid first, no matter when they were recorded. A lien must be <span class="tw" data-ru="p5-clear">cleared</span> before the property can be sold with clear <span class="tw" data-ru="p5-title">title</span>.</p>
+    <p data-el="p5TR" class="ru ru-line"></p>
+
+  </div>
+
+  <!-- Footer: page nav -->
+  <div data-el="bottomBar" style="flex-shrink:0; display:flex; align-items:center; justify-content:space-between; padding:11px 18px 15px; border-top:1px solid #f0f2f3; background:#fff;">
+    <button class="nav-btn nav-back" title="Previous page">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <span style="display:flex; flex-direction:column; align-items:center; line-height:1.15;">
+      <span style="font-size:14px; font-weight:700; color:#6b7280; font-variant-numeric:tabular-nums; letter-spacing:.02em;">8 <span style="color:#c0c5c9; font-weight:600;">/ 42</span></span>
+      <span style="font-size:9.5px; font-weight:600; color:#b3b8bf; letter-spacing:.02em;">Chapter 4</span>
+    </span>
+    <button class="nav-btn nav-next" title="Next page">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
+  </div>
+
+  <!-- Floating word toolbar -->
+  <div data-el="wbar" style="display:none; position:absolute; z-index:30; background:#fff; border-radius:12px; box-shadow:0 8px 24px rgba(26,26,46,.2); border:1px solid #eef0f0; padding:5px 6px; align-items:center; gap:3px;">
+    <button class="wbtn" title="Pronounce">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3a3a4a" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="#3a3a4a" stroke="none"></polygon><path d="M15.5 8.5a5 5 0 0 1 0 7"></path><path d="M19 5a10 10 0 0 1 0 14"></path></svg>
+    </button>
+    <span class="wsep"></span>
+    <button data-el="addBtn" class="wbtn" title="Add to L7 Dictionary" style="position:relative;">
+      <span data-el="addPad" style="display:inline-flex; align-items:center; justify-content:center; padding:5px 7px; border-radius:8px; transition:background .18s;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path data-el="addBook" d="M5 5.5A1.5 1.5 0 0 1 6.5 4H18a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H6.5A1.5 1.5 0 0 0 5 20.5z" stroke="#3a3a4a" stroke-width="1.8" stroke-linejoin="round"></path><path data-el="addSpine" d="M5 20.5A1.5 1.5 0 0 1 6.5 19H19" stroke="#3a3a4a" stroke-width="1.8" stroke-linejoin="round"></path><text data-el="addA" x="11.7" y="14.6" font-size="9" font-weight="800" text-anchor="middle" fill="#3a3a4a" font-family="Inter,sans-serif">A</text></svg>
+      </span>
+      <span data-el="addPip" style="position:absolute; top:1px; right:1px; width:13px; height:13px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#aab0b4; box-shadow:0 0 0 1.5px #fff;">
+        <svg data-el="addPipIcon" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </span>
+    </button>
+    <span class="wsep"></span>
+    <button class="wbtn" data-el="wcOpenBtn" title="Word card">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3a3a4a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"></rect><line x1="7" y1="9.5" x2="17" y2="9.5"></line><line x1="7" y1="13.5" x2="13" y2="13.5"></line></svg>
+    </button>
+    <span class="wsep"></span>
+    <button class="wbtn" data-el="wbarCloseBtn" title="Close">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aab0b4" stroke-width="2.2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+    </button>
+    <span data-el="warrow" style="position:absolute; top:100%; left:50%; transform:translateX(-50%); width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:6px solid #fff; filter:drop-shadow(0 2px 1px rgba(26,26,46,.08));"></span>
+  </div>
+
+  <!-- Toast -->
+  <div data-el="toast" style="position:absolute; left:50%; bottom:64px; transform:translateX(-50%) translateY(12px); opacity:0; transition:all .28s; display:flex; align-items:center; gap:7px; padding:9px 15px; background:#1a1a2e; color:#fff; font-size:12px; font-weight:600; border-radius:22px; pointer-events:none; z-index:40; white-space:nowrap;">
+    <span style="color:#34D399;">✓</span> Saved
+  </div>
+
+  <!-- Word card sheet -->
+  <div data-el="wcScrim" style="display:none; position:absolute; inset:0; background:rgba(26,26,46,.28); z-index:50;"></div>
+  <div data-el="wcSheet" style="position:absolute; left:0; right:0; top:600px; z-index:51; transition:top .32s cubic-bezier(.34,1.2,.5,1); background:#f3f5f7; border-radius:22px 22px 24px 24px; box-shadow:0 -8px 32px rgba(26,26,46,.18); padding:0 0 16px;">
+    <div style="background:#fff; border-radius:22px; padding:16px 18px 16px; box-shadow:0 2px 10px rgba(26,26,46,.05);">
+      <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
+        <div style="min-width:0;">
+          <div data-el="wcWord" style="font-size:27px; font-weight:800; color:#1a1a2e; line-height:1.05;">lien</div>
+          <div data-el="wcIpa" style="font-size:14px; color:#9aa1a0; margin-top:5px;">[liːn]</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+          <button data-el="wcProBtn" title="Pronounce" style="border:none; background:#f4f6f7; border-radius:50%; width:38px; height:38px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a2e" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="#1a1a2e" stroke="none"></polygon><path d="M15.5 8.5a5 5 0 0 1 0 7"></path><path d="M19 5a10 10 0 0 1 0 14"></path></svg>
+          </button>
+          <button data-el="wcCloseBtn" title="Close" style="border:none; background:#f4f6f7; border-radius:50%; width:38px; height:38px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2.3" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+          </button>
+        </div>
+      </div>
+
+      <div data-el="wcPro" style="display:none; margin-top:14px;">
+        <span style="display:inline-flex; align-items:center; gap:6px; font-size:10.5px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; color:#047857; background:rgba(52,211,153,.14); border-radius:6px; padding:4px 10px 4px 8px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+          Real Estate Concept
+        </span>
+        <div data-el="wcTr" style="font-size:18px; font-weight:600; color:#1a1a2e; margin-top:10px;"></div>
+        <p data-el="wcDefEN" style="font-size:13.5px; color:#3a3a4a; line-height:1.5; margin:9px 0 0;"></p>
+        <p data-el="wcDefRU" style="font-size:12px; color:#6b7280; line-height:1.45; margin:7px 0 0;"></p>
+      </div>
+
+      <div data-el="wcCommon" style="display:none; margin-top:12px;">
+        <div data-el="wcMeanings" style="font-size:16px; color:#1a1a2e; line-height:1.7;"></div>
+      </div>
+    </div>
+
+    <div style="padding:14px 18px 0;">
+      <button data-el="wcAddBtn" style="width:100%; border:none; background:linear-gradient(135deg,#4ade80,#22c55e); color:#fff; font-family:inherit; font-size:15px; font-weight:700; padding:14px 8px; border-radius:14px; cursor:pointer; box-shadow:0 4px 16px rgba(52,211,153,.32); display:flex; align-items:center; justify-content:center; gap:8px;">Add &amp; learn</button>
+    </div>
+  </div>
+
+</div>
+
+<style is:global>
+  [data-screen="textbook"] .tw { cursor: pointer; border-bottom: 1px dotted #c6cfcc; }
+  [data-screen="textbook"] .hl { background: #d4f4e4; color: #047857; border-radius: 4px; padding: 0 1px; box-decoration-break: clone; -webkit-box-decoration-break: clone; border-bottom-color: transparent; }
+  [data-screen="textbook"] .rw-on { background: #d4f4e4; color: #047857; border-radius: 4px; transition: background .08s; }
+  [data-screen="textbook"] .nav-btn { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform .08s ease, background .15s ease; flex-shrink: 0; }
+  [data-screen="textbook"] .nav-btn:active { transform: scale(.9); }
+  [data-screen="textbook"] .nav-back { border: 1.5px solid #d6dbe0; background: #fff; }
+  [data-screen="textbook"] .nav-back:hover { background: #f5f7f9; }
+  [data-screen="textbook"] .nav-next { border: none; background: #34D399; box-shadow: 0 4px 14px rgba(52,211,153,.32); }
+  [data-screen="textbook"] .nav-next:hover { background: #2bc48a; }
+  [data-screen="textbook"] .hdr-back { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; background: #f4f6f7; flex-shrink: 0; transition: background .15s, transform .08s; padding: 0; }
+  [data-screen="textbook"] .hdr-back:hover { background: #e9edee; }
+  [data-screen="textbook"] .hdr-back:active { transform: scale(.9); }
+  [data-screen="textbook"] .wbtn { display: flex; flex-direction: row; align-items: center; gap: 3px; border: none; background: none; cursor: pointer; font-family: inherit; padding: 4px 7px; border-radius: 8px; }
+  [data-screen="textbook"] .wbtn:hover { background: #f5f7f9; }
+  [data-screen="textbook"] .wbtn span { font-size: 11.5px; color: #3a3a4a; font-weight: 600; white-space: nowrap; }
+  [data-screen="textbook"] .wsep { width: 1px; height: 16px; background: #eef0f0; flex-shrink: 0; }
+  [data-screen="textbook"] .langOpt { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; border: none; background: none; cursor: pointer; font-family: inherit; font-size: 12.5px; font-weight: 600; color: #1a1a2e; padding: 0 10px; min-height: 36px; line-height: 1.15; border-radius: 9px; text-align: left; }
+  [data-screen="textbook"] .langOpt:hover { background: #f3f5f7; }
+  [data-screen="textbook"] [data-el="langMenu"]::-webkit-scrollbar { width: 0; }
+  [data-screen="textbook"] .book p.en { margin: 0; font-size: 15px; line-height: 1.62; color: #2b2f3a; }
+  [data-screen="textbook"] .book p.ru { margin: 5px 0 0; font-size: 12px; line-height: 1.5; color: #a3a8af; }
+  [data-screen="textbook"] .book .scroll::-webkit-scrollbar { width: 0; }
+  [data-screen="textbook"] .figchip { background: #fff; border: 1px solid #e6e9ea; border-radius: 7px; padding: 5px 7px; font-size: 10px; font-weight: 600; color: #3a3a4a; text-align: center; }
+  [data-screen="textbook"] .figchip-tr { font-size: 8.5px; font-weight: 600; color: #a3a8af; margin-top: 2px; line-height: 1.2; }
+</style>
+
+<script>
+  function initTextbook(root: HTMLElement) {
+    // ════════════ Language model ════════════
+    var LMETA: Record<string, { label: string; native: string; tts: string; dir: string }> = {
+      off: { label: 'Translate', native: 'English only', tts: 'en-US', dir: 'ltr' },
+      es:  { label: 'ES', native: 'Español', tts: 'es-ES', dir: 'ltr' },
+      pt:  { label: 'PT', native: 'Português', tts: 'pt-BR', dir: 'ltr' },
+      ht:  { label: 'HT', native: 'Kreyòl Ayisyen', tts: 'fr-FR', dir: 'ltr' },
+      ru:  { label: 'RU', native: 'Русский', tts: 'ru-RU', dir: 'ltr' },
+      fr:  { label: 'FR', native: 'Français', tts: 'fr-FR', dir: 'ltr' },
+      de:  { label: 'DE', native: 'Deutsch', tts: 'de-DE', dir: 'ltr' },
+      it:  { label: 'IT', native: 'Italiano', tts: 'it-IT', dir: 'ltr' },
+      zh:  { label: '中文', native: '中文（普通话）', tts: 'zh-CN', dir: 'ltr' },
+      ar:  { label: 'AR', native: 'العربية', tts: 'ar-SA', dir: 'rtl' },
+      tl:  { label: 'TL', native: 'Tagalog', tts: 'fil-PH', dir: 'ltr' }
+    };
+    var LANG_ORDER = ['off', 'es', 'pt', 'ht', 'ru', 'fr', 'de', 'it', 'zh', 'ar', 'tl'];
+
+    type Seg = string | [string, string];
+    var I18N: Record<string, { t: string; h2: string; h3: string; figCap: string; p1: Seg[]; p2: Seg[]; p3: Seg[]; p4: Seg[]; p5: Seg[] }> = {
+      es: {
+        t: 'Gravámenes y cargas', h2: 'Dos familias de cargas', h3: 'Tipos de gravámenes', figCap: 'Fig. 4.2 - Las dos familias de cargas',
+        p1: ["Una ", ["p1-enc","carga"], " es cualquier ", ["p1-claim","reclamación"], ", cargo u ", ["p1-liab","obligación"], " vinculada a un ", ["p1-prop","bien inmueble"], ": un derecho que posee alguien que no es el dueño. Todo ", ["p1-lien","gravamen"], " es una carga, pero no toda carga es un gravamen."],
+        p2: ["Las cargas se dividen en dos grupos. Las ", ["p2-fin","financieras"], " -los ", ["p2-lien","gravámenes"], "- garantizan una deuda. Las no financieras, como las ", ["p2-ease","servidumbres"], " y las invasiones, limitan el uso del terreno."],
+        p3: ["Un ", ["p3-lien","gravamen"], " es una reclamación financiera que garantiza el pago de una ", ["p3-debt","deuda"], ". Si la deuda no se paga, el acreedor puede forzar que el inmueble se ", ["p3-sold","venda"], ". Un gravamen es solo un derecho sobre el valor, no la ", ["p3-own","propiedad"], "."],
+        p4: ["Todo gravamen es ", ["p4-vol","voluntario"], " o ", ["p4-invol","involuntario"], ", y ", ["p4-spec","específico"], " (un solo inmueble) o ", ["p4-gen","general"], " (todos los bienes del dueño). Una ", ["p4-mort","hipoteca"], " es voluntaria y específica; un gravamen fiscal es involuntario y específico; un gravamen ", ["p4-judg","judicial"], " es involuntario y general."],
+        p5: ["Cuando hay varios gravámenes, la ", ["p5-prio","prioridad"], " suele seguir la regla «primero en tiempo, primero en derecho»: el orden de registro. La excepción clave: los gravámenes por ", ["p5-tax","impuestos"], " se pagan primero, sin importar cuándo se registraron. Un gravamen debe ", ["p5-clear","cancelarse"], " antes de vender el inmueble con un ", ["p5-title","título"], " limpio."]
+      },
+      pt: {
+        t: 'Ônus e encargos', h2: 'Duas famílias de encargos', h3: 'Tipos de ônus', figCap: 'Fig. 4.2 - As duas famílias de encargos',
+        p1: ["Um ", ["p1-enc","encargo"], " é qualquer ", ["p1-claim","reivindicação"], ", taxa ou ", ["p1-liab","obrigação"], " ligada a um ", ["p1-prop","imóvel"], ": um direito de alguém que não é o dono. Todo ", ["p1-lien","ônus"], " é um encargo, mas nem todo encargo é um ônus."],
+        p2: ["Os encargos se dividem em dois grupos. Os ", ["p2-fin","financeiros"], " -os ", ["p2-lien","ônus"], "- garantem uma dívida. Os não financeiros, como as ", ["p2-ease","servidões"], " e as invasões, limitam o uso do terreno."],
+        p3: ["Um ", ["p3-lien","ônus"], " é uma reivindicação financeira que garante o pagamento de uma ", ["p3-debt","dívida"], ". Se a dívida não for paga, o credor pode forçar a ", ["p3-sold","venda"], " do imóvel. Um ônus é apenas um direito sobre o valor, não a ", ["p3-own","propriedade"], "."],
+        p4: ["Todo ônus é ", ["p4-vol","voluntário"], " ou ", ["p4-invol","involuntário"], ", e ", ["p4-spec","específico"], " (um único imóvel) ou ", ["p4-gen","geral"], " (todos os bens do dono). Uma ", ["p4-mort","hipoteca"], " é voluntária e específica; um ônus tributário é involuntário e específico; um ônus ", ["p4-judg","judicial"], " é involuntário e geral."],
+        p5: ["Quando há vários ônus, a ", ["p5-prio","prioridade"], " geralmente segue a regra «primeiro no tempo, primeiro no direito»: a ordem de registro. A exceção principal: os ônus de ", ["p5-tax","impostos"], " são pagos primeiro, não importa quando foram registrados. Um ônus deve ser ", ["p5-clear","quitado"], " antes de vender o imóvel com um ", ["p5-title","título"], " limpo."]
+      },
+      ht: {
+        t: 'Privilèj ak chaj', h2: 'De gwoup chaj', h3: 'Kalite privilèj', figCap: 'Fig. 4.2 - De gwoup chaj yo',
+        p1: ["Yon ", ["p1-enc","chaj"], " se nenpòt ", ["p1-claim","reklamasyon"], ", frè, oswa ", ["p1-liab","obligasyon"], " ki tache ak yon ", ["p1-prop","pwopriyete"], ": yon dwa yon moun ki pa pwopriyetè a genyen. Chak ", ["p1-lien","privilèj"], " se yon chaj, men se pa chak chaj ki yon privilèj."],
+        p2: ["Chaj yo divize an de gwoup. ", ["p2-fin","Finansye"], " yo -", ["p2-lien","privilèj"], " yo- garanti yon dèt. Sa ki pa finansye yo, tankou ", ["p2-ease","sèvitid"], " ak anpyètman, limite jan yo itilize tè a."],
+        p3: ["Yon ", ["p3-lien","privilèj"], " se yon reklamasyon finansye ki garanti peman yon ", ["p3-debt","dèt"], ". Si dèt la pa peye, moun ki gen privilèj la ka fòse pou yo ", ["p3-sold","vann"], " pwopriyete a. Yon privilèj se sèlman yon dwa sou valè a, se pa ", ["p3-own","pwopriyete"], "."],
+        p4: ["Chak privilèj ", ["p4-vol","volontè"], " oswa ", ["p4-invol","envolontè"], ", epi ", ["p4-spec","espesifik"], " (yon sèl pwopriyete) oswa ", ["p4-gen","jeneral"], " (tout byen pwopriyetè a). Yon ", ["p4-mort","prè ipotekè"], " volontè e espesifik; yon privilèj taks envolontè e espesifik; yon privilèj ", ["p4-judg","jidisyè"], " envolontè e jeneral."],
+        p5: ["Lè gen plizyè privilèj, ", ["p5-prio","priyorite"], " a anjeneral swiv règ «premye nan tan, premye nan dwa»: lòd anrejistreman. Eksepsyon prensipal la: privilèj ", ["p5-tax","taks"], " yo peye anvan, kèlkeswa lè yo te anrejistre. Yon privilèj dwe ", ["p5-clear","retire"], " anvan yo vann pwopriyete a ak yon ", ["p5-title","tit"], " ki klè."]
+      },
+      ru: {
+        t: 'Залоги и обременения', h2: 'Две группы обременений', h3: 'Виды залогов', figCap: 'Рис. 4.2 - Две группы обременений',
+        p1: ["", ["p1-enc","Обременение"], " - это любое ", ["p1-claim","требование"], ", сбор или ", ["p1-liab","обязательство"], ", связанное с ", ["p1-prop","недвижимостью"], ": право, которым обладает не собственник. Каждый ", ["p1-lien","залог"], " - это обременение, но не каждое обременение - залог."],
+        p2: ["Обременения делятся на две группы. ", ["p2-fin","Финансовые"], " - ", ["p2-lien","залоги"], " - обеспечивают долг. Нефинансовые, например ", ["p2-ease","сервитуты"], " и посягательства, ограничивают использование земли."],
+        p3: ["", ["p3-lien","Залог"], " - это финансовое требование, обеспечивающее погашение ", ["p3-debt","долга"], ". Если долг не выплачен, держатель залога может добиться, чтобы объект был ", ["p3-sold","продан"], ". Залог - лишь претензия на стоимость, а не ", ["p3-own","право собственности"], "."],
+        p4: ["Каждый залог бывает ", ["p4-vol","добровольным"], " или ", ["p4-invol","принудительным"], ", а также ", ["p4-spec","конкретным"], " (на один объект) или ", ["p4-gen","общим"], " (на всё имущество владельца). ", ["p4-mort","Ипотека"], " - добровольный и конкретный; налоговый залог - принудительный и конкретный; ", ["p4-judg","судебный"], " залог - принудительный и общий."],
+        p5: ["Когда залогов несколько, ", ["p5-prio","приоритет"], " обычно определяется правилом «первый по времени - первый по праву»: порядком регистрации. Главное исключение: ", ["p5-tax","налоговые"], " залоги погашаются первыми, независимо от даты регистрации. Залог должен быть ", ["p5-clear","снят"], " до продажи объекта с чистым ", ["p5-title","правом собственности"], "."]
+      },
+      fr: {
+        t: 'Privilèges et charges', h2: 'Deux familles de charges', h3: 'Types de privilèges', figCap: 'Fig. 4.2 - Les deux familles de charges',
+        p1: ["Une ", ["p1-enc","charge"], " est toute ", ["p1-claim","créance"], ", redevance ou ", ["p1-liab","obligation"], " grevant un ", ["p1-prop","bien"], " : un droit détenu par une personne qui n’est pas le propriétaire. Tout ", ["p1-lien","privilège"], " est une charge, mais toute charge n’est pas un privilège."],
+        p2: ["Les charges se divisent en deux groupes. Les ", ["p2-fin","financières"], " -les ", ["p2-lien","privilèges"], "- garantissent une dette. Les non financières, comme les ", ["p2-ease","servitudes"], " et les empiètements, limitent l’usage du terrain."],
+        p3: ["Un ", ["p3-lien","privilège"], " est une créance financière qui garantit le paiement d’une ", ["p3-debt","dette"], ". Si la dette n’est pas payée, le créancier peut forcer la ", ["p3-sold","vente"], " du bien. Un privilège n’est qu’un droit sur la valeur, pas la ", ["p3-own","propriété"], "."],
+        p4: ["Tout privilège est ", ["p4-vol","volontaire"], " ou ", ["p4-invol","involontaire"], ", et ", ["p4-spec","spécifique"], " (un seul bien) ou ", ["p4-gen","général"], " (tous les biens du propriétaire). Une ", ["p4-mort","hypothèque"], " est volontaire et spécifique ; un privilège fiscal est involontaire et spécifique ; un privilège ", ["p4-judg","judiciaire"], " est involontaire et général."],
+        p5: ["Lorsqu’il existe plusieurs privilèges, la ", ["p5-prio","priorité"], " suit en général la règle « premier dans le temps, premier en droit » : l’ordre d’enregistrement. L’exception clé : les privilèges ", ["p5-tax","fiscaux"], " sont payés en premier, quelle que soit la date d’enregistrement. Un privilège doit être ", ["p5-clear","levé"], " avant de vendre le bien avec un ", ["p5-title","titre"], " clair."]
+      },
+      de: {
+        t: 'Pfandrechte und Belastungen', h2: 'Zwei Gruppen von Belastungen', h3: 'Arten von Pfandrechten', figCap: 'Abb. 4.2 - Die zwei Gruppen von Belastungen',
+        p1: ["Eine ", ["p1-enc","Belastung"], " ist jeder ", ["p1-claim","Anspruch"], ", jede Gebühr oder ", ["p1-liab","Verbindlichkeit"], " an einer ", ["p1-prop","Immobilie"], ": ein Recht, das jemand hat, der nicht der Eigentümer ist. Jedes ", ["p1-lien","Pfandrecht"], " ist eine Belastung, aber nicht jede Belastung ist ein Pfandrecht."],
+        p2: ["Belastungen teilen sich in zwei Gruppen. ", ["p2-fin","Finanzielle"], " -die ", ["p2-lien","Pfandrechte"], "- sichern eine Schuld. Nicht-finanzielle, wie ", ["p2-ease","Dienstbarkeiten"], " und Überbauten, beschränken die Nutzung des Grundstücks."],
+        p3: ["Ein ", ["p3-lien","Pfandrecht"], " ist ein finanzieller Anspruch, der die Zahlung einer ", ["p3-debt","Schuld"], " sichert. Wird die Schuld nicht bezahlt, kann der Gläubiger den ", ["p3-sold","Verkauf"], " der Immobilie erzwingen. Ein Pfandrecht ist nur ein Anspruch auf den Wert, nicht das ", ["p3-own","Eigentum"], "."],
+        p4: ["Jedes Pfandrecht ist ", ["p4-vol","freiwillig"], " oder ", ["p4-invol","unfreiwillig"], " und ", ["p4-spec","speziell"], " (eine bestimmte Immobilie) oder ", ["p4-gen","allgemein"], " (das gesamte Vermögen des Eigentümers). Eine ", ["p4-mort","Hypothek"], " ist freiwillig und speziell; ein Steuerpfandrecht ist unfreiwillig und speziell; ein ", ["p4-judg","Urteilspfandrecht"], " ist unfreiwillig und allgemein."],
+        p5: ["Bei mehreren Pfandrechten richtet sich die ", ["p5-prio","Rangfolge"], " meist nach «zuerst in der Zeit, zuerst im Recht»: der Reihenfolge der Eintragung. Die wichtige Ausnahme: ", ["p5-tax","Steuer"], "-Pfandrechte werden zuerst bezahlt, unabhängig vom Eintragungsdatum. Ein Pfandrecht muss ", ["p5-clear","gelöscht"], " werden, bevor die Immobilie mit einwandfreiem ", ["p5-title","Eigentumstitel"], " verkauft werden kann."]
+      },
+      it: {
+        t: 'Vincoli e gravami', h2: 'Due famiglie di gravami', h3: 'Tipi di vincoli', figCap: 'Fig. 4.2 - Le due famiglie di gravami',
+        p1: ["Un ", ["p1-enc","gravame"], " è qualsiasi ", ["p1-claim","diritto"], ", onere o ", ["p1-liab","obbligazione"], " gravante su un ", ["p1-prop","immobile"], ": un diritto detenuto da chi non è il proprietario. Ogni ", ["p1-lien","vincolo"], " è un gravame, ma non ogni gravame è un vincolo."],
+        p2: ["I gravami si dividono in due gruppi. Quelli ", ["p2-fin","finanziari"], " -i ", ["p2-lien","vincoli"], "- garantiscono un debito. Quelli non finanziari, come le ", ["p2-ease","servitù"], " e le invasioni, limitano l’uso del terreno."],
+        p3: ["Un ", ["p3-lien","vincolo"], " è una pretesa finanziaria che garantisce il pagamento di un ", ["p3-debt","debito"], ". Se il debito non viene pagato, il creditore può forzare la ", ["p3-sold","vendita"], " dell’immobile. Un vincolo è solo un diritto sul valore, non la ", ["p3-own","proprietà"], "."],
+        p4: ["Ogni vincolo è ", ["p4-vol","volontario"], " o ", ["p4-invol","involontario"], ", e ", ["p4-spec","specifico"], " (un singolo immobile) o ", ["p4-gen","generale"], " (tutti i beni del proprietario). Un’", ["p4-mort","ipoteca"], " è volontaria e specifica; un vincolo fiscale è involontario e specifico; un vincolo ", ["p4-judg","giudiziario"], " è involontario e generale."],
+        p5: ["Quando esistono più vincoli, la ", ["p5-prio","priorità"], " segue di solito la regola «primo nel tempo, primo nel diritto»: l’ordine di registrazione. L’eccezione principale: i vincoli ", ["p5-tax","fiscali"], " sono pagati per primi, indipendentemente da quando sono stati registrati. Un vincolo deve essere ", ["p5-clear","estinto"], " prima di vendere l’immobile con un ", ["p5-title","titolo"], " libero."]
+      },
+      zh: {
+        t: '留置权与产权负担', h2: '产权负担的两大类', h3: '留置权的种类', figCap: '图 4.2 - 产权负担的两大类',
+        p1: ["", ["p1-enc","产权负担"], "是指附着于", ["p1-prop","房产"], "上的任何", ["p1-claim","主张"], "、费用或", ["p1-liab","义务"], "--即非所有人持有的一种权利。每一项", ["p1-lien","留置权"], "都是产权负担，但并非每项产权负担都是留置权。"],
+        p2: ["产权负担分为两类。", ["p2-fin","财务类"], "--即", ["p2-lien","留置权"], "--用来担保债务。非财务类，例如", ["p2-ease","地役权"], "和越界，则限制土地的使用。"],
+        p3: ["", ["p3-lien","留置权"], "是一种担保", ["p3-debt","债务"], "偿还的财务主张。如果债务未偿还，留置权人可以强制", ["p3-sold","出售"], "该房产。留置权只是对价值的主张，并非", ["p3-own","所有权"], "。"],
+        p4: ["每项留置权要么是", ["p4-vol","自愿"], "的，要么是", ["p4-invol","非自愿"], "的；要么是", ["p4-spec","特定"], "的（针对单一房产），要么是", ["p4-gen","概括"], "的（针对业主全部财产）。", ["p4-mort","抵押贷款"], "是自愿且特定的；税务留置权是非自愿且特定的；", ["p4-judg","判决"], "留置权是非自愿且概括的。"],
+        p5: ["当存在多项留置权时，", ["p5-prio","优先顺序"], "通常遵循「时间在先，权利在先」：即登记的先后顺序。关键例外：", ["p5-tax","税务"], "留置权最先受偿，无论何时登记。留置权必须先", ["p5-clear","解除"], "，房产才能以清晰的", ["p5-title","产权"], "出售。"]
+      },
+      ar: {
+        t: 'الامتيازات والالتزامات العقارية', h2: 'مجموعتان من الالتزامات', h3: 'أنواع الامتيازات', figCap: 'شكل 4.2 - مجموعتا الالتزامات',
+        p1: [["p1-enc","الالتزام العقاري"], " هو أي ", ["p1-claim","مطالبة"], " أو رسم أو ", ["p1-liab","التزام"], " مرتبط بـ", ["p1-prop","العقار"], ": حق يملكه شخص ليس هو المالك. كل ", ["p1-lien","امتياز"], " هو التزام، لكن ليس كل التزام امتيازًا."],
+        p2: ["تنقسم الالتزامات إلى مجموعتين. ", ["p2-fin","المالية"], " -أي ", ["p2-lien","الامتيازات"], "- تضمن سداد دين. وغير المالية، مثل ", ["p2-ease","حقوق الارتفاق"], " والتعديات، تحدّ من استخدام الأرض."],
+        p3: ["", ["p3-lien","الامتياز"], " مطالبة مالية تضمن سداد ", ["p3-debt","دين"], ". وإذا لم يُسدَّد الدين، يمكن لصاحب الامتياز إجبار العقار على أن ", ["p3-sold","يُباع"], ". الامتياز مجرد حق على القيمة، وليس ", ["p3-own","ملكية"], "."],
+        p4: ["كل امتياز إما ", ["p4-vol","طوعي"], " أو ", ["p4-invol","غير طوعي"], "، وإما ", ["p4-spec","خاص"], " (عقار واحد) أو ", ["p4-gen","عام"], " (جميع أملاك المالك). ", ["p4-mort","الرهن العقاري"], " طوعي وخاص؛ وامتياز الضرائب غير طوعي وخاص؛ وامتياز ", ["p4-judg","حكم المحكمة"], " غير طوعي وعام."],
+        p5: ["عند وجود عدة امتيازات، تتبع ", ["p5-prio","الأولوية"], " عادةً قاعدة «الأسبق زمنًا هو الأسبق حقًا»: أي ترتيب التسجيل. الاستثناء المهم: امتيازات ", ["p5-tax","الضرائب"], " تُسدَّد أولًا بغضّ النظر عن وقت تسجيلها. يجب ", ["p5-clear","إزالة"], " الامتياز قبل بيع العقار بـ", ["p5-title","سند ملكية"], " خالٍ."]
+      },
+      tl: {
+        t: 'Mga Lien at Encumbrance', h2: 'Dalawang uri ng encumbrance', h3: 'Mga uri ng lien', figCap: 'Pigura 4.2 - Ang dalawang uri ng encumbrance',
+        p1: ["Ang ", ["p1-enc","encumbrance"], " ay anumang ", ["p1-claim","paghahabol"], ", singil, o ", ["p1-liab","obligasyon"], " na nakakabit sa isang ", ["p1-prop","ari-arian"], ": isang karapatang hawak ng hindi may-ari. Bawat ", ["p1-lien","lien"], " ay encumbrance, ngunit hindi lahat ng encumbrance ay lien."],
+        p2: ["Nahahati ang encumbrance sa dalawang grupo. Ang ", ["p2-fin","pinansyal"], " -ang mga ", ["p2-lien","lien"], "- ay sumisiguro sa isang utang. Ang hindi pinansyal, tulad ng ", ["p2-ease","easement"], " at pag-encroach, ay naglilimita sa paggamit ng lupa."],
+        p3: ["Ang ", ["p3-lien","lien"], " ay isang pinansyal na paghahabol na sumisiguro sa pagbabayad ng ", ["p3-debt","utang"], ". Kung hindi nabayaran ang utang, maaaring ipilit ng may-hawak ng lien na ", ["p3-sold","ibenta"], " ang ari-arian. Ang lien ay karapatan lamang sa halaga, hindi ", ["p3-own","pagmamay-ari"], "."],
+        p4: ["Bawat lien ay ", ["p4-vol","boluntaryo"], " o ", ["p4-invol","hindi boluntaryo"], ", at ", ["p4-spec","tiyak"], " (isang ari-arian) o ", ["p4-gen","pangkalahatan"], " (lahat ng ari-arian ng may-ari). Ang ", ["p4-mort","mortgage"], " ay boluntaryo at tiyak; ang tax lien ay hindi boluntaryo at tiyak; ang ", ["p4-judg","judgment"], " lien ay hindi boluntaryo at pangkalahatan."],
+        p5: ["Kapag maraming lien, ang ", ["p5-prio","prayoridad"], " ay karaniwang sumusunod sa «una sa panahon, una sa karapatan»: ang pagkakasunod ng pagrehistro. Mahalagang eksepsiyon: ang ", ["p5-tax","buwis"], " na lien ay binabayaran muna, kahit kailan pa nairehistro. Dapat ", ["p5-clear","alisin"], " ang lien bago ibenta ang ari-arian nang may malinaw na ", ["p5-title","titulo"], "."]
+      }
+    };
+
+    // ════════════ Word-card data ════════════
+    var DICT: Record<string, { type: string; ipa: string; lemma?: string }> = {
+      lien:        { type: 'pro', ipa: '[liːn]' },
+      encumbrance: { type: 'pro', ipa: '[ɪnˈkʌmbrəns]' },
+      title:       { type: 'pro', ipa: '[ˈtaɪtl̩]' },
+      easement:    { type: 'pro', ipa: '[ˈiːzmənt]' },
+      mortgage:  { type: 'common', ipa: '[ˈmɔːɡɪdʒ]' },
+      liability: { type: 'common', ipa: '[ˌlaɪəˈbɪləti]' },
+      claim:     { type: 'common', ipa: '[kleɪm]' },
+      property:  { type: 'common', ipa: '[ˈprɒpəti]' },
+      debt:      { type: 'common', ipa: '[det]' },
+      paid:      { type: 'common', ipa: '[peɪ]', lemma: 'pay' },
+      sold:      { type: 'common', ipa: '[sel]', lemma: 'sell' },
+      cleared:   { type: 'common', ipa: '[klɪə]', lemma: 'clear' },
+      voluntary:   { type: 'common', ipa: '[ˈvɒləntri]' },
+      involuntary: { type: 'common', ipa: '[ɪnˈvɒləntri]' },
+      specific:    { type: 'common', ipa: '[spəˈsɪfɪk]' },
+      general:     { type: 'common', ipa: '[ˈdʒenrəl]' },
+      priority:    { type: 'common', ipa: '[praɪˈɒrəti]' },
+      judgment:    { type: 'common', ipa: '[ˈdʒʌdʒmənt]' }
+    };
+    var EN_DEF: Record<string, string> = {
+      lien: 'A lien is a legal right of a creditor to hold the debtor’s property until a debt is paid. It must be cleared when the property is sold.',
+      encumbrance: 'An encumbrance is any claim or right that a third party holds against a property, limiting its use or sale.',
+      title: 'Title is the legal evidence of a person’s ownership of real property; it can be transferred or encumbered.',
+      easement: 'An easement is the right to use another person’s land for a specific purpose - such as access or utilities - without owning it.'
+    };
+    var CARD: Record<string, { pro: Record<string, { tr: string; def: string }>; common: Record<string, string> }> = {
+      es: { pro: {
+        lien: { tr: 'gravamen', def: 'Un gravamen es el derecho legal de un acreedor a retener el bien del deudor hasta que se pague la deuda; debe cancelarse al vender la propiedad.' },
+        encumbrance: { tr: 'carga / gravamen', def: 'Una carga es cualquier derecho o reclamación de un tercero sobre una propiedad que limita su uso o su venta.' },
+        title: { tr: 'título (de propiedad)', def: 'El título es la prueba legal de la propiedad de un inmueble; puede transferirse o gravarse.' },
+        easement: { tr: 'servidumbre', def: 'Una servidumbre es el derecho a usar el terreno de otra persona para un fin concreto -acceso, servicios- sin ser su dueño.' }
+      }, common: {
+        mortgage: 'hipoteca; crédito hipotecario', liability: 'obligación; responsabilidad', claim: 'reclamación; derecho; demanda', property: 'propiedad; inmueble', debt: 'deuda', paid: 'pagar; abonar', sold: 'vender', cleared: 'cancelar; saldar', voluntary: 'voluntario; con consentimiento', involuntary: 'involuntario; sin consentimiento', specific: 'específico (un solo bien)', general: 'general (todos los bienes)', priority: 'prioridad; orden de cobro', judgment: 'sentencia; fallo judicial'
+      } },
+      pt: { pro: {
+        lien: { tr: 'ônus / garantia real', def: 'Um ônus é o direito legal de um credor de reter o bem do devedor até a dívida ser paga; deve ser quitado na venda do imóvel.' },
+        encumbrance: { tr: 'encargo / ônus', def: 'Um encargo é qualquer direito ou reivindicação de terceiros sobre um imóvel que limita seu uso ou venda.' },
+        title: { tr: 'título (de propriedade)', def: 'O título é a prova legal da propriedade de um imóvel; pode ser transferido ou onerado.' },
+        easement: { tr: 'servidão', def: 'Uma servidão é o direito de usar o terreno de outra pessoa para um fim específico -acesso, utilidades- sem ser o dono.' }
+      }, common: {
+        mortgage: 'hipoteca; financiamento imobiliário', liability: 'obrigação; responsabilidade; passivo', claim: 'reivindicação; direito; alegação', property: 'propriedade; imóvel', debt: 'dívida', paid: 'pagar', sold: 'vender', cleared: 'quitar; liquidar', voluntary: 'voluntário; com consentimento', involuntary: 'involuntário; sem consentimento', specific: 'específico (um único bem)', general: 'geral (todos os bens)', priority: 'prioridade; ordem de pagamento', judgment: 'sentença; decisão judicial'
+      } },
+      ht: { pro: {
+        lien: { tr: 'privilèj', def: 'Yon privilèj se dwa legal yon kreyansye genyen pou kenbe byen debitè a jiskaske dèt la peye; li dwe retire lè yo vann pwopriyete a.' },
+        encumbrance: { tr: 'chaj sou pwopriyete', def: 'Yon chaj se nenpòt dwa oswa reklamasyon yon twazyèm pati genyen sou yon pwopriyete ki limite itilizasyon oswa vant li.' },
+        title: { tr: 'tit pwopriyete', def: 'Tit la se prèv legal ke yon moun posede yon byen imobilye; yo ka transfere oswa grve li.' },
+        easement: { tr: 'sèvitid', def: 'Yon sèvitid se dwa pou itilize tè yon lòt moun pou yon rezon presi -pasaj, sèvis- san ou pa mèt li.' }
+      }, common: {
+        mortgage: 'prè ipotekè; ipotèk', liability: 'obligasyon; responsablite', claim: 'reklamasyon; dwa; demand', property: 'pwopriyete; byen imobilye', debt: 'dèt', paid: 'peye', sold: 'vann', cleared: 'retire; efase', voluntary: 'volontè', involuntary: 'envolontè', specific: 'espesifik (yon sèl byen)', general: 'jeneral (tout byen)', priority: 'priyorite; lòd peman', judgment: 'jijman; desizyon tribinal'
+      } },
+      ru: { pro: {
+        lien: { tr: 'залоговое удержание', def: 'Залоговое удержание - право кредитора удерживать имущество должника до погашения долга; снимается при продаже объекта.' },
+        encumbrance: { tr: 'обременение', def: 'Обременение - любое право или требование третьих лиц на объект, ограничивающее его использование или продажу.' },
+        title: { tr: 'право собственности (титул)', def: 'Титул - юридическое подтверждение права собственности лица на недвижимость; может передаваться или обременяться.' },
+        easement: { tr: 'сервитут', def: 'Сервитут - право пользоваться чужим участком в определённых целях (проход, коммуникации) без права собственности.' }
+      }, common: {
+        mortgage: 'ипотека, ипотечный кредит', liability: 'обязательство, ответственность; задолженность', claim: 'требование, претензия; иск', property: 'имущество, собственность; объект', debt: 'долг, задолженность', paid: 'платить, оплачивать', sold: 'продавать', cleared: 'снимать, погашать (долг)', voluntary: 'добровольный; с согласия', involuntary: 'принудительный; без согласия', specific: 'конкретный (один объект)', general: 'общий (всё имущество)', priority: 'приоритет; очерёдность погашения', judgment: 'судебное решение'
+      } },
+      fr: { pro: {
+        lien: { tr: 'privilège / sûreté', def: 'Un privilège est le droit légal d’un créancier de retenir le bien du débiteur jusqu’au paiement de la dette; il doit être levé lors de la vente.' },
+        encumbrance: { tr: 'charge', def: 'Une charge est tout droit ou créance qu’un tiers détient sur un bien et qui en limite l’usage ou la vente.' },
+        title: { tr: 'titre de propriété', def: 'Le titre est la preuve légale de la propriété d’un bien immobilier ; il peut être transféré ou grevé.' },
+        easement: { tr: 'servitude', def: 'Une servitude est le droit d’utiliser le terrain d’autrui dans un but précis -accès, réseaux- sans en être propriétaire.' }
+      }, common: {
+        mortgage: 'hypothèque; prêt immobilier', liability: 'obligation; responsabilité; dette', claim: 'créance; revendication; réclamation', property: 'propriété; bien', debt: 'dette', paid: 'payer; régler', sold: 'vendre', cleared: 'lever; apurer', voluntary: 'volontaire; avec consentement', involuntary: 'involontaire; sans consentement', specific: 'spécifique (un seul bien)', general: 'général (tous les biens)', priority: 'priorité; ordre de paiement', judgment: 'jugement; décision judiciaire'
+      } },
+      de: { pro: {
+        lien: { tr: 'Pfandrecht', def: 'Ein Pfandrecht ist das gesetzliche Recht eines Gläubigers, das Eigentum des Schuldners bis zur Zahlung der Schuld zu belasten; es muss beim Verkauf gelöscht werden.' },
+        encumbrance: { tr: 'Belastung', def: 'Eine Belastung ist jedes Recht oder jeder Anspruch eines Dritten an einer Immobilie, der ihre Nutzung oder ihren Verkauf einschränkt.' },
+        title: { tr: 'Eigentumstitel', def: 'Der Eigentumstitel ist der rechtliche Nachweis des Eigentums an einer Immobilie; er kann übertragen oder belastet werden.' },
+        easement: { tr: 'Dienstbarkeit', def: 'Eine Dienstbarkeit ist das Recht, fremdes Land für einen bestimmten Zweck -Zugang, Versorgung- zu nutzen, ohne es zu besitzen.' }
+      }, common: {
+        mortgage: 'Hypothek; Baudarlehen', liability: 'Verbindlichkeit; Haftung', claim: 'Anspruch; Forderung', property: 'Eigentum; Immobilie', debt: 'Schuld; Verbindlichkeit', paid: 'zahlen; bezahlen', sold: 'verkaufen', cleared: 'tilgen; löschen', voluntary: 'freiwillig; mit Zustimmung', involuntary: 'unfreiwillig; ohne Zustimmung', specific: 'speziell (eine Immobilie)', general: 'allgemein (gesamtes Vermögen)', priority: 'Rangfolge; Reihenfolge der Zahlung', judgment: 'Gerichtsurteil'
+      } },
+      it: { pro: {
+        lien: { tr: 'vincolo / privilegio', def: 'Un vincolo è il diritto legale di un creditore di trattenere il bene del debitore finché il debito non è pagato; deve essere estinto alla vendita.' },
+        encumbrance: { tr: 'gravame', def: 'Un gravame è qualsiasi diritto o pretesa di terzi su un immobile che ne limita l’uso o la vendita.' },
+        title: { tr: 'titolo (di proprietà)', def: 'Il titolo è la prova legale della proprietà di un immobile; può essere trasferito o gravato.' },
+        easement: { tr: 'servitù', def: 'Una servitù è il diritto di usare il terreno altrui per uno scopo specifico -accesso, utenze- senza possederlo.' }
+      }, common: {
+        mortgage: 'ipoteca; mutuo ipotecario', liability: 'obbligazione; responsabilità; passività', claim: 'diritto; pretesa; rivendicazione', property: 'proprietà; immobile', debt: 'debito', paid: 'pagare', sold: 'vendere', cleared: 'estinguere; saldare', voluntary: 'volontario; con consenso', involuntary: 'involontario; senza consenso', specific: 'specifico (un solo bene)', general: 'generale (tutti i beni)', priority: 'priorità; ordine di pagamento', judgment: 'sentenza; decisione giudiziaria'
+      } },
+      zh: { pro: {
+        lien: { tr: '留置权', def: '留置权是债权人在债务清偿前对债务人财产享有的合法权利；房产出售时必须解除。' },
+        encumbrance: { tr: '产权负担', def: '产权负担是第三方对房产享有的任何权利或主张，会限制其使用或出售。' },
+        title: { tr: '产权（所有权凭证）', def: '产权是个人对不动产拥有所有权的法律证明，可以转让或设定负担。' },
+        easement: { tr: '地役权', def: '地役权是为特定目的（如通行或公共设施）使用他人土地的权利，但不拥有该土地。' }
+      }, common: {
+        mortgage: '抵押贷款；按揭', liability: '负债；责任；义务', claim: '债权；主张；索赔', property: '财产；房产', debt: '债务；欠款', paid: '支付；偿还', sold: '出售；卖', cleared: '清除；偿清', voluntary: '自愿的；经同意', involuntary: '非自愿的；未经同意', specific: '特定的（单一房产）', general: '概括的（全部财产）', priority: '优先顺序；受偿次序', judgment: '判决；法院裁定'
+      } },
+      ar: { pro: {
+        lien: { tr: 'امتياز / حق حجز', def: 'الامتياز هو حق قانوني للدائن في الاحتفاظ بعقار المدين حتى سداد الدين، ويجب إزالته عند بيع العقار.' },
+        encumbrance: { tr: 'التزام عقاري', def: 'الالتزام العقاري هو أي حق أو مطالبة لطرف ثالث على العقار تحدّ من استخدامه أو بيعه.' },
+        title: { tr: 'سند الملكية', def: 'سند الملكية هو الدليل القانوني على ملكية الشخص للعقار، ويمكن نقله أو رهنه.' },
+        easement: { tr: 'حق ارتفاق', def: 'حق الارتفاق هو حق استخدام أرض شخص آخر لغرض محدد -كالمرور أو المرافق- دون امتلاكها.' }
+      }, common: {
+        mortgage: 'رهن عقاري؛ قرض عقاري', liability: 'التزام؛ مسؤولية؛ دين', claim: 'مطالبة؛ دعوى؛ ادعاء', property: 'ملكية؛ عقار', debt: 'دين؛ مديونية', paid: 'يدفع؛ يسدد', sold: 'يبيع', cleared: 'يزيل؛ يسدد', voluntary: 'طوعي؛ بموافقة', involuntary: 'غير طوعي؛ بلا موافقة', specific: 'خاص (عقار واحد)', general: 'عام (جميع الأملاك)', priority: 'الأولوية؛ ترتيب السداد', judgment: 'حكم قضائي'
+      } },
+      tl: { pro: {
+        lien: { tr: 'lien (pananagutan sa ari-arian)', def: 'Ang lien ay legal na karapatan ng pinagkakautangan na hawakan ang ari-arian ng may utang hanggang mabayaran ito; dapat itong maalis kapag naibenta ang ari-arian.' },
+        encumbrance: { tr: 'encumbrance (pasanin)', def: 'Ang encumbrance ay anumang karapatan o paghahabol ng ikatlong partido sa ari-arian na naglilimita sa paggamit o pagbebenta nito.' },
+        title: { tr: 'titulo (ng pagmamay-ari)', def: 'Ang titulo ay legal na patunay ng pagmamay-ari ng isang ari-arian; maaari itong ilipat o lagyan ng pasanin.' },
+        easement: { tr: 'easement (karapatang gamitin)', def: 'Ang easement ay karapatang gamitin ang lupa ng iba para sa tiyak na layunin -daanan, utilidad- nang hindi ito pag-aari.' }
+      }, common: {
+        mortgage: 'mortgage; sangla; pautang sa bahay', liability: 'obligasyon; pananagutan; utang', claim: 'paghahabol; karapatan; angkin', property: 'ari-arian; pag-aari', debt: 'utang', paid: 'magbayad', sold: 'magbenta', cleared: 'alisin; bayaran nang lubos', voluntary: 'boluntaryo; may pahintulot', involuntary: 'hindi boluntaryo; walang pahintulot', specific: 'tiyak (isang ari-arian)', general: 'pangkalahatan (lahat ng ari-arian)', priority: 'prayoridad; pagkakasunod ng bayad', judgment: 'hatol; desisyon ng korte'
+      } }
+    };
+
+    function q(name: string) { return root.querySelector('[data-el="' + name + '"]') as HTMLElement | null; }
+
+    // ════════════ State ════════════
+    var curLang = 'ru';
+    var parallelOn = true;
+    (function () {
+      var l = (new URLSearchParams(location.search).get('lang') || 'es').toLowerCase();
+      if (l === 'off' || l === 'en') { parallelOn = false; } else if (LMETA[l]) { curLang = l; }
+      var lbl = q('langLabel');
+      if (lbl) { lbl.textContent = parallelOn ? LMETA[curLang].label : (l === 'en' ? 'EN' : 'Translate'); }
+      if (!parallelOn) { var ch = q('langChip'); if (ch) { ch.style.background = '#fff'; ch.style.color = '#047857'; ch.style.borderColor = 'rgba(52,211,153,.55)'; } }
+    })();
+    var CARD_EL = root;
+
+    function esc(t: string) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+    function renderSegs(arr: Seg[]) {
+      return arr.map(function (s) {
+        return typeof s === 'string' ? esc(s) : '<span data-el="' + s[0] + '">' + esc(s[1]) + '</span>';
+      }).join('');
+    }
+    function plainSegs(arr: Seg[]) { return arr.map(function (s) { return typeof s === 'string' ? s : s[1]; }).join(''); }
+
+    function clearHl() {
+      root.querySelectorAll('.hl').forEach(function (e) { e.classList.remove('hl'); });
+      root.querySelectorAll('.rw-on').forEach(function (e) { e.classList.remove('rw-on'); });
+    }
+
+    // Переводы чипов диаграммы Fig. 4.2 (под каждым английским термином)
+    var CHIP_I18N: Record<string, Record<string, string>> = {
+      es: { mortgage: 'Hipoteca', propertyTax: 'Impuesto predial', mechanics: 'Gravamen del constructor', judgment: 'Gravamen judicial', easements: 'Servidumbres', encroachments: 'Invasiones', deedRestrictions: 'Restricciones de escritura' },
+      pt: { mortgage: 'Hipoteca', propertyTax: 'Imposto predial', mechanics: 'Ônus do construtor', judgment: 'Ônus judicial', easements: 'Servidões', encroachments: 'Invasões', deedRestrictions: 'Restrições da escritura' },
+      ht: { mortgage: 'Prè ipotekè', propertyTax: 'Taks pwopriyete', mechanics: 'Privilèj konstriktè', judgment: 'Privilèj jidisyè', easements: 'Sèvitid', encroachments: 'Anpyètman', deedRestrictions: 'Restriksyon nan tit' },
+      ru: { mortgage: 'Ипотека', propertyTax: 'Налог на недвижимость', mechanics: 'Залог подрядчика', judgment: 'Судебный залог', easements: 'Сервитуты', encroachments: 'Посягательства', deedRestrictions: 'Ограничения по акту' },
+      fr: { mortgage: 'Hypothèque', propertyTax: 'Taxe foncière', mechanics: 'Privilège de l’entrepreneur', judgment: 'Privilège judiciaire', easements: 'Servitudes', encroachments: 'Empiétements', deedRestrictions: 'Restrictions de l’acte' },
+      de: { mortgage: 'Hypothek', propertyTax: 'Grundsteuer', mechanics: 'Bauhandwerker-Pfandrecht', judgment: 'Gerichtliches Pfandrecht', easements: 'Dienstbarkeiten', encroachments: 'Grenzüberbauten', deedRestrictions: 'Urkundliche Beschränkungen' },
+      it: { mortgage: 'Ipoteca', propertyTax: 'Imposta sugli immobili', mechanics: 'Privilegio dell’appaltatore', judgment: 'Privilegio giudiziale', easements: 'Servitù', encroachments: 'Sconfinamenti', deedRestrictions: 'Vincoli dell’atto' },
+      zh: { mortgage: '抵押贷款', propertyTax: '房产税', mechanics: '承建商留置权', judgment: '判决留置权', easements: '地役权', encroachments: '越界占用', deedRestrictions: '契约限制' },
+      ar: { mortgage: 'رهن عقاري', propertyTax: 'ضريبة عقارية', mechanics: 'امتياز المقاول', judgment: 'امتياز قضائي', easements: 'حقوق الارتفاق', encroachments: 'التعديات', deedRestrictions: 'قيود سند الملكية' },
+      tl: { mortgage: 'Mortgage', propertyTax: 'Buwis sa ari-arian', mechanics: 'Lien ng kontratista', judgment: 'Lien mula sa hatol', easements: 'Mga easement', encroachments: 'Paglabag sa hangganan', deedRestrictions: 'Restriksyon sa titulo' }
+    };
+
+    // ════════════ Language application ════════════
+    function applyLang() {
+      var L = I18N[curLang], dir = LMETA[curLang].dir;
+      function setLine(name: string, val: string) { var el = q(name); if (!el) { return; } el.textContent = val; el.setAttribute('dir', dir); }
+      setLine('tTR', L.t); setLine('h2TR', L.h2); setLine('h3TR', L.h3); setLine('figCap', L.figCap);
+      var chips = CHIP_I18N[curLang] || {};
+      root.querySelectorAll<HTMLElement>('.figchip-tr').forEach(function (el) {
+        el.textContent = chips[el.getAttribute('data-chip') || ''] || '';
+        el.setAttribute('dir', dir);
+      });
+      (['p1', 'p2', 'p3', 'p4', 'p5'] as const).forEach(function (k) {
+        var el = q(k + 'TR');
+        if (!el) { return; }
+        el.innerHTML = renderSegs(L[k]); el.setAttribute('dir', dir);
+        el.removeAttribute('data-rw');
+      });
+      root.querySelectorAll<HTMLElement>('.ru-line').forEach(function (e) { e.style.display = parallelOn ? '' : 'none'; });
+    }
+    function buildLangMenu() {
+      var menu = q('langMenu');
+      if (!menu) { return; }
+      menu.innerHTML = '';
+      LANG_ORDER.forEach(function (code) {
+        var m = LMETA[code];
+        var b = document.createElement('button');
+        b.className = 'langOpt';
+        if (code === 'ar') { b.setAttribute('dir', 'rtl'); }
+        var active = (code === 'off') ? !parallelOn : (parallelOn && curLang === code);
+        b.innerHTML = '<span>' + m.native + '</span><span class="langTick" style="color:#34D399; font-weight:800; display:' + (active ? 'inline' : 'none') + ';">✓</span>';
+        b.onclick = function (e) { e.stopPropagation(); pickLang(code); };
+        menu!.appendChild(b);
+      });
+    }
+    function toggleLangMenu(e: Event) {
+      e.stopPropagation();
+      var m = q('langMenu');
+      if (!m) { return; }
+      if (m.style.display === 'block') { m.style.display = 'none'; return; }
+      buildLangMenu(); m.style.display = 'block';
+    }
+    function pickLang(code: string) {
+      if (code === 'off') { parallelOn = false; }
+      else { parallelOn = true; curLang = code; }
+      applyLang();
+      var chip = q('langChip'); var lbl = q('langLabel');
+      if (lbl) { lbl.textContent = parallelOn ? LMETA[curLang].label : 'Translate'; }
+      if (chip) {
+        if (parallelOn) { chip.style.background = '#34D399'; chip.style.color = '#fff'; chip.style.borderColor = '#34D399'; }
+        else { chip.style.background = '#fff'; chip.style.color = '#047857'; chip.style.borderColor = 'rgba(52,211,153,.55)'; }
+      }
+      if (!parallelOn) { clearHl(); var wb = q('wbar'); if (wb) { wb.style.display = 'none'; } }
+      var menu = q('langMenu'); if (menu) { menu.style.display = 'none'; }
+      // notify the page that the demo language changed
+      root.dispatchEvent(new CustomEvent('l7:langPicked', { bubbles: true, detail: { lang: parallelOn ? curLang : 'off' } }));
+    }
+
+    // ════════════ Word card ════════════
+    var cardRuOn = false, cardKey = '';
+    var addedWords: Record<string, boolean> = {};
+    function positionSheet() {
+      var sheet = q('wcSheet');
+      if (!sheet) { return; }
+      sheet.style.top = (CARD_EL.clientHeight - sheet.offsetHeight) + 'px';
+    }
+    function setCardRu(on: boolean) {
+      cardRuOn = on;
+      var dru = q('wcDefRU'); if (dru) { dru.style.display = 'block'; }
+      positionSheet();
+    }
+    function syncCardBtn() {
+      var b = q('wcAddBtn');
+      if (!b) { return; }
+      if (addedWords[cardKey]) {
+        b.style.background = '#fff'; b.style.color = '#047857'; b.style.border = '1.5px solid #34D399'; b.style.boxShadow = 'none';
+        b.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> In dictionary';
+      } else {
+        b.style.background = 'linear-gradient(135deg,#4ade80,#22c55e)'; b.style.color = '#fff'; b.style.border = 'none'; b.style.boxShadow = '0 4px 16px rgba(52,211,153,.32)';
+        b.innerHTML = 'Add &amp; learn';
+      }
+    }
+    function cardAdd(ev?: Event) {
+      if (ev) { ev.stopPropagation(); }
+      if (!cardKey) { return; }
+      var nowOn = !addedWords[cardKey];
+      if (nowOn) { addedWords[cardKey] = true; } else { delete addedWords[cardKey]; }
+      syncCardBtn();
+      if (nowOn) { showToast(); }
+    }
+    function openWordCard(ev?: Event) {
+      if (ev) { ev.stopPropagation(); }
+      var raw = currentWord ? currentWord.textContent!.trim() : 'lien';
+      var key = raw.toLowerCase().replace(/[^a-z]/g, '');
+      // plural → singular fallback (easements → easement, liens → lien)
+      if (!DICT[key] && key.length > 3 && key.charAt(key.length - 1) === 's' && DICT[key.slice(0, -1)]) { key = key.slice(0, -1); }
+      cardKey = key;
+      var d = DICT[key] || { type: 'common', ipa: '' };
+      var lc = CARD[curLang] || CARD.ru;
+      var dir = LMETA[curLang].dir;
+      var wcWord = q('wcWord'); if (wcWord) { wcWord.textContent = d.lemma || key; }
+      var wcIpa = q('wcIpa'); if (wcIpa) { wcIpa.textContent = d.ipa || ''; }
+      var pro = q('wcPro'), common = q('wcCommon');
+      if (d.type === 'pro') {
+        if (pro) { pro.style.display = 'block'; } if (common) { common.style.display = 'none'; }
+        var pdata = (lc.pro && lc.pro[key]) ? lc.pro[key] : { tr: '', def: '' };
+        var tr = q('wcTr');
+        if (tr) { tr.textContent = '- ' + (pdata.tr || ''); tr.setAttribute('dir', dir); }
+        var defEN = q('wcDefEN'); if (defEN) { defEN.textContent = EN_DEF[key] || ''; }
+        var dru = q('wcDefRU');
+        if (dru) { dru.textContent = pdata.def || ''; dru.setAttribute('dir', dir); }
+        setCardRu(false);
+      } else {
+        if (common) { common.style.display = 'block'; } if (pro) { pro.style.display = 'none'; }
+        var raw2 = (lc.common && lc.common[key]) ? lc.common[key] : (d.lemma || key);
+        var list = raw2.split(';').map(function (s) { return s.trim(); }).filter(Boolean);
+        var mEl = q('wcMeanings');
+        if (mEl) {
+          mEl.setAttribute('dir', dir);
+          mEl.innerHTML = list.map(function (m) {
+            return '<div style="display:flex; gap:7px;"><span style="color:#9aa1a0;">-</span><span>' + esc(m) + '</span></div>';
+          }).join('');
+        }
+      }
+      syncCardBtn();
+      var wb = q('wbar'); if (wb) { wb.style.display = 'none'; }
+      var scrim = q('wcScrim'); if (scrim) { scrim.style.display = 'block'; }
+      requestAnimationFrame(positionSheet);
+    }
+    function closeWordCard(ev?: Event) {
+      if (ev) { ev.stopPropagation(); }
+      var sheet = q('wcSheet'); if (sheet) { sheet.style.top = CARD_EL.clientHeight + 'px'; }
+      var scrim = q('wcScrim'); if (scrim) { scrim.style.display = 'none'; }
+      clearHl();
+    }
+
+    // ════════════ Tap a word ════════════
+    var currentWord: HTMLElement | null = null;
+    function tapWord(ev: Event, el: HTMLElement) {
+      ev.stopPropagation();
+      currentWord = el;
+      var anchor = el.getAttribute('data-ru');
+      var ru = (anchor && parallelOn) ? (root.querySelector('[data-el="' + anchor + '"]') as HTMLElement | null) : null;
+      var bar = q('wbar');
+      if (!bar) { return; }
+      if (el.classList.contains('hl')) { clearHl(); bar.style.display = 'none'; return; }
+      clearHl();
+      el.classList.add('hl');
+      if (ru) { ru.classList.add('hl'); }
+      syncAddBtn();
+      bar.style.visibility = 'hidden'; bar.style.display = 'flex';
+      var cr = CARD_EL.getBoundingClientRect();
+      var wr = el.getBoundingClientRect();
+      var bw = bar.offsetWidth, bh = bar.offsetHeight;
+      var wcx = wr.left - cr.left + wr.width / 2;
+      var arrow = q('warrow');
+      var top = wr.top - cr.top - bh - 9;
+      if (top < 8) { top = 8; }
+      var left = Math.max(8, Math.min(wcx - bw / 2, CARD_EL.clientWidth - bw - 8));
+      bar.style.left = left + 'px'; bar.style.top = top + 'px';
+      if (arrow) { arrow.style.left = (wcx - left) + 'px'; }
+      bar.style.visibility = 'visible';
+    }
+    function closeBar(ev?: Event) { if (ev) { ev.stopPropagation(); } clearHl(); var wb = q('wbar'); if (wb) { wb.style.display = 'none'; } }
+    function syncAddBtn() {
+      var w = currentWord ? currentWord.textContent!.trim().toLowerCase().replace(/[^a-z]/g, '') : '';
+      var on = !!addedWords[w];
+      var book = q('addBook'), spine = q('addSpine'), letter = q('addA');
+      var pad = q('addPad'), pip = q('addPip'), pipIcon = q('addPipIcon');
+      if (on) {
+        if (book) { book.setAttribute('fill', '#34D399'); book.setAttribute('stroke', '#34D399'); } if (spine) { spine.setAttribute('stroke', '#ffffff'); } if (letter) { letter.setAttribute('fill', '#ffffff'); }
+        if (pad) { pad.style.background = 'rgba(52,211,153,.14)'; } if (pip) { pip.style.background = '#34D399'; }
+        if (pipIcon) { pipIcon.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>'; }
+      } else {
+        if (book) { book.setAttribute('fill', 'none'); book.setAttribute('stroke', '#3a3a4a'); } if (spine) { spine.setAttribute('stroke', '#3a3a4a'); } if (letter) { letter.setAttribute('fill', '#3a3a4a'); }
+        if (pad) { pad.style.background = 'transparent'; } if (pip) { pip.style.background = '#aab0b4'; }
+        if (pipIcon) { pipIcon.innerHTML = '<line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>'; }
+      }
+    }
+    function showToast() {
+      var t = q('toast');
+      if (!t) { return; }
+      t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)';
+      setTimeout(function () { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(12px)'; }, 1400);
+    }
+    function addWord(ev: Event) {
+      ev.stopPropagation();
+      var w = currentWord ? currentWord.textContent!.trim().toLowerCase().replace(/[^a-z]/g, '') : '';
+      if (!w) { return; }
+      var nowOn = !addedWords[w];
+      if (nowOn) { addedWords[w] = true; } else { delete addedWords[w]; }
+      syncAddBtn();
+      if (nowOn) { showToast(); }
+    }
+    document.addEventListener('click', function () {
+      if (!autoOn) { closeBar(); }
+      var menu = q('langMenu'); if (menu) { menu.style.display = 'none'; }
+    });
+
+    // ════════════ Bookmark ════════════
+    var saved = false;
+    function toggleSave(ev?: Event) {
+      if (ev) { ev.stopPropagation(); }
+      saved = !saved;
+      var bm = q('bm');
+      if (!bm) { return; }
+      bm.setAttribute('fill', saved ? '#34D399' : 'none');
+      bm.setAttribute('stroke', saved ? '#34D399' : '#c9ced2');
+      bm.style.transform = 'scale(1.2)';
+      setTimeout(function () { bm.style.transform = 'scale(1)'; }, 160);
+    }
+
+    // ════════════ Auto read-aloud ════════════
+    var autoOn = false, autoTimer: ReturnType<typeof setTimeout> | null = null;
+    var autoSteps: { el: HTMLElement | null; say: string; lang: string }[] = [], autoIdx = -1;
+    var LETTER = /[A-Za-zА-Яа-яЁё؀-ۿ一-鿿]/;
+    function setAutoBtn(on: boolean) {
+      var b = q('autoBtn');
+      if (!b) { return; }
+      if (on) { b.style.background = '#34D399'; b.style.borderColor = '#34D399';
+        b.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="#fff"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg>'; }
+      else { b.style.background = '#fff'; b.style.borderColor = 'rgba(52,211,153,.55)';
+        b.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="#047857"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>'; }
+    }
+    function speak(text: string, lang: string) {
+      if (!window.speechSynthesis) { return; }
+      try { window.speechSynthesis.cancel();
+        var u = new SpeechSynthesisUtterance(text); u.lang = lang; u.rate = (lang === 'en-US') ? 0.85 : 0.95;
+        window.speechSynthesis.speak(u);
+      } catch (e) {}
+    }
+    var EN_SAY: Record<string, string> = {
+      p1: 'An encumbrance is any claim, charge, or liability attached to real property - a right held by someone who is not the owner. Every lien is an encumbrance, but not every encumbrance is a lien.',
+      p2: 'Encumbrances split into two groups. Financial ones - liens - secure a debt. Non-financial ones, like easements and encroachments, limit how the land is used.',
+      p3: 'A lien is a financial claim that secures the payment of a debt. If the debt is not paid, the lien holder can force the property to be sold. A lien is only a claim on value - it is not ownership.',
+      p4: 'Every lien is either voluntary or involuntary, and either specific - one named property - or general - all the owner\'s property. A mortgage is voluntary and specific; a property tax lien is involuntary and specific; a judgment lien is involuntary and general.',
+      p5: 'When several liens exist, priority usually follows first in time, first in right - the order they were recorded. The key exception: property tax liens are paid first, no matter when they were recorded. A lien must be cleared before the property can be sold with clear title.'
+    };
+    function buildSteps() {
+      var tl = LMETA[curLang].tts;
+      var steps: { el: HTMLElement | null; say: string; lang: string }[] = [];
+      (['p1', 'p2', 'p3', 'p4', 'p5'] as const).forEach(function (k) {
+        steps.push({ el: q(k + 'EN'), say: EN_SAY[k], lang: 'en-US' });
+        if (parallelOn) { steps.push({ el: q(k + 'TR'), say: plainSegs(I18N[curLang][k]), lang: tl }); }
+      });
+      return steps;
+    }
+    function startAuto() {
+      autoOn = true; setAutoBtn(true);
+      var wb = q('wbar'); if (wb) { wb.style.display = 'none'; }
+      autoSteps = buildSteps(); autoIdx = -1; autoStep();
+    }
+    function stopAuto() {
+      autoOn = false; if (autoTimer) { clearTimeout(autoTimer); } clearHl();
+      if (window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch (e) {} }
+      setAutoBtn(false);
+    }
+    function autoStep() {
+      if (!autoOn) { return; }
+      clearHl(); autoIdx++;
+      if (autoIdx >= autoSteps.length) { stopAuto(); return; }
+      runStep(autoSteps[autoIdx]);
+    }
+    function wordSpansOf(el: HTMLElement) {
+      if (!el.getAttribute('data-rw')) {
+        Array.prototype.slice.call(el.childNodes).forEach(function (n: ChildNode) {
+          if (n.nodeType === 3 && LETTER.test(n.nodeValue || '')) {
+            var frag = document.createDocumentFragment();
+            (n.nodeValue || '').split(/(\s+)/).forEach(function (tok) {
+              if (LETTER.test(tok)) { var s = document.createElement('span'); s.className = 'rw'; s.textContent = tok; frag.appendChild(s); }
+              else { frag.appendChild(document.createTextNode(tok)); }
+            });
+            el.replaceChild(frag, n);
+          }
+        });
+        el.setAttribute('data-rw', '1');
+      }
+      return Array.prototype.slice.call(el.querySelectorAll('span')).filter(function (e: HTMLElement) {
+        return !e.querySelector('span') && LETTER.test(e.textContent || '');
+      });
+    }
+    function runStep(s: { el: HTMLElement | null; say: string; lang: string }) {
+      if (s.el) {
+        var sa = q('scrollArea');
+        if (sa) {
+          var er = s.el.getBoundingClientRect(), sr = sa.getBoundingClientRect();
+          if (er.top < sr.top + 20 || er.bottom > sr.bottom - 20) { sa.scrollTop += (er.top - sr.top) - 40; }
+        }
+      }
+      var spans = wordSpansOf(s.el!);
+      speak(s.say, s.lang);
+      var total = 480 + 42 * s.say.length;
+      var per = Math.max(150, total / Math.max(1, spans.length));
+      var i = -1;
+      function adv() {
+        if (!autoOn) { return; }
+        if (i >= 0 && spans[i]) { spans[i].classList.remove('rw-on'); }
+        i++;
+        if (i >= spans.length) { autoTimer = setTimeout(autoStep, 260); return; }
+        spans[i].classList.add('rw-on');
+        autoTimer = setTimeout(adv, per);
+      }
+      adv();
+    }
+    function toggleAuto(ev: Event) { ev.stopPropagation(); if (autoOn) { stopAuto(); } else { startAuto(); } }
+
+    // ════════════ Make every English word tappable ════════════
+    function enableAllWords(name: string) {
+      var p = q(name);
+      if (!p) { return; }
+      Array.prototype.slice.call(p.childNodes).forEach(function (node: ChildNode) {
+        if (node.nodeType !== 3) { return; }
+        var frag = document.createDocumentFragment();
+        (node.nodeValue || '').split(/(\s+)/).forEach(function (tok) {
+          var core = /[A-Za-z]/.test(tok) ? tok.match(/^([^A-Za-z]*)([A-Za-z][A-Za-z'’-]*)([^A-Za-z]*)$/) : null;
+          if (core) {
+            if (core[1]) { frag.appendChild(document.createTextNode(core[1])); }
+            var s = document.createElement('span'); s.className = 'tw'; s.textContent = core[2]; s.onclick = function (e) { tapWord(e, s); };
+            frag.appendChild(s);
+            if (core[3]) { frag.appendChild(document.createTextNode(core[3])); }
+          } else { frag.appendChild(document.createTextNode(tok)); }
+        });
+        p!.replaceChild(frag, node);
+      });
+    }
+
+    // ════════════ Wire events (former inline on* handlers) ════════════
+    root.querySelectorAll<HTMLElement>('.tw[data-ru]').forEach(function (el) {
+      el.addEventListener('click', function (e) { tapWord(e, el); });
+    });
+    var hdrBack = root.querySelector('.hdr-back'); if (hdrBack) { hdrBack.addEventListener('click', function (e) { e.stopPropagation(); }); }
+    root.querySelectorAll('.nav-btn').forEach(function (b) { b.addEventListener('click', function (e) { e.stopPropagation(); }); });
+    var langChip = q('langChip'); if (langChip) { langChip.addEventListener('click', toggleLangMenu); }
+    var langMenu = q('langMenu'); if (langMenu) { langMenu.addEventListener('click', function (e) { e.stopPropagation(); }); }
+    var autoBtn = q('autoBtn'); if (autoBtn) { autoBtn.addEventListener('click', toggleAuto); }
+    var saveBtn = q('saveBtn'); if (saveBtn) { saveBtn.addEventListener('click', toggleSave); }
+    var addBtn = q('addBtn'); if (addBtn) { addBtn.addEventListener('click', addWord); }
+    var wcOpenBtn = q('wcOpenBtn'); if (wcOpenBtn) { wcOpenBtn.addEventListener('click', openWordCard); }
+    var wbarCloseBtn = q('wbarCloseBtn'); if (wbarCloseBtn) { wbarCloseBtn.addEventListener('click', closeBar); }
+    // pronounce buttons in wbar + word card sheet (originally onclick="event.stopPropagation()")
+    var wbarPron = root.querySelector('[data-el="wbar"] .wbtn[title="Pronounce"]'); if (wbarPron) { wbarPron.addEventListener('click', function (e) { e.stopPropagation(); }); }
+    var wcProBtn = q('wcProBtn'); if (wcProBtn) { wcProBtn.addEventListener('click', function (e) { e.stopPropagation(); }); }
+    var wcScrim = q('wcScrim'); if (wcScrim) { wcScrim.addEventListener('click', closeWordCard); }
+    var wcCloseBtn = q('wcCloseBtn'); if (wcCloseBtn) { wcCloseBtn.addEventListener('click', closeWordCard); }
+    var wcAddBtn = q('wcAddBtn'); if (wcAddBtn) { wcAddBtn.addEventListener('click', cardAdd); }
+
+    (['p1EN', 'p2EN', 'p3EN', 'p4EN', 'p5EN']).forEach(enableAllWords);
+
+    // init
+    applyLang();
+
+    // ════════════ Авто-демо (demo prop): экран некликабельный, «палец» проигрывает сценарий по циклу ════════════
+    (function () {
+      if (root.dataset.demo !== '1') { return; }
+      var stage = CARD_EL;
+      stage.style.pointerEvents = 'none';                 // глушим пользовательское взаимодействие
+      var sa = q('scrollArea');
+      if (!sa) { return; }
+
+      var dot = document.createElement('div');
+      dot.setAttribute('aria-hidden', 'true');
+      dot.style.cssText = 'position:absolute; left:-60px; top:-60px; width:24px; height:24px; border-radius:50%; background:rgba(26,26,46,.5); border:2.5px solid #fff; box-shadow:0 3px 10px rgba(0,0,0,.3); z-index:90; pointer-events:none; opacity:0; transition:left .6s cubic-bezier(.45,.05,.25,1), top .6s cubic-bezier(.45,.05,.25,1), opacity .3s, transform .14s ease;';
+      stage.appendChild(dot);
+
+      function sleep(ms: number) { return new Promise<void>(function (r) { setTimeout(r, ms); }); }
+      function ev() { return { stopPropagation: function () {} } as unknown as Event; }
+      function posOf(el: HTMLElement) {
+        var cr = stage.getBoundingClientRect(), r = el.getBoundingClientRect();
+        return { x: r.left - cr.left + r.width / 2, y: r.top - cr.top + r.height / 2 };
+      }
+      function moveTo(el: HTMLElement | null) {
+        if (!el) { return sleep(0); }
+        var p = posOf(el);
+        dot.style.opacity = '1';
+        dot.style.left = (p.x - 12) + 'px';
+        dot.style.top = (p.y - 12) + 'px';
+        return sleep(700);
+      }
+      function ripple() {
+        var x = parseFloat(dot.style.left) + 12, y = parseFloat(dot.style.top) + 12;
+        var r = document.createElement('div');
+        r.style.cssText = 'position:absolute; left:' + (x - 11) + 'px; top:' + (y - 11) + 'px; width:22px; height:22px; border-radius:50%; border:2px solid rgba(52,211,153,.9); z-index:89; pointer-events:none; opacity:.9; transform:scale(.4); transition:transform .5s ease-out, opacity .5s ease-out;';
+        stage.appendChild(r);
+        requestAnimationFrame(function () { r.style.transform = 'scale(2.6)'; r.style.opacity = '0'; });
+        setTimeout(function () { r.remove(); }, 540);
+      }
+      function tap() {
+        dot.style.transform = 'scale(.72)';
+        ripple();
+        return sleep(160).then(function () { dot.style.transform = 'scale(1)'; return sleep(160); });
+      }
+      function smoothScroll(to: number, dur: number) {
+        return new Promise<void>(function (res) {
+          var from = sa!.scrollTop, d = to - from, t0: number | null = null;
+          if (Math.abs(d) < 1) { return res(); }
+          function step(ts: number) {
+            if (t0 === null) { t0 = ts; }
+            var p = Math.min(1, (ts - t0) / dur);
+            var e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+            sa!.scrollTop = from + d * e;
+            if (p < 1) { requestAnimationFrame(step); } else { res(); }
+          }
+          requestAnimationFrame(step);
+        });
+      }
+      function reset() {
+        try { closeWordCard(ev()); } catch (e) {}
+        try { closeBar(ev()); } catch (e) {}
+        try { addedWords = {}; } catch (e) {}
+        try { if (saved) { toggleSave(ev()); } } catch (e) {}
+        sa!.scrollTop = 0;
+      }
+      var firstWord = root.querySelector('.tw[data-ru="p1-enc"]') as HTMLElement | null;
+
+      function cycle() {
+        reset();
+        dot.style.opacity = '0';
+        return sleep(800)
+          .then(function () { return moveTo(firstWord); })
+          .then(tap)
+          .then(function () { if (firstWord) { tapWord(ev(), firstWord); } return sleep(720); })
+          .then(function () { return moveTo(q('wcOpenBtn')); })
+          .then(tap)
+          .then(function () { openWordCard(ev()); return sleep(820); })
+          .then(function () { return moveTo(q('wcAddBtn')); })
+          .then(tap)
+          .then(function () { cardAdd(ev()); return sleep(1250); })
+          .then(function () { return moveTo(q('wcCloseBtn')); })
+          .then(tap)
+          .then(function () { closeWordCard(ev()); return sleep(720); })
+          .then(function () { dot.style.opacity = '0'; return smoothScroll(Math.min(sa!.scrollHeight - sa!.clientHeight, 300), 1000); })
+          .then(function () { return sleep(560); })
+          .then(function () { return moveTo(q('saveBtn')); })
+          .then(tap)
+          .then(function () { toggleSave(ev()); return sleep(1350); })
+          .then(function () { dot.style.opacity = '0'; return sleep(850); });
+      }
+      var running = false;
+      function loop() { if (!running) { return; } cycle().then(function () { if (running) { loop(); } }); }
+      // play/pause come from the page as CustomEvents on root (was window postMessage __l7:'libdemo')
+      root.addEventListener('l7:play', function () { if (!running) { running = true; loop(); } });
+      root.addEventListener('l7:pause', function () { running = false; });
+    })();
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-screen="textbook"]').forEach(initTextbook);
+</script>

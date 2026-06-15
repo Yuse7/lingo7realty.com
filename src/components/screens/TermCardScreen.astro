@@ -1,0 +1,404 @@
+---
+// Inline demo screen: a flashcard ("term card") with parallel translation, card
+// flip (front = recall prompt / back = answer), spaced-repetition grade buttons
+// (Again / Hard / Got it), a tappable example word with a floating toolbar
+// (Listen / Translate / Add to L7 Dictionary) and a "Saved" toast.
+// Was public/screens/Term Card Screen.html (an iframe). Inlined into the light
+// DOM so Yandex Webvisor can record it.
+//
+// PATTERN (shared by all inline screens):
+//  - root <div data-screen="term"> ; language is read at runtime from ?lang
+//  - all former id="x" → data-el="x"; JS reaches them via root.querySelector
+//  - styles in one <style is:global> block, every selector prefixed with
+//    [data-screen="term"] (isolates from other screens AND covers elements
+//    created in JS, which Astro's scoped CSS would miss); @keyframes prefixed
+//  - script is a module (runs once); initTerm(root) holds all state/functions
+//    in a closure and is mapped over every [data-screen="term"] instance
+//
+// DEMO mode: instead of the original ?demo=1 query, the auto-flip demo turns on
+// when data-demo="1" (the `demo` prop). The parent orchestrator starts/stops the
+// finger via l7:play / l7:pause CustomEvents dispatched on the root (formerly
+// window postMessage {__l7:'libdemo', action:'play'|'pause'}).
+const { demo = false } = Astro.props;
+---
+<div class="screen" data-screen="term" data-demo={demo ? '1' : undefined} style="width:320px; height:600px; overflow:hidden; border-radius:24px; background:#fff; position:relative; color:#1a1a2e; font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; box-shadow:0 12px 40px rgba(0,0,0,.12); display:flex; flex-direction:column;">
+
+  <!-- Header -->
+  <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding:15px 16px 13px; border-bottom:1px solid #eef0f0; flex-shrink:0;">
+    <span style="line-height:1.18; min-width:0;">
+      <span style="display:block; font-size:13.5px; font-weight:700; color:#1a1a2e;">Term Cards · Title &amp; Liens</span>
+      <span data-el="secTr" class="tr-line" style="display:block; font-size:10.5px; color:#a3a8af; margin-top:1px;">Карточки терминов · Титул и залоги</span>
+    </span>
+    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex-shrink:0;">
+      <div style="position:relative;">
+        <button data-el="langChip" title="Translation language" style="display:flex; align-items:center; gap:4px; border:1.5px solid #34D399; background:#34D399; color:#fff; font-family:inherit; font-size:11px; font-weight:700; padding:0 8px; height:26px; border-radius:999px; cursor:pointer; white-space:nowrap;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="3" y1="12" x2="21" y2="12"></line><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"></path></svg>
+          <span data-el="langLabel">RU</span><span style="font-size:8px;">▾</span>
+        </button>
+        <div data-el="langMenu" style="display:none; position:absolute; top:calc(100% + 6px); right:0; background:#fff; border:1px solid #eef0f0; border-radius:13px; box-shadow:0 8px 26px rgba(26,26,46,.18); padding:5px; min-width:168px; max-height:420px; overflow-y:auto; z-index:60;"></div>
+      </div>
+      <span style="font-size:11.5px; font-weight:600; color:#9aa0a8; font-variant-numeric:tabular-nums;">Card 7 / 107</span>
+    </div>
+  </div>
+
+  <!-- Card area -->
+  <div style="flex:1; min-height:0; overflow-y:auto; padding:16px 16px 8px; display:flex; flex-direction:column;">
+    <div style="position:relative; background:#fff; border:1px solid #eef0f0; border-radius:16px; box-shadow:0 8px 26px rgba(52,211,153,.18); padding:16px 16px 17px;">
+      <!-- flip button -->
+      <button data-el="flipBtn" title="Flip card" style="position:absolute; top:9px; right:10px; border:none; background:#f4f6f7; border-radius:50%; width:28px; height:28px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#8a909a; z-index:5;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+      </button>
+
+      <div data-el="backFace">
+      <!-- term -->
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size:28px; font-weight:800; color:#1a1a2e; line-height:1;">Lien</span>
+        <button title="Pronounce" style="border:none; background:#f4f6f7; border-radius:50%; width:34px; height:34px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1a1a2e" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="#1a1a2e" stroke="none"></polygon><path d="M15.5 8.5a5 5 0 0 1 0 7"></path><path d="M19 5a10 10 0 0 1 0 14"></path></svg>
+        </button>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+        <span class="tr-line" style="font-size:14px; color:#6b7280;"><span data-el="termBadge" class="ru-badge" style="display:inline-flex; align-items:center; font-size:8.5px; font-weight:800; letter-spacing:.04em; color:#047857; background:rgba(52,211,153,.14); border-radius:4px; padding:1px 5px; margin-right:5px; vertical-align:1px;">RU</span><span data-el="termTr">залоговое удержание</span></span>
+        <span style="font-size:10.5px; color:#9aa0a8; background:#f3f5f7; border-radius:5px; padding:2px 7px; font-weight:600;">noun</span>
+      </div>
+
+      <div style="height:1px; background:#eef0f0; margin:14px 0;"></div>
+
+      <!-- definition -->
+      <p style="margin:0; font-size:14px; line-height:1.5; color:#2b2f3a;">A legal claim against property as security for a debt - it must be cleared when the property is sold.</p>
+      <p class="tr-line" style="margin:6px 0 0; font-size:12px; line-height:1.45; color:#9aa0a8;"><span class="ru-badge" style="display:inline-flex; align-items:center; font-size:8.5px; font-weight:800; letter-spacing:.04em; color:#047857; background:rgba(52,211,153,.14); border-radius:4px; padding:1px 5px; margin-right:5px; vertical-align:1px;" data-el="defBadge">RU</span><span data-el="defTr">Юридическое требование к объекту как обеспечение долга - снимается при продаже.</span></p>
+
+      <!-- example -->
+      <div style="margin-top:14px; background:#f7faf9; border-radius:12px; padding:11px 13px;">
+        <div style="font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:#34D399; margin-bottom:6px;">Example</div>
+        <p data-el="exEN" style="margin:0; font-size:13.5px; line-height:1.5; color:#1a1a2e;">The bank placed a <span data-el="lienWord" class="tw" style="background:#d4f4e4; color:#047857; border-radius:4px; padding:0 3px; border-bottom:1px dotted #7ed0a8;">lien</span> on the house until the loan is repaid.</p>
+        <p class="tr-line" style="margin:6px 0 0; font-size:11.5px; line-height:1.45; color:#9aa0a8;"><span class="ru-badge" style="display:inline-flex; align-items:center; font-size:8px; font-weight:800; letter-spacing:.04em; color:#047857; background:rgba(52,211,153,.14); border-radius:4px; padding:1px 5px; margin-right:5px; vertical-align:1px;" data-el="exBadge">RU</span><span data-el="exTr">Банк наложил залог на дом, пока кредит не погашен.</span></p>
+
+        <!-- floating word toolbar -->
+        <div data-el="wbar" style="display:none; position:absolute; z-index:30; background:#fff; border-radius:11px; box-shadow:0 8px 24px rgba(26,26,46,.2); border:1px solid #eef0f0; padding:5px 6px; align-items:center; gap:3px;">
+          <button class="wmini" title="Listen" style="display:flex; align-items:center; gap:4px; border:none; background:none; cursor:pointer; font-family:inherit; padding:4px 7px; border-radius:8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3a3a4a" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="#3a3a4a" stroke="none"></polygon><path d="M15.5 8.5a5 5 0 0 1 0 7"></path></svg>
+            <span style="font-size:11.5px; color:#3a3a4a; font-weight:600;">Listen</span>
+          </button>
+          <span style="width:1px; height:16px; background:#eef0f0;"></span>
+          <button class="wmini" title="Translate" style="display:flex; align-items:center; gap:4px; border:none; background:none; cursor:pointer; font-family:inherit; padding:4px 7px; border-radius:8px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3a3a4a" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="3" y1="12" x2="21" y2="12"></line><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"></path></svg>
+            <span style="font-size:11.5px; color:#3a3a4a; font-weight:600;">Translate</span>
+          </button>
+          <span style="width:1px; height:16px; background:#eef0f0;"></span>
+          <button data-el="addBtn" class="wmini" title="Add to L7 Dictionary" style="display:flex; align-items:center; gap:4px; border:none; background:none; cursor:pointer; font-family:inherit; padding:4px 7px; border-radius:8px;">
+            <span data-el="addIcon" style="font-size:14px; line-height:1; color:#3a3a4a;">＋</span>
+            <span data-el="addLabel" style="font-size:11.5px; color:#3a3a4a; font-weight:600;">L7 Dictionary</span>
+          </button>
+          <span data-el="warrow" style="position:absolute; top:100%; left:50%; transform:translateX(-50%); width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:6px solid #fff; filter:drop-shadow(0 2px 1px rgba(26,26,46,.08));"></span>
+        </div>
+      </div>
+      </div><!-- /backFace -->
+
+      <div data-el="frontFace" style="display:none; text-align:center; padding:30px 12px 34px;">
+        <div style="display:flex; align-items:center; justify-content:center; gap:10px;">
+          <span style="font-size:34px; font-weight:800; color:#1a1a2e; line-height:1;">Lien</span>
+          <button title="Pronounce" style="border:none; background:#f4f6f7; border-radius:50%; width:34px; height:34px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1a1a2e" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="#1a1a2e" stroke="none"></polygon><path d="M15.5 8.5a5 5 0 0 1 0 7"></path><path d="M19 5a10 10 0 0 1 0 14"></path></svg>
+          </button>
+        </div>
+        <div style="margin-top:9px;"><span style="font-size:10.5px; color:#9aa0a8; background:#f3f5f7; border-radius:5px; padding:2px 7px; font-weight:600;">noun</span></div>
+        <p style="margin:20px 0 16px; font-size:13px; color:#9aa0a8; line-height:1.4;">Recall the meaning, then flip the card.</p>
+        <button data-el="showAnsBtn" style="display:inline-flex; align-items:center; gap:7px; border:1.5px solid #34D399; background:#fff; color:#047857; font-family:inherit; font-size:13px; font-weight:700; padding:9px 18px; border-radius:999px; cursor:pointer;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+          Show answer
+        </button>
+      </div>
+    </div>
+
+    <!-- grade buttons -->
+    <div data-el="gradeRow" style="display:none; gap:8px; margin-top:14px;">
+      <button class="grade" data-grade="again" style="border:1.5px solid #d05656; background:#fff; color:#d05656;">Again</button>
+      <button class="grade" data-grade="hard" style="border:1.5px solid #e3e7e9; background:#fff; color:#6b7280;">Hard</button>
+      <button class="grade" data-grade="got" style="border:none; background:#34D399; color:#fff; box-shadow:0 4px 14px rgba(52,211,153,.3);">Got it ✓</button>
+    </div>
+  </div>
+
+  <!-- footer -->
+  <div style="flex-shrink:0; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 16px 15px; border-top:1px solid #f0f2f3;">
+    <div style="min-width:0; flex:1;">
+      <div style="font-size:11px; font-weight:600; color:#9aa0a8;">Mastered <span style="color:#047857; font-weight:700;">24</span> / 107</div>
+      <div style="height:5px; background:#eef0f0; border-radius:999px; overflow:hidden; margin-top:5px; max-width:150px;">
+        <div style="width:22%; height:100%; background:#34D399; border-radius:999px;"></div>
+      </div>
+    </div>
+    <div style="display:flex; gap:8px; flex-shrink:0;">
+      <button class="nav-arrow" title="Previous">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <button class="nav-arrow" title="Next">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- toast -->
+  <div data-el="toast" style="position:absolute; left:50%; bottom:70px; transform:translateX(-50%) translateY(12px); opacity:0; transition:all .28s; display:flex; align-items:center; gap:7px; padding:9px 15px; background:#1a1a2e; color:#fff; font-size:12px; font-weight:600; border-radius:22px; pointer-events:none; z-index:40; white-space:nowrap;">
+    <span style="color:#34D399;">✓</span> Saved
+  </div>
+
+</div>
+
+<style is:global>
+  [data-screen="term"] .tw { cursor: pointer; }
+  [data-screen="term"] .hl { background: #d4f4e4; color: #047857; border-radius: 4px; padding: 0 2px; border-bottom: 1px dotted transparent; }
+  [data-screen="term"] .grade { flex: 1; border-radius: 12px; padding: 11px 4px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; transition: transform .08s, background .15s; display: flex; align-items: center; justify-content: center; gap: 5px; }
+  [data-screen="term"] .grade:active { transform: scale(.95); }
+  [data-screen="term"] .nav-arrow { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid #e3e7e9; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform .08s, background .15s; }
+  [data-screen="term"] .nav-arrow:active { transform: scale(.9); }
+  [data-screen="term"] .nav-arrow:hover { background: #f5f7f9; }
+</style>
+
+<script>
+  function initTerm(root: HTMLElement) {
+    var LMETA: Record<string, { label: string; native: string; dir: string }> = {
+      off: { label: 'Translate', native: 'English only', dir: 'ltr' },
+      es:  { label: 'ES', native: 'Español', dir: 'ltr' },
+      pt:  { label: 'PT', native: 'Português', dir: 'ltr' },
+      ht:  { label: 'HT', native: 'Kreyòl Ayisyen', dir: 'ltr' },
+      ru:  { label: 'RU', native: 'Русский', dir: 'ltr' },
+      fr:  { label: 'FR', native: 'Français', dir: 'ltr' },
+      de:  { label: 'DE', native: 'Deutsch', dir: 'ltr' },
+      it:  { label: 'IT', native: 'Italiano', dir: 'ltr' },
+      zh:  { label: '中文', native: '中文（普通话）', dir: 'ltr' },
+      ar:  { label: 'AR', native: 'العربية', dir: 'rtl' },
+      tl:  { label: 'TL', native: 'Tagalog', dir: 'ltr' }
+    };
+    var LANG_ORDER = ['off', 'es', 'pt', 'ht', 'ru', 'fr', 'de', 'it', 'zh', 'ar', 'tl'];
+    var T: Record<string, { term: string; def: string; ex: string }> = {
+      es: { term: 'gravamen', def: 'Una reclamación legal sobre un inmueble como garantía de una deuda; debe cancelarse al venderlo.', ex: 'El banco impuso un gravamen sobre la casa hasta que se pague el préstamo.' },
+      pt: { term: 'ônus', def: 'Uma reivindicação legal sobre um imóvel como garantia de uma dívida; deve ser quitado na venda.', ex: 'O banco colocou um ônus sobre a casa até que o empréstimo seja pago.' },
+      ht: { term: 'privilèj', def: 'Yon reklamasyon legal sou yon pwopriyete kòm garanti pou yon dèt; li dwe retire lè yo vann li.', ex: 'Bank lan mete yon privilèj sou kay la jiskaske prè a peye.' },
+      ru: { term: 'залоговое удержание', def: 'Юридическое требование к объекту как обеспечение долга - снимается при продаже.', ex: 'Банк наложил залог на дом, пока кредит не погашен.' },
+      fr: { term: 'privilège', def: 'Une créance légale sur un bien en garantie d’une dette ; il doit être levé lors de la vente.', ex: 'La banque a placé un privilège sur la maison jusqu’au remboursement du prêt.' },
+      de: { term: 'Pfandrecht', def: 'Ein rechtlicher Anspruch auf eine Immobilie als Sicherheit für eine Schuld; beim Verkauf zu löschen.', ex: 'Die Bank trug ein Pfandrecht auf das Haus ein, bis das Darlehen zurückgezahlt ist.' },
+      it: { term: 'vincolo', def: 'Una pretesa legale su un immobile a garanzia di un debito; va estinta alla vendita.', ex: 'La banca ha posto un vincolo sulla casa finché il prestito non sarà rimborsato.' },
+      zh: { term: '留置权', def: '以房产作为债务担保的合法主张--出售时必须解除。', ex: '银行对该房屋设定留置权，直到贷款还清为止。' },
+      ar: { term: 'امتياز', def: 'مطالبة قانونية على عقار كضمان لدين، ويجب إزالتها عند البيع.', ex: 'وضع البنك امتيازًا على المنزل حتى يُسدَّد القرض.' },
+      tl: { term: 'lien', def: 'Legal na paghahabol sa isang ari-arian bilang garantiya ng utang; dapat alisin kapag naibenta.', ex: 'Naglagay ang bangko ng lien sa bahay hanggang mabayaran ang utang.' }
+    };
+
+    var SEC: Record<string, string> = {
+      es: 'Tarjetas de términos · Título y gravámenes',
+      pt: 'Cartões de termos · Título e ônus',
+      ht: 'Kat tèm · Tit ak privilèj',
+      ru: 'Карточки терминов · Титул и залоги',
+      fr: 'Cartes de termes · Titre et privilèges',
+      de: 'Begriffskarten · Eigentum & Pfandrechte',
+      it: 'Schede dei termini · Titolo e vincoli',
+      zh: '术语卡片 · 产权与留置权',
+      ar: 'بطاقات المصطلحات · سند الملكية والامتيازات',
+      tl: 'Mga term card · Titulo at mga lien'
+    };
+
+    function q(name: string) { return root.querySelector('[data-el="' + name + '"]') as HTMLElement | null; }
+
+    // Demo language comes from ?lang on the page URL (site default: Spanish).
+    var curLang = 'es', parallelOn = true;
+    var l = (new URLSearchParams(location.search).get('lang') || 'es').toLowerCase();
+    if (l === 'off' || l === 'en') { parallelOn = false; } else if (LMETA[l]) { curLang = l; }
+    var langLabel = q('langLabel'), langChip = q('langChip'), langMenu = q('langMenu');
+    if (langLabel) { langLabel.textContent = parallelOn ? LMETA[curLang].label : (l === 'en' ? 'EN' : 'Translate'); }
+    if (!parallelOn && langChip) { langChip.style.background = '#fff'; langChip.style.color = '#047857'; langChip.style.borderColor = 'rgba(52,211,153,.55)'; }
+
+    function applyLang() {
+      var dir = LMETA[curLang].dir, t = T[curLang];
+      var tb = q('termBadge'); if (tb) { tb.textContent = LMETA[curLang].label; }
+      var db = q('defBadge'); if (db) { db.textContent = LMETA[curLang].label; }
+      var eb = q('exBadge'); if (eb) { eb.textContent = LMETA[curLang].label; }
+      var tt = q('termTr'); if (tt) { tt.textContent = t.term; tt.setAttribute('dir', dir); }
+      var st = q('secTr'); if (st) { st.textContent = SEC[curLang]; st.setAttribute('dir', dir); }
+      var dt = q('defTr'); if (dt) { dt.textContent = t.def; dt.setAttribute('dir', dir); }
+      var et = q('exTr'); if (et) { et.textContent = t.ex; et.setAttribute('dir', dir); }
+      root.querySelectorAll<HTMLElement>('.tr-line').forEach(function (e) { e.style.display = parallelOn ? '' : 'none'; });
+      if (!parallelOn) { closeBar(); }
+    }
+    function buildLangMenu() {
+      if (!langMenu) { return; }
+      langMenu.innerHTML = '';
+      LANG_ORDER.forEach(function (code) {
+        var m = LMETA[code];
+        var b = document.createElement('button');
+        b.style.cssText = 'display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; border:none; background:none; cursor:pointer; font-family:inherit; font-size:12.5px; font-weight:600; color:#1a1a2e; padding:0 10px; min-height:36px; line-height:1.15; border-radius:9px; text-align:left;';
+        if (code === 'ar') { b.setAttribute('dir', 'rtl'); }
+        b.onmouseover = function () { b.style.background = '#f3f5f7'; };
+        b.onmouseout = function () { b.style.background = 'none'; };
+        var active = (code === 'off') ? !parallelOn : (parallelOn && curLang === code);
+        b.innerHTML = '<span>' + m.native + '</span><span style="color:#34D399; font-weight:800; display:' + (active ? 'inline' : 'none') + ';">✓</span>';
+        b.onclick = function (e) { e.stopPropagation(); pickLang(code); };
+        langMenu!.appendChild(b);
+      });
+    }
+    function toggleLangMenu(e: Event) {
+      e.stopPropagation();
+      if (!langMenu) { return; }
+      if (langMenu.style.display === 'block') { langMenu.style.display = 'none'; return; }
+      buildLangMenu(); langMenu.style.display = 'block';
+    }
+    function pickLang(code: string) {
+      if (code === 'off') { parallelOn = false; } else { parallelOn = true; curLang = code; }
+      applyLang();
+      if (langLabel) { langLabel.textContent = parallelOn ? LMETA[curLang].label : 'Translate'; }
+      if (langChip) {
+        if (parallelOn) { langChip.style.background = '#34D399'; langChip.style.color = '#fff'; langChip.style.borderColor = '#34D399'; }
+        else { langChip.style.background = '#fff'; langChip.style.color = '#047857'; langChip.style.borderColor = 'rgba(52,211,153,.55)'; }
+      }
+      if (langMenu) { langMenu.style.display = 'none'; }
+    }
+
+    // word tap → toolbar
+    var added = false;
+    function tapLien(ev: Event) {
+      ev.stopPropagation();
+      var bar = q('wbar'); if (!bar) { return; }
+      if (bar.style.display === 'flex') { closeBar(); return; }
+      var screen = root;
+      var word = q('lienWord'); if (!word) { return; }
+      bar.style.visibility = 'hidden'; bar.style.display = 'flex';
+      var sr = screen.getBoundingClientRect(), wr = word.getBoundingClientRect();
+      var bw = bar.offsetWidth, bh = bar.offsetHeight;
+      var wcx = wr.left - sr.left + wr.width / 2;
+      var top = wr.top - sr.top - bh - 9;
+      var left = Math.max(8, Math.min(wcx - bw / 2, 320 - bw - 8));
+      bar.style.left = left + 'px'; bar.style.top = top + 'px';
+      var arrow = q('warrow'); if (arrow) { arrow.style.left = (wcx - left) + 'px'; }
+      // self-correct any overflow using the real rendered rect (font-load safe)
+      var rr = bar.getBoundingClientRect();
+      var overR = (rr.right - sr.left) - 312;
+      var overL = 8 - (rr.left - sr.left);
+      var shift = overR > 0 ? -overR : (overL > 0 ? overL : 0);
+      if (shift) { left += shift; bar.style.left = left + 'px'; if (arrow) { arrow.style.left = (wcx - left) + 'px'; } }
+      bar.style.visibility = 'visible';
+    }
+    function closeBar() { var bar = q('wbar'); if (bar) { bar.style.display = 'none'; } }
+    function toggleAdd(ev: Event) {
+      ev.stopPropagation();
+      added = !added;
+      var icon = q('addIcon'), label = q('addLabel');
+      if (added) {
+        if (icon) { icon.textContent = '✓'; icon.style.color = '#34D399'; }
+        if (label) { label.textContent = 'In L7 Dictionary'; label.style.color = '#047857'; }
+        showToast();
+      } else {
+        if (icon) { icon.textContent = '＋'; icon.style.color = '#3a3a4a'; }
+        if (label) { label.textContent = 'L7 Dictionary'; label.style.color = '#3a3a4a'; }
+      }
+    }
+    function showToast() {
+      var t = q('toast'); if (!t) { return; }
+      t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)';
+      setTimeout(function () { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(12px)'; }, 1400);
+    }
+
+    // grade buttons
+    function grade(ev: Event) {
+      ev.stopPropagation();
+      var btn = ev.currentTarget as HTMLElement;
+      btn.style.transform = 'scale(.95)';
+      setTimeout(function () { btn.style.transform = 'scale(1)'; }, 130);
+    }
+
+    // card flip (default = FRONT / no answer shown)
+    var flipped = false;
+    function setFace() {
+      var back = q('backFace'); if (back) { back.style.display = flipped ? 'block' : 'none'; }
+      var front = q('frontFace'); if (front) { front.style.display = flipped ? 'none' : 'block'; }
+      var gr = q('gradeRow'); if (gr) { gr.style.display = flipped ? 'flex' : 'none'; }
+      var fb = q('flipBtn');
+      if (fb) {
+        fb.style.display = flipped ? 'flex' : 'none';
+        fb.style.background = '#f4f6f7'; fb.style.color = '#8a909a';
+      }
+      closeBar();
+    }
+    function flipCard(ev?: Event) {
+      if (ev) { ev.stopPropagation(); }
+      flipped = !flipped;
+      setFace();
+    }
+
+    // wire events (former inline on* handlers)
+    if (langChip) { langChip.addEventListener('click', toggleLangMenu); }
+    if (langMenu) { langMenu.addEventListener('click', function (e) { e.stopPropagation(); }); }
+    var flipBtn = q('flipBtn'); if (flipBtn) { flipBtn.addEventListener('click', flipCard); }
+    var showAnsBtn = q('showAnsBtn'); if (showAnsBtn) { showAnsBtn.addEventListener('click', flipCard); }
+    var lienWord = q('lienWord'); if (lienWord) { lienWord.addEventListener('click', tapLien); }
+    var addBtn = q('addBtn'); if (addBtn) { addBtn.addEventListener('click', toggleAdd); }
+    // word-toolbar mini buttons that only stopPropagation (Listen / Translate)
+    root.querySelectorAll<HTMLElement>('[data-el="wbar"] .wmini').forEach(function (b) {
+      if (b !== addBtn) { b.addEventListener('click', function (e) { e.stopPropagation(); }); }
+    });
+    // pronounce buttons + nav arrows (formerly inline onclick=event.stopPropagation())
+    root.querySelectorAll<HTMLElement>('button[title="Pronounce"], .nav-arrow').forEach(function (b) {
+      b.addEventListener('click', function (e) { e.stopPropagation(); });
+    });
+    root.querySelectorAll<HTMLElement>('.grade').forEach(function (b) {
+      b.addEventListener('click', grade);
+    });
+
+    root.addEventListener('click', function () {
+      closeBar();
+      if (langMenu) { langMenu.style.display = 'none'; }
+    });
+
+    applyLang();
+    setFace();
+
+    // ════════════ Авто-демо (data-demo="1"): экран некликабельный, палец листает карточку по циклу (родитель шлёт l7:play/l7:pause) ════════════
+    (function () {
+      if (root.dataset.demo !== '1') { return; }
+      var stage = root;
+      stage.style.pointerEvents = 'none';
+
+      var dot = document.createElement('div');
+      dot.setAttribute('aria-hidden', 'true');
+      dot.style.cssText = 'position:absolute; left:-60px; top:-60px; width:24px; height:24px; border-radius:50%; background:rgba(26,26,46,.5); border:2.5px solid #fff; box-shadow:0 3px 10px rgba(0,0,0,.3); z-index:90; pointer-events:none; opacity:0; transition:left .45s cubic-bezier(.45,.05,.25,1), top .45s cubic-bezier(.45,.05,.25,1), opacity .25s, transform .14s ease;';
+      stage.appendChild(dot);
+
+      function sleep(ms: number) { return new Promise<void>(function (r) { setTimeout(r, ms); }); }
+      function moveTo(el: HTMLElement | null) {
+        if (!el) { return sleep(0); }
+        var cr = stage.getBoundingClientRect(), r = el.getBoundingClientRect();
+        var x = r.left - cr.left + r.width / 2, y = r.top - cr.top + r.height / 2;
+        dot.style.opacity = '1'; dot.style.left = (x - 12) + 'px'; dot.style.top = (y - 12) + 'px';
+        return sleep(520);
+      }
+      function ripple() {
+        var x = parseFloat(dot.style.left) + 12, y = parseFloat(dot.style.top) + 12;
+        var r = document.createElement('div');
+        r.style.cssText = 'position:absolute; left:' + (x - 11) + 'px; top:' + (y - 11) + 'px; width:22px; height:22px; border-radius:50%; border:2px solid rgba(52,211,153,.9); z-index:89; pointer-events:none; opacity:.9; transform:scale(.4); transition:transform .5s ease-out, opacity .5s ease-out;';
+        stage.appendChild(r);
+        requestAnimationFrame(function () { r.style.transform = 'scale(2.6)'; r.style.opacity = '0'; });
+        setTimeout(function () { r.remove(); }, 540);
+      }
+      function tap() {
+        dot.style.transform = 'scale(.72)'; ripple();
+        return sleep(120).then(function () { dot.style.transform = 'scale(1)'; return sleep(110); });
+      }
+      try { if (flipped) { flipped = false; setFace(); } } catch (e) {}
+
+      // Листаем карточку каждые ~5 c, пока блок в зоне видимости (родитель шлёт play/pause через l7:play/l7:pause)
+      var running = false, timer: ReturnType<typeof setTimeout> | null = null;
+      function tick() {
+        if (!running) { return; }
+        var btn = flipped ? q('flipBtn') : q('showAnsBtn');
+        moveTo(btn).then(tap).then(function () {
+          if (!running) { return; }
+          try { flipCard(); } catch (e) {}
+          timer = setTimeout(tick, 4250);
+        });
+      }
+      function play() { if (running) { return; } running = true; timer = setTimeout(tick, 120); }
+      function pause() { running = false; if (timer) { clearTimeout(timer); timer = null; } dot.style.opacity = '0'; }
+      root.addEventListener('l7:play', play);
+      root.addEventListener('l7:pause', pause);
+    })();
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-screen="term"]').forEach(initTerm);
+</script>
