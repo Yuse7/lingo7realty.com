@@ -20,13 +20,15 @@ SUB_EN = "Pass on your first try, even if English isn't your first language."
 SUB_ES = "Apru&eacute;balo a la primera, aunque el ingl&eacute;s no sea tu idioma."
 
 # (output-name, review-photo, title, sub-line, style a|b, object-position)
+# Single hero ad: a real licensee in front of the Florida DBPR building.
 VARIANTS = [
-    ("01-carmen", "carmen", TITLE_EN, SUB_EN, "a", "62% 24%"),
-    ("02-sofia",  "sofia",  TITLE_EN, SUB_EN, "b", "66% 22%"),
-    ("03-giulia", "giulia", TITLE_EN, SUB_EN, "a", "58% 22%"),
-    ("04-joao",   "joao",   TITLE_EN, SUB_EN, "b", "50% 20%"),
-    ("05-espanol","jean",   TITLE_ES, SUB_ES, "a", "44% 22%"),
-    ("06-polina", "polina", TITLE_EN, SUB_EN, "b", "50% 20%"),
+    ("florida-license-exam", "carmen", TITLE_EN, SUB_EN, "a", "60% 50%"),
+    # Other variants were retired (kept here to re-enable quickly):
+    # ("02-sofia",  "sofia",  TITLE_EN, SUB_EN, "b", "66% 22%"),
+    # ("03-giulia", "giulia", TITLE_EN, SUB_EN, "a", "58% 22%"),
+    # ("04-joao",   "joao",   TITLE_EN, SUB_EN, "b", "50% 20%"),
+    # ("05-espanol","jean",   TITLE_ES, SUB_ES, "a", "44% 22%"),
+    # ("06-polina", "polina", TITLE_EN, SUB_EN, "b", "50% 20%"),
 ]
 
 for name, ph, title, sub, style, pos in VARIANTS:

@@ -29,11 +29,13 @@ facebook/
   automation/    Playwright (CDP) scripts that drive Facebook to publish
 ```
 
-**Photo ads** (`ads/`): image-led creatives, one short phrase each, built from the
-review photos in `public/pics/reviews/`. Edit/add variants in `templates/ads.py`
-(photo, phrase, style `a`=full-bleed scrim / `b`=photo + emerald band, object-position).
-Note: the review photos are illustrative, not real customers, keep phrases aspirational
-and swap in real success stories before running paid ads.
+**Photo ads** (`ads/`): image-led creative, one short phrase, built from the
+review photos in `public/pics/reviews/`. Currently a single hero ad
+(`florida-license-exam.png`) using a real licensee in front of the Florida DBPR
+building. Add/re-enable variants in `templates/ads.py` (photo, phrase, style
+`a`=full-bleed scrim / `b`=photo + emerald band, object-position); a few retired
+variants are kept commented there. Note: the review photos are illustrative, not real
+customers, keep phrases aspirational and swap in real success stories before running paid ads.
 
 ## 1. Regenerate / create images
 
