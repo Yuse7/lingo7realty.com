@@ -1,7 +1,9 @@
 ---
 // Inline demo screen: the exam-prep home catalog (Florida Sales Associate),
-// with a Translate-language picker and a hero autoplay that taps Translate →
-// picks the site language → opens Tests, then hands off to the Quiz screen.
+// with a Translate-language picker and a hero autoplay that opens Tests, then
+// hands off to the Quiz screen. The screen starts already in the language the
+// visitor chose in the hero headline (read from ?lang) - no in-phone language
+// picking, so the first demo doesn't repeat that choice.
 // Was public/screens/Home Menu Screen.html (an iframe). Inlined into the light
 // DOM so Yandex Webvisor can record it.
 //
@@ -165,8 +167,14 @@
       langMenu.style.display = langMenu.style.display === 'block' ? 'none' : 'block';
     }
 
-    function pickLang(btn: HTMLElement) {
-      var lang = btn.getAttribute('data-lang') || 'off';
+    function langMeta(code: string) {
+      for (var i = 0; i < LANGS.length; i++) { if (LANGS[i].code === code) { return LANGS[i]; } }
+      return null;
+    }
+
+    // Apply a language to the screen (translations, chip, ticks). Shared by the
+    // manual picker and the autoplay, which pre-applies the visitor's language.
+    function applyLang(lang: string) {
       currentLang = lang;
       var on = lang !== 'off';
       Object.keys(T).forEach(function (id) {
@@ -175,18 +183,23 @@
         if (!on) { el.style.display = 'none'; return; }
         el.textContent = T[id][lang] || '';
         el.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
-        el.style.display = (id === 'trL7sub') ? 'block' : 'block';
+        el.style.display = 'block';
       });
-      if (langLabel) { langLabel.textContent = btn.getAttribute('data-label') || ''; }
+      var meta = langMeta(lang);
+      if (langLabel) { langLabel.textContent = meta ? meta.label : 'Translate'; }
       if (langChip) {
         if (on) { langChip.style.background = 'rgba(52,211,153,.12)'; langChip.style.borderColor = '#34D399'; langChip.style.color = '#047857'; }
         else { langChip.style.background = '#fff'; langChip.style.borderColor = '#eef0f0'; langChip.style.color = '#8a909a'; }
       }
       root.querySelectorAll<HTMLElement>('.langOpt').forEach(function (o) {
         var tick = o.querySelector('.langTick') as HTMLElement | null;
-        if (tick) { tick.style.display = (o === btn) ? 'inline' : 'none'; }
+        if (tick) { tick.style.display = (o.getAttribute('data-lang') === lang) ? 'inline' : 'none'; }
       });
       if (langMenu) { langMenu.style.display = 'none'; }
+    }
+
+    function pickLang(btn: HTMLElement) {
+      applyLang(btn.getAttribute('data-lang') || 'off');
       // language picked - tell the lander to drop its "Pick a language" caption
       root.dispatchEvent(new CustomEvent('l7:langPicked', { bubbles: true }));
     }
@@ -252,15 +265,14 @@
         await sleep(dwell || 600);
       }
 
-      // Restore the first-load look (translation off, Textbook selected) so each
+      // The visitor already chose their language in the hero headline (?lang); the
+      // Home screen opens already in it - no in-phone language picking in the demo.
+      var demoLang = (lang === 'en') ? 'off' : (langMeta(lang) ? lang : 'es');
+
+      // Restore the first-load look (already translated, Textbook selected) so each
       // replay of the Home screen starts clean, like the old iframe reload did.
       function resetUI() {
-        currentLang = 'off';
-        Object.keys(T).forEach(function (id) { var el = root.querySelector('[data-el="' + id + '"]') as HTMLElement | null; if (el) { el.style.display = 'none'; } });
-        if (langLabel) { langLabel.textContent = 'Translate'; }
-        if (langChip) { langChip.style.background = '#fff'; langChip.style.borderColor = '#eef0f0'; langChip.style.color = '#8a909a'; }
-        root.querySelectorAll<HTMLElement>('.langOpt').forEach(function (o) { var t = o.querySelector('.langTick') as HTMLElement | null; if (t) { t.style.display = (o.getAttribute('data-lang') === 'off') ? 'inline' : 'none'; } });
-        if (langMenu) { langMenu.style.display = 'none'; }
+        applyLang(demoLang);
         var mis = root.querySelectorAll<HTMLElement>('.mi'); if (mis[0]) { selectMenu(mis[0]); }
         finger.style.opacity = '0';
       }
@@ -268,20 +280,10 @@
       async function run(token: number) {
         await sleep(300); if (token !== runToken) { return; }
         finger.style.opacity = '1';
-        await sleep(140); if (token !== runToken) { return; }
+        await sleep(620); if (token !== runToken) { return; }
 
-        // 1. open the Translate menu (the "Pick a language" caption already hangs above the phone)
-        await tap(langChip, 0); if (token !== runToken) { return; }
-
-        // 2. pick the site language
-        var menu = langMenu;
-        var opt = (root.querySelector('.langOpt[data-lang="' + (lang === 'en' ? 'off' : lang) + '"]') ||
-                  root.querySelector('.langOpt[data-lang="ru"]')) as HTMLElement | null;
-        if (menu && opt) { menu.scrollTop = Math.max(0, opt.offsetTop - menu.clientHeight / 2 + opt.offsetHeight / 2); }
-        await sleep(950); if (token !== runToken) { return; }
-        await tap(opt, 850); if (token !== runToken) { return; }
-
-        // 3. open Tests (2nd menu item)
+        // Open Tests (2nd menu item). No language step - the screen is already in
+        // the visitor's language, picked once in the hero headline.
         await tap(root.querySelectorAll<HTMLElement>('.mi')[1], 850); if (token !== runToken) { return; }
 
         // hand off to the Quiz screen
