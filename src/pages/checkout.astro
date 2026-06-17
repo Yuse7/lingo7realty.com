@@ -105,7 +105,7 @@ import '../styles/global.css';
       setText('[data-co-btnprice]', priceStr);
 
       // Попадание на /checkout/ = начало оформления. Стандартное событие Meta
-      // InitiateCheckout + цель Яндекс.Метрики «checkout» с параметрами заказа,
+      // InitiateCheckout + одноимённая цель Яндекс.Метрики с параметрами заказа,
       // один раз при загрузке страницы. (Раньше слалось по клику «Get …» на
       // лендинге; перенесено сюда, чтобы не задваивать счёт.)
       try {
@@ -115,8 +115,8 @@ import '../styles/global.css';
       } catch (err) { /* пиксель ещё не загрузился */ }
       try {
         var icYm = { plan: plan, role: role, price: price };
-        console.log('[Yandex] ym reachGoal checkout', icYm);
-        (window as any).ym && (window as any).ym(109780177, 'reachGoal', 'checkout', icYm);
+        console.log('[Yandex] ym reachGoal InitiateCheckout', icYm);
+        (window as any).ym && (window as any).ym(109780177, 'reachGoal', 'InitiateCheckout', icYm);
       } catch (err) { /* метрика ещё не загрузилась */ }
 
       var buy = document.querySelector('[data-checkout-buy]');
