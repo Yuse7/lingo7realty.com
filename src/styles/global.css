@@ -960,8 +960,8 @@ a { text-decoration: none; color: inherit; }
 .compare__table {
   position: relative;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  max-width: 760px;
+  grid-template-columns: 1fr;
+  max-width: 440px;
   margin: 0 auto;
   opacity: 0;
   transform: translateY(30px);
@@ -973,14 +973,14 @@ a { text-decoration: none; color: inherit; }
   transform: translateY(0);
 }
 
-/* Подложка-выделение правого столбца («рекомендованный план»).
+/* Подложка-выделение единственной карточки.
    Absolute, а не grid-cell: grid-row: 1 / -1 не растягивается по implicit-строкам
    (-1 ссылается на последнюю ЯВНУЮ линию, которой нет), и auto-placement ломается. */
 .compare__colbg {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 50%;
+  left: 0;
   right: 0;
   background: #fff;
   border: 2px solid #34D399;
@@ -1031,9 +1031,6 @@ a { text-decoration: none; color: inherit; }
   z-index: 1;
   padding: 20px 26px;
 }
-
-.compare__cell--old { padding-right: 34px; }
-.compare__cell--new { padding-left: 30px; }
 
 /* Inset-разделители между рядами */
 .compare__cell::before {
@@ -2927,8 +2924,6 @@ a { text-decoration: none; color: inherit; }
   .compare__hlabel { font-size: 13px; }
   .compare__icon { width: 22px; height: 22px; font-size: 11px; }
   .compare__cell { padding: 16px 14px; }
-  .compare__cell--old { padding-right: 16px; }
-  .compare__cell--new { padding-left: 16px; }
   .compare__cell::before { left: 14px; right: 14px; }
   .compare__cell strong { font-size: 14px; }
   .compare__cell p { font-size: 12.5px; line-height: 1.4; }
