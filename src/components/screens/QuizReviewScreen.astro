@@ -58,7 +58,7 @@ const { mode = '' } = Astro.props;
   <!-- Question -->
   <div style="padding:13px 18px 4px;">
     <p data-el="qEN" style="margin:0; font-size:14px; font-weight:700; line-height:1.32;">A <span class="tw" data-ru="q-legal">legal</span> <span class="tw" data-ru="q-claim">claim</span> against a <span class="tw" data-ru="q-prop">property</span> that must be <span class="tw" data-ru="q-paid">paid off</span> when the <span class="tw" data-ru="">property</span> is <span class="tw" data-ru="q-sold">sold</span> is <span class="tw" data-ru="q-called">called</span> a…</p>
-    <p data-el="qRU" class="ru-line" style="margin:5px 0 0; font-size:11.5px; color:#6b7280; line-height:1.45;"><span data-el="lngBadge" style="display:inline-block; vertical-align:1px; font-size:8.5px; font-weight:700; letter-spacing:.04em; color:#059669; background:rgba(52,211,153,.14); border-radius:4px; padding:1px 5px; margin-right:5px;">RU</span><span data-el="qTrans"></span></p>
+    <p data-el="qRU" class="ru-line" style="margin:5px 0 0; font-size:11.5px; color:#6b7280; line-height:1.45;"><span data-el="qTrans"></span></p>
   </div>
 
   <!-- Options -->
@@ -433,7 +433,6 @@ const { mode = '' } = Astro.props;
     // ════════════ Language application ════════════
     function applyLang() {
       var L = I18N[curLang], dir = LMETA[curLang].dir;
-      var lb = q('lngBadge'); if (lb) { lb.textContent = LMETA[curLang].label; }
       var qt = q('qTrans');
       if (qt) { qt.innerHTML = renderSegs(L.q); qt.setAttribute('dir', dir); }
       var xt = q('exTrans');
