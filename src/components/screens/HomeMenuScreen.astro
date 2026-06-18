@@ -113,6 +113,8 @@
 </style>
 
 <script>
+  import { resolveLang } from '../../scripts/lang';
+
   function initHome(root: HTMLElement) {
     // ── Language model (order per product spec) ──
     var LANGS = [
@@ -232,7 +234,7 @@
     //    iframe src was swapped), so the orchestrator (re)plays the screen it
     //    shows and pauses the one it hides; a run token cancels stale loops.
     (function () {
-      var lang = (new URLSearchParams(location.search).get('lang') || 'es').toLowerCase();
+      var lang = resolveLang();
       var frame = root;
 
       var finger = document.createElement('div');

@@ -210,6 +210,8 @@ const { mode = '' } = Astro.props;
 </style>
 
 <script>
+  import { resolveLang } from '../../scripts/lang';
+
   function initQuiz(root: HTMLElement) {
     // ════════════ Language model ════════════
     var LMETA: Record<string, { label: string; native: string; tts: string; dir: string }> = {
@@ -829,8 +831,8 @@ const { mode = '' } = Astro.props;
     applyLang();
 
     // ════════════ Demo orchestration (was the second <script>) ════════════
-    // Demo language comes from ?lang on the page URL (site default: Spanish).
-    var lang = (new URLSearchParams(location.search).get('lang') || 'es').toLowerCase();
+    // Язык демо: ?lang из URL → язык браузера → испанский (единый resolveLang, см. lang.ts).
+    var lang = resolveLang();
     // switch the screen to the page language
     try {
       if (lang === 'en') { pickLang('off'); var __el = q('langLabel'); if (__el) { __el.textContent = 'EN'; } }

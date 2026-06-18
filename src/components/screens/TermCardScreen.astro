@@ -155,6 +155,8 @@ const { demo = false } = Astro.props;
 </style>
 
 <script>
+  import { resolveLang } from '../../scripts/lang';
+
   function initTerm(root: HTMLElement) {
     var LMETA: Record<string, { label: string; native: string; dir: string }> = {
       off: { label: 'Translate', native: 'English only', dir: 'ltr' },
@@ -198,9 +200,9 @@ const { demo = false } = Astro.props;
 
     function q(name: string) { return root.querySelector('[data-el="' + name + '"]') as HTMLElement | null; }
 
-    // Demo language comes from ?lang on the page URL (site default: Spanish).
+    // Язык демо: ?lang из URL → язык браузера → испанский (единый resolveLang, см. lang.ts).
     var curLang = 'es', parallelOn = true;
-    var l = (new URLSearchParams(location.search).get('lang') || 'es').toLowerCase();
+    var l = resolveLang();
     if (l === 'off' || l === 'en') { parallelOn = false; } else if (LMETA[l]) { curLang = l; }
     var langLabel = q('langLabel'), langChip = q('langChip'), langMenu = q('langMenu');
     if (langLabel) { langLabel.textContent = parallelOn ? LMETA[curLang].label : (l === 'en' ? 'EN' : 'Translate'); }

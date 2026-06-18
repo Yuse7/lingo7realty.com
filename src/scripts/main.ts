@@ -5,24 +5,10 @@
 // orchestrator. The language switcher is decorative - it reloads with a
 // ?lang code but the page content always stays English (as in the original).
 
-// ── Эффективный язык страницы (общий для заголовка hero и демо-экранов) ──
-//    Приоритет: явный ?lang (если поддержан) → язык браузера → испанский.
-//    Браузерный язык матчим только против PICKER_LANGS (без английского), чтобы
-//    надпись «My language is …» и язык демо в телефоне всегда совпадали. Если у
-//    человека браузер на английском или языке не из списка - остаётся испанский
-//    (главный сегмент не-носителей, на который нацелен лендинг).
-var PICKER_LANGS = ['es', 'pt', 'ht', 'ru', 'fr', 'de', 'it', 'zh', 'ar', 'tl'];
-function resolveLang(urlValid: string[]): string {
-  var urlLang = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
-  if (urlValid.indexOf(urlLang) >= 0) { return urlLang; }
-  var navs = (navigator.languages && navigator.languages.length)
-    ? navigator.languages : [navigator.language || ''];
-  for (var i = 0; i < navs.length; i++) {
-    var base = (navs[i] || '').toLowerCase().split('-')[0];
-    if (PICKER_LANGS.indexOf(base) >= 0) { return base; }
-  }
-  return 'es';
-}
+// Определение языка демо вынесено в общий модуль ./lang - его же импортируют все
+// демо-экраны (src/components/screens/*.astro), поэтому заголовок hero «My
+// language is …» и язык в телефоне всегда показывают одно и то же.
+import { resolveLang } from './lang';
 
 // ── Pricing & login modals ──
 (function () {
@@ -197,8 +183,8 @@ function resolveLang(urlValid: string[]): string {
   var nameEl = document.getElementById('heroLangName');
   if (!dd || !btn || !menu) { return; }
 
-  // Текущий язык: ?lang из адреса → язык браузера → испанский (см. resolveLang вверху).
-  var cur = resolveLang(PICKER_LANGS);
+  // Текущий язык: ?lang из адреса → язык браузера → испанский (см. ./lang).
+  var cur = resolveLang();
 
   // Подсветить активный язык и подставить его английское имя в заголовок.
   var curOpt = menu.querySelector('.hero-lang__opt[data-lang="' + cur + '"]');

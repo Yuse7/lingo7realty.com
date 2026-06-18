@@ -222,6 +222,8 @@ const { demo = false } = Astro.props;
 </style>
 
 <script>
+  import { resolveLang } from '../../scripts/lang';
+
   function initTextbook(root: HTMLElement) {
     // ════════════ Language model ════════════
     var LMETA: Record<string, { label: string; native: string; tts: string; dir: string }> = {
@@ -439,7 +441,7 @@ const { demo = false } = Astro.props;
     var curLang = 'ru';
     var parallelOn = true;
     (function () {
-      var l = (new URLSearchParams(location.search).get('lang') || 'es').toLowerCase();
+      var l = resolveLang();
       if (l === 'off' || l === 'en') { parallelOn = false; } else if (LMETA[l]) { curLang = l; }
       var lbl = q('langLabel');
       if (lbl) { lbl.textContent = parallelOn ? LMETA[curLang].label : (l === 'en' ? 'EN' : 'Translate'); }
