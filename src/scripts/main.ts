@@ -15,16 +15,40 @@ import { resolveLang } from './lang';
   var pricingModal = document.getElementById('pricingModal');
   var loginModal = document.getElementById('loginModal');
   var pricingHost = document.getElementById('pricingHost');
-  var source = document.querySelector('.final-cta .pricing');
+  var source = document.getElementById('pricingTpl');   // <template> с карточкой тарифа (FinalCta.astro)
   function closeAll() {
     if (pricingModal) pricingModal.classList.remove('is-open');
     if (loginModal) loginModal.classList.remove('is-open');
     document.body.classList.remove('modal-open');
   }
   function open(m: Element | null) { if (!m) { return; } closeAll(); m.classList.add('is-open'); document.body.classList.add('modal-open'); }
+  // Аналитика «вход в покупательский поток»: открытие модалки с тарифами шлём как
+  // Meta `AddToCart` + одноимённую цель Яндекса. Это шаг воронки ПЕРЕД оформлением
+  // (InitiateCheckout шлётся ниже, по клику «Get …»). Раньше карточка висела внизу
+  // инлайн, и «открытия» не было; теперь она за кнопкой - каждое открытие трекаем.
+  // План/роль читаем из только что вставленной карточки (дефолты: 1 Month / sa / 69).
+  function trackPricingOpen() {
+    var card = pricingHost && pricingHost.querySelector('.pricing');
+    var planEl = card && card.querySelector('.plan.active');
+    var roleEl = card && card.querySelector('.role.active');
+    var plan = (planEl && planEl.getAttribute('data-plan')) || '1 Month';
+    var price = Number(planEl && planEl.getAttribute('data-price')) || 69;
+    var role = (roleEl && roleEl.getAttribute('data-role')) || 'sa';
+    try {
+      var atc = { value: price, currency: 'USD', content_name: plan };
+      console.log('[Meta] fbq track AddToCart', atc);
+      (window as any).fbq && (window as any).fbq('track', 'AddToCart', atc);
+    } catch (err) { /* пиксель ещё не загрузился */ }
+    try {
+      var atcYm = { plan: plan, role: role, price: price };
+      console.log('[Yandex] ym reachGoal AddToCart', atcYm);
+      (window as any).ym && (window as any).ym(109780177, 'reachGoal', 'AddToCart', atcYm);
+    } catch (err) { /* метрика ещё не загрузилась */ }
+  }
   function openPricing() {
-    if (pricingHost && source) { pricingHost.innerHTML = ''; pricingHost.appendChild(source.cloneNode(true)); }
+    if (pricingHost && source) { pricingHost.innerHTML = ''; pricingHost.appendChild((source as HTMLTemplateElement).content.cloneNode(true)); }
     open(pricingModal);
+    trackPricingOpen();
   }
   document.addEventListener('click', function (e) {
     var t = e.target as Element;
