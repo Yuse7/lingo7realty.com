@@ -86,7 +86,7 @@ a { text-decoration: none; color: inherit; }
 
 /* ===== Header ===== */
 .header {
-  position: fixed;
+  position: relative;
   top: 0;
   left: 0;
   right: 0;
@@ -181,7 +181,7 @@ a { text-decoration: none; color: inherit; }
   min-height: 100vh;
   display: flex;
   align-items: center;
-  padding-top: 80px;
+  padding-top: 0;
   overflow: hidden;
   background: #f9fafb;
 }
@@ -2594,7 +2594,7 @@ a { text-decoration: none; color: inherit; }
 /* ===== Sticky CTA (mobile only) ===== */
 .sticky-cta {
   display: none;
-  position: fixed;
+  position: static;
   bottom: 0;
   left: 0;
   right: 0;
@@ -2780,7 +2780,7 @@ a { text-decoration: none; color: inherit; }
 
   .hero {
     min-height: auto;
-    padding-top: 72px;
+    padding-top: 0;
   }
 
   .hero__inner {

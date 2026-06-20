@@ -1,7 +1,7 @@
 ---
 // 13. Final CTA - заголовок + кнопка, открывающая модалку с тарифами.
 // Сама карточка тарифа лежит ниже в <template id="pricingTpl">: main.ts клонирует
-// её в модалку (#pricingHost) при открытии и шлёт Meta `AddToCart` + одноимённую
+// её в модалку (#pricingHost) при открытии и шлёт Meta `ViewContent` + одноимённую
 // цель Яндекса (= пользователь вошёл в покупательский поток). Раньше карточка
 // показывалась тут инлайн И клонировалась; инлайновую копию убрали, чтобы открытие
 // тарифов стало явным отслеживаемым действием.
@@ -28,7 +28,7 @@
       <h2 class="title" data-i18n="finalcta.title">Pass faster with the <span class="accent">right plan</span></h2>
       <div class="roles">
         <button class="role active" data-role="sa" data-i18n="finalcta.role-sa"><span class="dot"></span>Sales Associate</button>
-        <button class="role soon" data-role="broker" data-i18n="finalcta.role-broker"><span class="dot"></span>Broker <span class="soon-tag">Soon</span></button>
+        <button class="role" data-role="broker" data-i18n="finalcta.role-broker"><span class="dot"></span>Broker</button>
       </div>
       <div class="roles-msg" data-i18n="finalcta.roles-msg">Broker prep is coming soon. For now, join the Sales Associate track.</div>
       <div class="sub-q" data-i18n="finalcta.sub-q">How much study time do you want?</div>

@@ -22,8 +22,8 @@ import { resolveLang } from './lang';
     document.body.classList.remove('modal-open');
   }
   function open(m: Element | null) { if (!m) { return; } closeAll(); m.classList.add('is-open'); document.body.classList.add('modal-open'); }
-  // Аналитика «вход в покупательский поток»: открытие модалки с тарифами шлём как
-  // Meta `AddToCart` + одноимённую цель Яндекса. Это шаг воронки ПЕРЕД оформлением
+  // Аналитика «просмотр прайса»: открытие модалки с тарифами шлём как
+  // Meta `ViewContent` + одноимённую цель Яндекса. Это шаг воронки ПЕРЕД оформлением
   // (InitiateCheckout шлётся ниже, по клику «Get …»). Раньше карточка висела внизу
   // инлайн, и «открытия» не было; теперь она за кнопкой - каждое открытие трекаем.
   // План/роль читаем из только что вставленной карточки (дефолты: 1 Month / sa / 69).
@@ -35,14 +35,14 @@ import { resolveLang } from './lang';
     var price = Number(planEl && planEl.getAttribute('data-price')) || 69;
     var role = (roleEl && roleEl.getAttribute('data-role')) || 'sa';
     try {
-      var atc = { value: price, currency: 'USD', content_name: plan };
-      console.log('[Meta] fbq track AddToCart', atc);
-      (window as any).fbq && (window as any).fbq('track', 'AddToCart', atc);
+      var vc = { value: price, currency: 'USD', content_name: plan };
+      console.log('[Meta] fbq track ViewContent', vc);
+      (window as any).fbq && (window as any).fbq('track', 'ViewContent', vc);
     } catch (err) { /* пиксель ещё не загрузился */ }
     try {
-      var atcYm = { plan: plan, role: role, price: price };
-      console.log('[Yandex] ym reachGoal AddToCart', atcYm);
-      (window as any).ym && (window as any).ym(109780177, 'reachGoal', 'AddToCart', atcYm);
+      var vcYm = { plan: plan, role: role, price: price };
+      console.log('[Yandex] ym reachGoal ViewContent', vcYm);
+      (window as any).ym && (window as any).ym(109780177, 'reachGoal', 'ViewContent', vcYm);
     } catch (err) { /* метрика ещё не загрузилась */ }
   }
   function openPricing() {
