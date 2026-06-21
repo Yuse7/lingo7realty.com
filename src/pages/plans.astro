@@ -1,0 +1,292 @@
+---
+// Страница выбора тарифа /plans/. Оплата с этой страницы УБРАНА: пользователь
+// только выбирает продукт (роль + окно обучения) и жмёт «Continue to payment».
+// Платёжный провайдер ещё не подключён, поэтому вместо перехода на оплату
+// раскрываем блок «оплата пока недоступна» + сбор email («сообщим, когда
+// заработает»). Аналитика: ViewContent на загрузке, InitiateCheckout по клику
+// «Continue to payment», Lead по отправке email. Когда подключите оплату -
+// заведите «Continue to payment» на реальную платёжную страницу, а email-блок
+// уберите или оставьте как запасной канал.
+// NB: email сейчас НИКУДА не сохраняется (статика без бэкенда) - шлётся только
+// событие Lead и показывается успех. Нужен реальный endpoint (Formspree/
+// Mailchimp/свой), чтобы собирать адреса.
+import Head from '../components/Head.astro';
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <Head
+    title="Choose your plan - Lingo7 Realty"
+    description="Pick your Florida real estate exam-prep plan and study window."
+    canonicalUrl="https://lingo7realty.com/plans/"
+    noindex={true}
+  />
+</head>
+<body class="sp">
+  <main class="sp__wrap">
+    <div class="sp__panel">
+      <a class="sp__back" href="/">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        <span class="sp__merchant">Lingo7 <b>Realty</b></span>
+      </a>
+
+      <div class="sp__prodLabel">Florida Real Estate exam prep</div>
+      <div class="sp__amount" data-amount>$69.00</div>
+      <div class="sp__prodSub"><span data-rolename>Sales Associate</span> · <span data-planname>1 Month</span> plan</div>
+
+      <div class="sp__choose">
+        <div class="sp__seg" role="group" aria-label="Track">
+          <button type="button" class="sp__segBtn is-active" data-role="sa">Sales Associate</button>
+          <button type="button" class="sp__segBtn" data-role="broker">Broker</button>
+        </div>
+
+        <div class="sp__plans">
+          <button type="button" class="sp__planRow" data-plan="1 Week" data-price="49">
+            <span class="sp__planRadio"></span>
+            <span class="sp__planName">1 Week</span>
+            <span class="sp__planPrice">$49.00</span>
+          </button>
+          <button type="button" class="sp__planRow is-active" data-plan="1 Month" data-price="69">
+            <span class="sp__planRadio"></span>
+            <span class="sp__planName">1 Month <em>Popular</em></span>
+            <span class="sp__planPrice">$69.00</span>
+          </button>
+          <button type="button" class="sp__planRow" data-plan="3 Months" data-price="89">
+            <span class="sp__planRadio"></span>
+            <span class="sp__planName">3 Months <em>Best value</em></span>
+            <span class="sp__planPrice">$89.00</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="sp__lines">
+        <div class="sp__line"><span data-linename>Sales Associate · 1 Month</span><span data-lineprice>$69.00</span></div>
+        <div class="sp__line sp__line--muted"><span>Billed once · no auto-renewal</span></div>
+        <div class="sp__line sp__line--total"><span>Total due today</span><span data-total>$69.00</span></div>
+      </div>
+
+      <ul class="sp__perks">
+        <li><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>One-time payment</li>
+        <li><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>No auto-renewal</li>
+        <li><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>Money back within 14 days, for any reason</li>
+      </ul>
+
+      <button class="sp__continue" type="button" data-continue>
+        Continue to payment
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </button>
+
+      <!-- Оплата ещё не подключена: раскрывается по «Continue to payment». Сбор email. -->
+      <div class="sp__notify" data-notify hidden>
+        <div class="sp__notifyHead">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          <span>Payment unavailable</span>
+        </div>
+        <form class="sp__notifyForm" data-notify-form novalidate>
+          <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+          <button type="submit">Notify me when payment is available</button>
+        </form>
+        <p class="sp__notifyOk" data-notify-ok hidden>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span data-notify-ok-text>Thanks! We'll email you when payment is available.</span>
+        </p>
+      </div>
+
+      <div class="sp__powered">
+        <a href="/terms/">Terms</a>
+        <span class="sp__sep">·</span>
+        <a href="/privacy/">Privacy</a>
+      </div>
+    </div>
+  </main>
+
+  <style is:global>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    [hidden] { display: none !important; }
+    body.sp { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif; color: #1a1f36; background: #fff; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; overflow-x: hidden; }
+    body.sp a { text-decoration: none; }
+
+    .sp__wrap { min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 64px 24px 56px; }
+    .sp__panel { width: 100%; max-width: 440px; }
+
+    .sp__back { display: inline-flex; align-items: center; gap: 8px; color: #1a1f36; margin-bottom: 40px; }
+    .sp__back svg { color: #6b7280; transition: color .15s, transform .15s; }
+    .sp__back:hover svg { color: #1a1f36; transform: translateX(-2px); }
+    .sp__merchant { font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+    .sp__merchant b { color: #34D399; font-weight: 700; }
+
+    .sp__prodLabel { font-size: 15px; font-weight: 500; color: #6b7280; margin-bottom: 6px; }
+    .sp__amount { font-size: 36px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; color: #1a1f36; }
+    .sp__prodSub { font-size: 14px; font-weight: 500; color: #8792a2; margin-top: 6px; }
+
+    .sp__choose { margin: 30px 0 26px; }
+    .sp__seg { display: flex; gap: 4px; background: #f1f3f6; border-radius: 9px; padding: 4px; margin-bottom: 14px; }
+    .sp__segBtn { flex: 1; font-family: inherit; font-size: 13px; font-weight: 600; color: #6b7280; background: transparent; border: none; border-radius: 6px; padding: 8px 6px; cursor: pointer; transition: background .15s, color .15s, box-shadow .15s; }
+    .sp__segBtn.is-active { background: #fff; color: #1a1f36; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+
+    .sp__plans { display: flex; flex-direction: column; gap: 8px; }
+    .sp__planRow { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; font-family: inherit; background: #fff; border: 1px solid #e6e9ee; border-radius: 10px; padding: 13px 14px; cursor: pointer; transition: border-color .15s, box-shadow .15s, background .15s; }
+    .sp__planRow:hover { border-color: #c9d2dd; }
+    .sp__planRow.is-active { border-color: #34D399; background: rgba(52,211,153,.05); box-shadow: 0 0 0 1px #34D399; }
+    .sp__planRadio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #c4cad1; flex-shrink: 0; position: relative; transition: border-color .15s; }
+    .sp__planRow.is-active .sp__planRadio { border-color: #34D399; }
+    .sp__planRow.is-active .sp__planRadio::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: #34D399; }
+    .sp__planName { font-size: 14.5px; font-weight: 600; color: #1a1f36; display: flex; align-items: center; gap: 7px; }
+    .sp__planName em { font-style: normal; font-size: 10px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; color: #047857; background: rgba(52,211,153,.15); padding: 2px 7px; border-radius: 20px; }
+    .sp__planPrice { margin-left: auto; font-size: 14.5px; font-weight: 600; color: #1a1f36; }
+
+    .sp__lines { border-top: 1px solid #e6e9ee; padding-top: 16px; display: flex; flex-direction: column; gap: 9px; }
+    .sp__line { display: flex; align-items: baseline; justify-content: space-between; font-size: 14px; font-weight: 500; color: #4b5563; }
+    .sp__line--muted { color: #8792a2; font-size: 13px; }
+    .sp__line--total { margin-top: 5px; padding-top: 13px; border-top: 1px solid #e6e9ee; font-size: 15px; font-weight: 700; color: #1a1f36; }
+
+    .sp__perks { list-style: none; margin: 24px 0 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+    .sp__perks li { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 500; color: #4b5563; }
+    .sp__perks svg { color: #34D399; flex-shrink: 0; }
+
+    .sp__continue { width: 100%; height: 48px; margin-top: 28px; font-family: inherit; font-size: 15px; font-weight: 600; color: #fff; background: #059669; border: none; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,.08); transition: background .15s, transform .1s; }
+    .sp__continue:hover { background: #047857; }
+    .sp__continue:active { transform: translateY(1px); }
+    .sp__continue svg { transition: transform .15s; }
+    .sp__continue:hover svg { transform: translateX(2px); }
+
+    .sp__notify { margin-top: 24px; padding: 20px; border: 1px solid #e6e9ee; border-radius: 12px; background: #f9fafb; animation: spIn .24s ease; }
+    @keyframes spIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+    .sp__notifyHead { display: flex; align-items: center; gap: 9px; font-size: 15px; font-weight: 700; color: #1a1f36; margin-bottom: 14px; }
+    .sp__notifyHead svg { color: #D97706; flex: 0 0 auto; }
+    .sp__notifyForm { display: flex; flex-direction: column; gap: 10px; }
+    .sp__notifyForm input { flex: 1; min-width: 0; height: 44px; font-family: inherit; font-size: 15px; color: #1a1f36; background: #fff; border: 1px solid #d5dbe3; border-radius: 8px; padding: 0 13px; transition: border-color .15s, box-shadow .15s; }
+    .sp__notifyForm input::placeholder { color: #9aa3b0; }
+    .sp__notifyForm input:focus { outline: none; border-color: #34D399; box-shadow: 0 0 0 3px rgba(52,211,153,.18); }
+    .sp__notifyForm button { width: 100%; height: 44px; font-family: inherit; font-size: 14.5px; font-weight: 600; color: #fff; background: #059669; border: none; border-radius: 8px; cursor: pointer; transition: background .15s; }
+    .sp__notifyForm button:hover { background: #047857; }
+    .sp__notifyOk { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600; color: #047857; }
+    .sp__notifyOk svg { color: #34D399; flex: 0 0 auto; }
+
+    .sp__powered { display: flex; align-items: center; gap: 10px; margin-top: 32px; font-size: 12.5px; font-weight: 500; color: #aab0bb; }
+    .sp__powered a { color: #aab0bb; transition: color .15s; }
+    .sp__powered a:hover { color: #6b7280; }
+    .sp__sep { opacity: .6; }
+
+    @media (max-width: 480px) {
+      .sp__wrap { padding: 36px 18px 40px; }
+      .sp__back { margin-bottom: 28px; }
+      .sp__notifyForm { flex-direction: column; }
+      .sp__notifyForm button { width: 100%; }
+    }
+  </style>
+
+  <script>
+    // Выбор тарифа обновляет суммы; ViewContent на загрузке; «Continue to payment»
+    // (оплата ещё не подключена) -> InitiateCheckout + блок сбора email; отправка
+    // email -> Lead + успех. См. шапку файла про отсутствие бэкенда для email.
+    (function () {
+      var ROLE: Record<string, string> = { sa: 'Sales Associate', broker: 'Broker' };
+      var state = { role: 'sa', plan: '1 Month', price: 69 };
+
+      function money(n: number) { return '$' + n + '.00'; }
+      function setText(sel: string, val: string) { var e = document.querySelector(sel); if (e) { e.textContent = val; } }
+      function each(sel: string, fn: (el: Element) => void) { Array.prototype.forEach.call(document.querySelectorAll(sel), fn); }
+
+      function render() {
+        var roleName = ROLE[state.role] || 'Sales Associate';
+        var amt = money(state.price);
+        setText('[data-amount]', amt);
+        setText('[data-rolename]', roleName);
+        setText('[data-planname]', state.plan);
+        setText('[data-linename]', roleName + ' · ' + state.plan);
+        setText('[data-lineprice]', amt);
+        setText('[data-total]', amt);
+      }
+
+      each('[data-role]', function (b) {
+        b.addEventListener('click', function () {
+          each('[data-role]', function (x) { x.classList.remove('is-active'); });
+          b.classList.add('is-active');
+          state.role = b.getAttribute('data-role') || 'sa';
+          render();
+        });
+      });
+      each('[data-plan]', function (b) {
+        b.addEventListener('click', function () {
+          each('[data-plan]', function (x) { x.classList.remove('is-active'); });
+          b.classList.add('is-active');
+          state.plan = b.getAttribute('data-plan') || '1 Month';
+          state.price = Number(b.getAttribute('data-price')) || 69;
+          render();
+        });
+      });
+
+      render();
+
+      // Просмотр прайса на загрузке (fbq/ym - синхронные очереди, событие не теряется).
+      try {
+        var vc = { value: state.price, currency: 'USD', content_name: state.plan };
+        console.log('[Meta] fbq track ViewContent', vc);
+        (window as any).fbq && (window as any).fbq('track', 'ViewContent', vc);
+      } catch (err) { /* пиксель ещё не загрузился */ }
+      try {
+        var vy = { plan: state.plan, role: state.role, price: state.price };
+        console.log('[Yandex] ym reachGoal ViewContent', vy);
+        (window as any).ym && (window as any).ym(109780177, 'reachGoal', 'ViewContent', vy);
+      } catch (err) { /* метрика ещё не загрузилась */ }
+
+      // «Continue to payment»: намерение оформить -> InitiateCheckout (один раз);
+      // оплаты пока нет -> раскрываем блок сбора email.
+      var icSent = false;
+      var cont = document.querySelector('[data-continue]') as HTMLElement | null;
+      var notify = document.querySelector('[data-notify]') as HTMLElement | null;
+      if (cont && notify) {
+        cont.addEventListener('click', function () {
+          if (!icSent) {
+            icSent = true;
+            try {
+              var ic = { value: state.price, currency: 'USD', content_name: state.plan };
+              console.log('[Meta] fbq track InitiateCheckout', ic);
+              (window as any).fbq && (window as any).fbq('track', 'InitiateCheckout', ic);
+            } catch (err) { /* пиксель ещё не загрузился */ }
+            try {
+              var iy = { plan: state.plan, role: state.role, price: state.price };
+              console.log('[Yandex] ym reachGoal InitiateCheckout', iy);
+              (window as any).ym && (window as any).ym(109780177, 'reachGoal', 'InitiateCheckout', iy);
+            } catch (err) { /* метрика ещё не загрузилась */ }
+          }
+          cont!.style.display = 'none';
+          notify!.hidden = false;
+          try { notify!.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (err) { /* старые браузеры */ }
+          var inp = notify!.querySelector('input') as HTMLInputElement | null;
+          if (inp) { try { inp.focus(); } catch (err) { /* */ } }
+        });
+      }
+
+      // Отправка email: бэкенда нет - фиксируем Lead и показываем успех.
+      // TODO: завести на реальный endpoint (Formspree/Mailchimp/свой), иначе адрес
+      // никуда не сохраняется.
+      var nform = document.querySelector('[data-notify-form]') as HTMLFormElement | null;
+      if (nform) {
+        nform.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var inp = nform!.querySelector('input') as HTMLInputElement | null;
+          var email = inp ? inp.value.trim() : '';
+          try {
+            var ld = { value: state.price, currency: 'USD', content_name: state.plan };
+            console.log('[Meta] fbq track Lead', ld);
+            (window as any).fbq && (window as any).fbq('track', 'Lead', ld);
+          } catch (err) { /* пиксель ещё не загрузился */ }
+          try {
+            var ly = { plan: state.plan, role: state.role, price: state.price };
+            console.log('[Yandex] ym reachGoal Lead', ly);
+            (window as any).ym && (window as any).ym(109780177, 'reachGoal', 'Lead', ly);
+          } catch (err) { /* метрика ещё не загрузилась */ }
+          nform!.hidden = true;
+          var ok = document.querySelector('[data-notify-ok]') as HTMLElement | null;
+          var okText = document.querySelector('[data-notify-ok-text]');
+          if (okText && email) { okText.textContent = "Thanks! We'll email " + email + ' when payment is available.'; }
+          if (ok) { ok.hidden = false; }
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

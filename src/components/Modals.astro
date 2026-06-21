@@ -1,17 +1,8 @@
 ---
-// Pricing & login modals + sticky mobile CTA. Behaviour lives in main.ts.
+// Login modal + sticky mobile CTA. Behaviour lives in main.ts.
+// Карточка тарифа переехала на отдельную страницу /plans/ - модалки тарифа
+// больше нет; CTA «See plans & pricing» - обычные ссылки на /plans/.
 ---
-<!-- Модалка: выбор тарифа и оплата -->
-<div class="modal" id="pricingModal" role="dialog" aria-modal="true" aria-label="Choose a plan and checkout">
-  <div class="modal__backdrop" data-close-modal></div>
-  <div class="modal__dialog">
-    <button class="modal__close" data-close-modal aria-label="Close">&times;</button>
-    <!-- Выбор тарифа (клон .final-cta .pricing). Клик по «Get …» уводит
-         на отдельную страницу оплаты /checkout/ (логика в main.ts). -->
-    <div id="pricingHost"></div>
-  </div>
-</div>
-
 <!-- Модалка: вход -->
 <div class="modal" id="loginModal" role="dialog" aria-modal="true" aria-label="Log in">
   <div class="modal__backdrop" data-close-modal></div>
@@ -31,12 +22,12 @@
         </div>
         <button type="submit" class="login-card__btn" data-i18n="modals.login-btn">Log in</button>
       </form>
-      <p class="login-card__alt" data-i18n="modals.login-alt">No account yet? <a href="#" data-buy>Start now</a></p>
+      <p class="login-card__alt" data-i18n="modals.login-alt">No account yet? <a href="/plans/">Start now</a></p>
     </div>
   </div>
 </div>
 
 <!-- Sticky CTA (mobile) -->
 <div class="sticky-cta" id="stickyCta">
-  <a href="#" class="btn btn--primary btn--full" data-buy data-i18n="sticky.cta">See plans &amp; pricing</a>
+  <a href="/plans/" class="btn btn--primary btn--full" data-i18n="sticky.cta">See plans &amp; pricing</a>
 </div>

@@ -1,46 +1,17 @@
 ---
-// 13. Final CTA - заголовок + кнопка, открывающая модалку с тарифами.
-// Сама карточка тарифа лежит ниже в <template id="pricingTpl">: main.ts клонирует
-// её в модалку (#pricingHost) при открытии и шлёт Meta `ViewContent` + одноимённую
-// цель Яндекса (= пользователь вошёл в покупательский поток). Раньше карточка
-// показывалась тут инлайн И клонировалась; инлайновую копию убрали, чтобы открытие
-// тарифов стало явным отслеживаемым действием.
+// 13. Final CTA - заголовок + кнопка, ведущая на страницу тарифов /plans/.
+// Карточка тарифа раньше клонировалась отсюда (<template id="pricingTpl">) в
+// модалку; теперь это отдельная страница src/pages/plans.astro, а кнопка -
+// обычная ссылка на неё.
 ---
 <section class="final-cta" id="stores">
   <div class="container final-cta__inner">
     <h2 class="final-cta__title">Pass faster with the right plan</h2>
     <p class="final-cta__text">Pick your study window, see Sales Associate pricing, and start today - with your language right next to every exam term.</p>
-    <a href="#" class="btn btn--primary btn--lg" data-buy>See plans &amp; pricing</a>
+    <a href="/plans/" class="btn btn--primary btn--lg">See plans &amp; pricing</a>
     <div class="final-cta__perks">
       <span>One-time payment · no auto-renewal</span>
-      <span>7-day money-back guarantee</span>
+      <span>14-day money-back guarantee, for any reason</span>
     </div>
   </div>
 </section>
-
-<!-- Источник карточки тарифа для модалки (#pricingHost). <template> не рендерится
-     на странице - main.ts клонирует его содержимое при каждом открытии модалки,
-     поэтому выбор роли/плана каждый раз сбрасывается к дефолтам. -->
-<template id="pricingTpl">
-  <div class="pricing">
-    <div class="card">
-      <span class="eyebrow" data-i18n="finalcta.eyebrow"><span class="pin"></span>Florida Real Estate</span>
-      <h2 class="title" data-i18n="finalcta.title">Pass faster with the <span class="accent">right plan</span></h2>
-      <div class="roles">
-        <button class="role active" data-role="sa" data-i18n="finalcta.role-sa"><span class="dot"></span>Sales Associate</button>
-        <button class="role" data-role="broker" data-i18n="finalcta.role-broker"><span class="dot"></span>Broker</button>
-      </div>
-      <div class="roles-msg" data-i18n="finalcta.roles-msg">Broker prep is coming soon. For now, join the Sales Associate track.</div>
-      <div class="sub-q" data-i18n="finalcta.sub-q">How much study time do you want?</div>
-      <div class="plans">
-        <div class="plan" data-plan="1 Week" data-price="49"><span class="radio"></span><span class="plan-name" data-i18n="finalcta.plan-1week-name">1 Week</span><span class="plan-price" data-i18n="finalcta.plan-1week-price">$49</span></div>
-        <div class="plan active" data-plan="1 Month" data-price="69"><span class="radio"></span><span class="plan-name" data-i18n="finalcta.plan-1month-name">1 Month</span><span class="plan-price" data-i18n="finalcta.plan-1month-price">$69</span><span class="badge" data-i18n="finalcta.plan-1month-badge">Most popular</span></div>
-        <div class="plan" data-plan="3 Months" data-price="89"><span class="radio"></span><span class="plan-name" data-i18n="finalcta.plan-3months-name">3 Months</span><span class="plan-price" data-i18n="finalcta.plan-3months-price">$89</span><span class="save-tag" data-i18n="finalcta.plan-3months-save">Best value</span></div>
-      </div>
-      <div class="plans-note" data-i18n="finalcta.plans-note">One-time payment · no auto-renewal</div>
-      <button class="cta">Get 1 Month<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></button>
-      <div class="pay-msg" data-i18n="finalcta.pay-msg"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg> <span>Payments are temporarily unavailable for technical reasons. We're working to bring checkout back as soon as possible, please check again shortly.</span></div>
-      <div class="guarantee"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg> <span data-i18n="finalcta.guarantee">Get your money back within 7 days</span></div>
-    </div>
-  </div>
-</template>

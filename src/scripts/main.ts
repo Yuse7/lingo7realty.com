@@ -10,107 +10,24 @@
 // language is …» и язык в телефоне всегда показывают одно и то же.
 import { resolveLang } from './lang';
 
-// ── Pricing & login modals ──
+// ── Login modal ──
+//    Карточка тарифа переехала на отдельную страницу /plans/ (бывшие триггеры
+//    data-buy - теперь обычные ссылки), поэтому здесь осталась только модалка входа.
 (function () {
-  var pricingModal = document.getElementById('pricingModal');
   var loginModal = document.getElementById('loginModal');
-  var pricingHost = document.getElementById('pricingHost');
-  var source = document.getElementById('pricingTpl');   // <template> с карточкой тарифа (FinalCta.astro)
   function closeAll() {
-    if (pricingModal) pricingModal.classList.remove('is-open');
     if (loginModal) loginModal.classList.remove('is-open');
     document.body.classList.remove('modal-open');
   }
   function open(m: Element | null) { if (!m) { return; } closeAll(); m.classList.add('is-open'); document.body.classList.add('modal-open'); }
-  // Аналитика «просмотр прайса»: открытие модалки с тарифами шлём как
-  // Meta `ViewContent` + одноимённую цель Яндекса. Это шаг воронки ПЕРЕД оформлением
-  // (InitiateCheckout шлётся ниже, по клику «Get …»). Раньше карточка висела внизу
-  // инлайн, и «открытия» не было; теперь она за кнопкой - каждое открытие трекаем.
-  // План/роль читаем из только что вставленной карточки (дефолты: 1 Month / sa / 69).
-  function trackPricingOpen() {
-    var card = pricingHost && pricingHost.querySelector('.pricing');
-    var planEl = card && card.querySelector('.plan.active');
-    var roleEl = card && card.querySelector('.role.active');
-    var plan = (planEl && planEl.getAttribute('data-plan')) || '1 Month';
-    var price = Number(planEl && planEl.getAttribute('data-price')) || 69;
-    var role = (roleEl && roleEl.getAttribute('data-role')) || 'sa';
-    try {
-      var vc = { value: price, currency: 'USD', content_name: plan };
-      console.log('[Meta] fbq track ViewContent', vc);
-      (window as any).fbq && (window as any).fbq('track', 'ViewContent', vc);
-    } catch (err) { /* пиксель ещё не загрузился */ }
-    try {
-      var vcYm = { plan: plan, role: role, price: price };
-      console.log('[Yandex] ym reachGoal ViewContent', vcYm);
-      (window as any).ym && (window as any).ym(109780177, 'reachGoal', 'ViewContent', vcYm);
-    } catch (err) { /* метрика ещё не загрузилась */ }
-  }
-  function openPricing() {
-    if (pricingHost && source) { pricingHost.innerHTML = ''; pricingHost.appendChild((source as HTMLTemplateElement).content.cloneNode(true)); }
-    open(pricingModal);
-    trackPricingOpen();
-  }
   document.addEventListener('click', function (e) {
     var t = e.target as Element;
-    if (t.closest('[data-buy]')) { e.preventDefault(); openPricing(); return; }
     if (t.closest('[data-login]')) { e.preventDefault(); open(loginModal); return; }
     if (t.closest('[data-close-modal]')) { e.preventDefault(); closeAll(); }
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeAll(); } });
   var loginForm = document.getElementById('loginForm');
   if (loginForm) { loginForm.addEventListener('submit', function (e) { e.preventDefault(); /* TODO: подключить авторизацию */ }); }
-})();
-
-// ── Оплата временно недоступна (техработы) ──
-//    Платёжный провайдер на обслуживании: клик по «Get …» больше НЕ уводит на
-//    /checkout/, а раскрывает сообщение в карточке тарифа (.pay-msg). Работает и
-//    для клона карточки в модалке (делегирование). Чтобы вернуть оплату -
-//    восстанови редирект на /checkout/ из истории git и убери .pay-msg
-//    (FinalCta.astro + .pricing .pay-msg в global.css).
-//    NB: раз /checkout/ недостижим, намерение купить иначе вообще не фиксируется,
-//    поэтому аналитику начала оформления (Meta InitiateCheckout + одноимённая
-//    цель Яндекса «InitiateCheckout») шлём прямо здесь, по клику «Get …», с параметрами выбранного
-//    плана/роли - те же, что слал /checkout/ при загрузке. Один раз за заход
-//    (флаг icSent), чтобы повторные тычки по неработающей кнопке не задваивали
-//    счёт. Когда вернёте оплату и редирект на /checkout/ - уберите этот блок
-//    отправки, иначе InitiateCheckout посчитается дважды (клик + загрузка
-//    /checkout/).
-(function () {
-  var icSent = false;
-  document.addEventListener('click', function (e) {
-    var cta = (e.target as Element).closest('.pricing .cta');
-    if (!cta) { return; }
-    var card = cta.closest('.pricing');
-    if (!card) { return; }
-
-    if (!icSent) {
-      icSent = true;
-      var planEl = card.querySelector('.plan.active');
-      var roleEl = card.querySelector('.role.active');
-      var plan = (planEl && planEl.getAttribute('data-plan')) || '1 Month';
-      var price = Number(planEl && planEl.getAttribute('data-price')) || 69;
-      var role = (roleEl && roleEl.getAttribute('data-role')) || 'sa';
-      // Meta: начало оформления.
-      try {
-        var icParams = { value: price, currency: 'USD', content_name: plan };
-        console.log('[Meta] fbq track InitiateCheckout', icParams);
-        (window as any).fbq && (window as any).fbq('track', 'InitiateCheckout', icParams);
-      } catch (err) { /* пиксель ещё не загрузился */ }
-      // Яндекс.Метрика: цель с тем же именем, что у Meta-события.
-      try {
-        var icYm = { plan: plan, role: role, price: price };
-        console.log('[Yandex] ym reachGoal InitiateCheckout', icYm);
-        (window as any).ym && (window as any).ym(109780177, 'reachGoal', 'InitiateCheckout', icYm);
-      } catch (err) { /* метрика ещё не загрузилась */ }
-    }
-
-    var msg = card.querySelector('.pay-msg');
-    if (msg) {
-      msg.classList.add('show');
-      // В модалке карточка может скроллиться - подтянуть сообщение в зону видимости.
-      try { msg.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (err) { /* старые браузеры */ }
-    }
-  });
 })();
 
 // ── Sticky CTA (mobile) ──
@@ -148,11 +65,12 @@ import { resolveLang } from './lang';
   });
 })();
 
-// ── Library demo screens + supporting UI ──
+// ── Library demo screens ──
+//    Экраны библиотеки инлайн ([data-screen]); язык каждый экран берёт сам из ?lang.
+//    Демо стартует, когда экран попадает в зону видимости, и встаёт на паузу, когда
+//    уходит (l7:play / l7:pause - раньше слалось в iframe через postMessage).
+//    Выбор роли/плана в карточке тарифа переехал на страницу /plans/.
 (function () {
-  // Экраны библиотеки инлайн ([data-screen]); язык каждый экран берёт сам из ?lang.
-  // Демо стартует, когда экран попадает в зону видимости, и встаёт на паузу, когда
-  // уходит (l7:play / l7:pause - раньше слалось в iframe через postMessage).
   if ('IntersectionObserver' in window) {
     document.querySelectorAll<HTMLElement>('.library__panel [data-screen]').forEach(function (root) {
       new IntersectionObserver(function (entries) {
@@ -162,40 +80,6 @@ import { resolveLang } from './lang';
       }, { threshold: 0.4 }).observe(root);
     });
   }
-
-  // Блок оплаты (нативный, делегирование - работает и для клона в модалке)
-  (function () {
-    function ctaIcon() { return ' <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>'; }
-    document.addEventListener('click', function (e) {
-      // Здесь - только выбор роли/плана (подсветка + текст кнопки «Get …»).
-      // Аналитику начала оформления (InitiateCheckout) теперь шлёт обработчик
-      // «Оплата временно недоступна» выше - по клику «Get …», пока оплата
-      // отключена и /checkout/ недостижим.
-      var role = (e.target as Element).closest('.pricing .role');
-      if (role) {
-        var card = role.closest('.pricing')!;
-        var msg = card.querySelector('.roles-msg');
-        if (role.classList.contains('soon')) {
-          role.classList.remove('flash'); void (role as HTMLElement).offsetWidth; role.classList.add('flash');
-          if (msg) { msg.classList.add('show'); }
-          return;
-        }
-        if (msg) { msg.classList.remove('show'); }
-        card.querySelectorAll('.role').forEach(function (r) { r.classList.remove('active'); });
-        role.classList.add('active');
-        return;
-      }
-      var plan = (e.target as Element).closest('.pricing .plan');
-      if (plan) {
-        var card2 = plan.closest('.pricing')!;
-        card2.querySelectorAll('.plan').forEach(function (x) { x.classList.remove('active'); });
-        plan.classList.add('active');
-        var cta = card2.querySelector('.cta');
-        if (cta) { cta.innerHTML = 'Get ' + plan.getAttribute('data-plan') + ctaIcon(); }
-      }
-    });
-  })();
-
 })();
 
 // ── Hero inline language picker: pick a language → reload with ?lang=xx so ──

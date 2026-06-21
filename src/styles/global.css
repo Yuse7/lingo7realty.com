@@ -2403,6 +2403,10 @@ a { text-decoration: none; color: inherit; }
 .pricing .pay-msg svg { flex: 0 0 auto; margin-top: 1px; color: #D97706; }
 @keyframes payMsgIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 .pricing .plans-note { text-align: center; font-size: 12px; color: #aab0b6; font-weight: 500; margin: 13px 0 2px; }
+/* Видимые пункты-гарантии под планами (страница /plans/): one-time / no auto-renewal / возврат денег */
+.pricing .plan-perks { list-style: none; margin: 4px 0 22px; padding: 0; display: flex; flex-direction: column; gap: 11px; }
+.pricing .plan-perks li { display: flex; align-items: center; gap: 11px; font-size: 14.5px; font-weight: 600; color: #374151; }
+.pricing .plan-perks li svg { color: #34D399; flex-shrink: 0; }
 /* Узкие экраны: ужать карточку и плашку плана, чтобы бейдж «Most popular» не вылезал за строку */
 @media (max-width: 480px) {
   .pricing .card { padding: 32px 22px 26px; }
