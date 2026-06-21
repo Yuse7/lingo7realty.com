@@ -86,7 +86,7 @@ a { text-decoration: none; color: inherit; }
 
 /* ===== Header ===== */
 .header {
-  position: relative;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -158,7 +158,6 @@ a { text-decoration: none; color: inherit; }
 .store-btn:hover { opacity: 0.7; }
 .store-btn img { height: 100%; width: auto; }
 
-.header__right--mobile { display: none; }
 
 .store-link {
   display: flex;
@@ -181,7 +180,7 @@ a { text-decoration: none; color: inherit; }
   min-height: 100vh;
   display: flex;
   align-items: center;
-  padding-top: 0;
+  padding-top: 80px;
   overflow: hidden;
   background: #f9fafb;
 }
@@ -2595,22 +2594,6 @@ a { text-decoration: none; color: inherit; }
   font-size: 14px;
 }
 
-/* ===== Sticky CTA (mobile only) ===== */
-.sticky-cta {
-  display: none;
-  position: static;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 99;
-  padding: 12px 16px;
-  padding-bottom: calc(12px + env(safe-area-inset-bottom));
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(0,0,0,0.06);
-}
-
 /* ===== Burger & Mobile Menu ===== */
 .burger {
   display: none;
@@ -2780,11 +2763,17 @@ a { text-decoration: none; color: inherit; }
 
   .nav { display: none; }
 
+  /* В тесной мобильной шапке кнопку CTA сокращаем, чтобы влез бургер.
+     Селектор с .header__cta повышает специфичность - иначе базовое
+     правило ниже по файлу перебивает это (@media не добавляет веса). */
+  .header__cta .header__cta-long { display: none; }
+  .header__cta .header__cta-brief { display: inline; }
+
   .header__inner { padding-top: 12px; padding-bottom: 12px; }
 
   .hero {
     min-height: auto;
-    padding-top: 0;
+    padding-top: 72px;
   }
 
   .hero__inner {
@@ -2875,8 +2864,7 @@ a { text-decoration: none; color: inherit; }
 
 
 
-  .header__right--desktop { display: none; }
-  .header__right--mobile { display: flex; }
+  .header__login { display: none; }
 
   .store-btn {
     height: 36px;
@@ -3033,11 +3021,6 @@ a { text-decoration: none; color: inherit; }
   .footer__inner { flex-direction: column; gap: 28px; align-items: flex-start; }
   .footer__links { flex-wrap: wrap; gap: 16px; }
   .footer__input { width: 160px; }
-
-  /* Show sticky CTA on mobile */
-  .sticky-cta { display: none; }
-  .sticky-cta.is-visible { display: block; }
-  body { padding-bottom: 0; }
 }
 
 @media (max-width: 400px) {
@@ -3158,6 +3141,7 @@ body.modal-open { overflow: hidden; }
   border-radius: 12px;
 }
 .header__cta--sm { padding: 10px 16px; font-size: 14px; }
+.header__cta-brief { display: none; }
 
 .final-cta__btn { margin: 4px auto 22px; }
 

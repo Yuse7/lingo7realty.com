@@ -1,6 +1,6 @@
 // Client-side behaviour for the Lingo7 Realty landing page.
 // Consolidated from the inline <script> blocks of the original index.html:
-// modals, sticky CTA, burger menu, header language switcher, language section
+// modals, burger menu, header language switcher, language section
 // sync/hover, scroll reveals, library tabs, FAQ accordion, the hero demo
 // orchestrator. The language switcher is decorative - it reloads with a
 // ?lang code but the page content always stays English (as in the original).
@@ -28,24 +28,6 @@ import { resolveLang } from './lang';
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeAll(); } });
   var loginForm = document.getElementById('loginForm');
   if (loginForm) { loginForm.addEventListener('submit', function (e) { e.preventDefault(); /* TODO: подключить авторизацию */ }); }
-})();
-
-// ── Sticky CTA (mobile) ──
-(function () {
-  var stickyCta = document.getElementById('stickyCta');
-  var heroSection = document.querySelector('.hero');
-  var finalCta = document.querySelector('.final-cta');
-  if (stickyCta && heroSection) {
-    window.addEventListener('scroll', function () {
-      var heroBottom = heroSection!.getBoundingClientRect().bottom;
-      var finalTop = finalCta ? finalCta.getBoundingClientRect().top : Infinity;
-      if (heroBottom < 0 && finalTop > window.innerHeight) {
-        stickyCta!.classList.add('is-visible');
-      } else {
-        stickyCta!.classList.remove('is-visible');
-      }
-    }, { passive: true });
-  }
 })();
 
 // ── Burger menu ──

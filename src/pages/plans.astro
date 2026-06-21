@@ -1,15 +1,10 @@
 ---
-// Страница выбора тарифа /plans/. Оплата с этой страницы УБРАНА: пользователь
-// только выбирает продукт (роль + окно обучения) и жмёт «Continue to payment».
-// Платёжный провайдер ещё не подключён, поэтому вместо перехода на оплату
-// раскрываем блок «оплата пока недоступна» + сбор email («сообщим, когда
-// заработает»). Аналитика: ViewContent на загрузке, InitiateCheckout по клику
-// «Continue to payment», Lead по отправке email. Когда подключите оплату -
-// заведите «Continue to payment» на реальную платёжную страницу, а email-блок
-// уберите или оставьте как запасной канал.
-// NB: email сейчас НИКУДА не сохраняется (статика без бэкенда) - шлётся только
-// событие Lead и показывается успех. Нужен реальный endpoint (Formspree/
-// Mailchimp/свой), чтобы собирать адреса.
+// Страница выбора тарифа /plans/. Оплата пока НЕ подключена: пользователь
+// выбирает продукт (окно обучения) и жмёт «Proceed to payment», после чего
+// показываем блок «оплатить пока нельзя» (без сбора email).
+// Аналитика: ViewContent на загрузке, InitiateCheckout по клику «Proceed to
+// payment». Когда подключите оплату - заведите «Proceed to payment» на реальную
+// платёжную страницу и уберите блок «Payment unavailable».
 import Head from '../components/Head.astro';
 ---
 <!DOCTYPE html>
@@ -30,33 +25,49 @@ import Head from '../components/Head.astro';
         <span class="sp__merchant">Lingo7 <b>Realty</b></span>
       </a>
 
-      <div class="sp__prodLabel">Florida Real Estate exam prep</div>
-      <div class="sp__amount" data-amount>$69.00</div>
-      <div class="sp__prodSub"><span data-rolename>Sales Associate</span> · <span data-planname>1 Month</span> plan</div>
+      <div class="sp__eyebrow">
+        <span class="sp__prodLabel">Florida Real Estate exam prep</span>
+        <span class="sp__fresh">Updated for 2026</span>
+      </div>
+      <h1 class="sp__headline">Pass the Florida exam in a language you understand</h1>
+      <p class="sp__subline">The full Florida question bank and timed practice tests, with every question and term explained in your own language.</p>
+
+      <ul class="sp__benefits">
+        <li><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>Every practice question explained in your language</li>
+        <li><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>Tap any term to save it, with audio pronunciation</li>
+        <li><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>Spaced-repetition drills so terms stick for exam day</li>
+        <li><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>Full Florida question bank and timed tests, matched to the real 100-question exam</li>
+      </ul>
+      <p class="sp__trust">Continually updated to Florida's current exam outline (Pearson VUE / FREC) - all 19 official content areas, built on current Florida license law and FREC rules.</p>
 
       <div class="sp__choose">
-        <div class="sp__seg" role="group" aria-label="Track">
-          <button type="button" class="sp__segBtn is-active" data-role="sa">Sales Associate</button>
-          <button type="button" class="sp__segBtn" data-role="broker">Broker</button>
-        </div>
-
         <div class="sp__plans">
           <button type="button" class="sp__planRow" data-plan="1 Week" data-price="49">
             <span class="sp__planRadio"></span>
-            <span class="sp__planName">1 Week</span>
+            <span class="sp__planMain">
+              <span class="sp__planName">1 Week</span>
+              <span class="sp__planMeta">Full access · $49/week</span>
+            </span>
             <span class="sp__planPrice">$49.00</span>
           </button>
           <button type="button" class="sp__planRow is-active" data-plan="1 Month" data-price="69">
             <span class="sp__planRadio"></span>
-            <span class="sp__planName">1 Month <em>Popular</em></span>
+            <span class="sp__planMain">
+              <span class="sp__planName">1 Month <em>Popular</em></span>
+              <span class="sp__planMeta">Full access · about $16/week</span>
+            </span>
             <span class="sp__planPrice">$69.00</span>
           </button>
           <button type="button" class="sp__planRow" data-plan="3 Months" data-price="89">
             <span class="sp__planRadio"></span>
-            <span class="sp__planName">3 Months <em>Best value</em></span>
+            <span class="sp__planMain">
+              <span class="sp__planName">3 Months <em>Best value</em></span>
+              <span class="sp__planMeta">Full access · about $7/week</span>
+            </span>
             <span class="sp__planPrice">$89.00</span>
           </button>
         </div>
+        <p class="sp__note">You keep full access for the whole window - study at your own pace.</p>
       </div>
 
       <div class="sp__lines">
@@ -72,24 +83,17 @@ import Head from '../components/Head.astro';
       </ul>
 
       <button class="sp__continue" type="button" data-continue>
-        Continue to payment
+        Proceed to payment
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
       </button>
 
-      <!-- Оплата ещё не подключена: раскрывается по «Continue to payment». Сбор email. -->
+      <!-- Оплата ещё не подключена: по «Proceed to payment» показываем, что оплатить пока нельзя. -->
       <div class="sp__notify" data-notify hidden>
         <div class="sp__notifyHead">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
           <span>Payment unavailable</span>
         </div>
-        <form class="sp__notifyForm" data-notify-form novalidate>
-          <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
-          <button type="submit">Notify me when payment is available</button>
-        </form>
-        <p class="sp__notifyOk" data-notify-ok hidden>
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span data-notify-ok-text>Thanks! We'll email you when payment is available.</span>
-        </p>
+        <p class="sp__notifyText">Online payment isn't available just yet - we're putting the final touches on checkout. Please check back soon.</p>
       </div>
 
       <div class="sp__powered">
@@ -116,15 +120,17 @@ import Head from '../components/Head.astro';
     .sp__merchant { font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
     .sp__merchant b { color: #34D399; font-weight: 700; }
 
-    .sp__prodLabel { font-size: 15px; font-weight: 500; color: #6b7280; margin-bottom: 6px; }
-    .sp__amount { font-size: 36px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; color: #1a1f36; }
-    .sp__prodSub { font-size: 14px; font-weight: 500; color: #8792a2; margin-top: 6px; }
+    .sp__eyebrow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+    .sp__prodLabel { font-size: 13px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: #059669; }
+    .sp__fresh { font-size: 11px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; color: #047857; background: rgba(52,211,153,.15); padding: 3px 9px; border-radius: 20px; }
+    .sp__headline { font-size: 27px; font-weight: 700; letter-spacing: -.02em; line-height: 1.18; color: #1a1f36; margin: 0; }
+    .sp__subline { font-size: 14.5px; font-weight: 500; line-height: 1.5; color: #6b7280; margin: 12px 0 0; }
+    .sp__benefits { list-style: none; margin: 20px 0 0; padding: 0; display: flex; flex-direction: column; gap: 11px; }
+    .sp__benefits li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; font-weight: 500; line-height: 1.4; color: #1a1f36; }
+    .sp__benefits svg { color: #059669; flex: 0 0 auto; margin-top: 1px; }
+    .sp__trust { margin: 16px 0 0; font-size: 12px; font-weight: 500; line-height: 1.45; color: #8792a2; }
 
     .sp__choose { margin: 30px 0 26px; }
-    .sp__seg { display: flex; gap: 4px; background: #f1f3f6; border-radius: 9px; padding: 4px; margin-bottom: 14px; }
-    .sp__segBtn { flex: 1; font-family: inherit; font-size: 13px; font-weight: 600; color: #6b7280; background: transparent; border: none; border-radius: 6px; padding: 8px 6px; cursor: pointer; transition: background .15s, color .15s, box-shadow .15s; }
-    .sp__segBtn.is-active { background: #fff; color: #1a1f36; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
-
     .sp__plans { display: flex; flex-direction: column; gap: 8px; }
     .sp__planRow { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; font-family: inherit; background: #fff; border: 1px solid #e6e9ee; border-radius: 10px; padding: 13px 14px; cursor: pointer; transition: border-color .15s, box-shadow .15s, background .15s; }
     .sp__planRow:hover { border-color: #c9d2dd; }
@@ -134,7 +140,10 @@ import Head from '../components/Head.astro';
     .sp__planRow.is-active .sp__planRadio::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: #34D399; }
     .sp__planName { font-size: 14.5px; font-weight: 600; color: #1a1f36; display: flex; align-items: center; gap: 7px; }
     .sp__planName em { font-style: normal; font-size: 10px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; color: #047857; background: rgba(52,211,153,.15); padding: 2px 7px; border-radius: 20px; }
-    .sp__planPrice { margin-left: auto; font-size: 14.5px; font-weight: 600; color: #1a1f36; }
+    .sp__planMain { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .sp__planMeta { font-size: 11.5px; font-weight: 500; color: #8792a2; }
+    .sp__planPrice { margin-left: auto; padding-left: 12px; font-size: 14.5px; font-weight: 600; color: #1a1f36; align-self: center; }
+    .sp__note { margin: 12px 2px 0; font-size: 12px; font-weight: 500; color: #8792a2; line-height: 1.4; }
 
     .sp__lines { border-top: 1px solid #e6e9ee; padding-top: 16px; display: flex; flex-direction: column; gap: 9px; }
     .sp__line { display: flex; align-items: baseline; justify-content: space-between; font-size: 14px; font-weight: 500; color: #4b5563; }
@@ -155,14 +164,7 @@ import Head from '../components/Head.astro';
     @keyframes spIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
     .sp__notifyHead { display: flex; align-items: center; gap: 9px; font-size: 15px; font-weight: 700; color: #1a1f36; margin-bottom: 14px; }
     .sp__notifyHead svg { color: #D97706; flex: 0 0 auto; }
-    .sp__notifyForm { display: flex; flex-direction: column; gap: 10px; }
-    .sp__notifyForm input { flex: 1; min-width: 0; height: 44px; font-family: inherit; font-size: 15px; color: #1a1f36; background: #fff; border: 1px solid #d5dbe3; border-radius: 8px; padding: 0 13px; transition: border-color .15s, box-shadow .15s; }
-    .sp__notifyForm input::placeholder { color: #9aa3b0; }
-    .sp__notifyForm input:focus { outline: none; border-color: #34D399; box-shadow: 0 0 0 3px rgba(52,211,153,.18); }
-    .sp__notifyForm button { width: 100%; height: 44px; font-family: inherit; font-size: 14.5px; font-weight: 600; color: #fff; background: #059669; border: none; border-radius: 8px; cursor: pointer; transition: background .15s; }
-    .sp__notifyForm button:hover { background: #047857; }
-    .sp__notifyOk { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600; color: #047857; }
-    .sp__notifyOk svg { color: #34D399; flex: 0 0 auto; }
+    .sp__notifyText { margin: 0; font-size: 13.5px; font-weight: 500; line-height: 1.5; color: #6b7280; }
 
     .sp__powered { display: flex; align-items: center; gap: 10px; margin-top: 32px; font-size: 12.5px; font-weight: 500; color: #aab0bb; }
     .sp__powered a { color: #aab0bb; transition: color .15s; }
@@ -172,13 +174,11 @@ import Head from '../components/Head.astro';
     @media (max-width: 480px) {
       .sp__wrap { padding: 36px 18px 40px; }
       .sp__back { margin-bottom: 28px; }
-      .sp__notifyForm { flex-direction: column; }
-      .sp__notifyForm button { width: 100%; }
     }
   </style>
 
   <script>
-    // Выбор тарифа обновляет суммы; ViewContent на загрузке; «Continue to payment»
+    // Выбор тарифа обновляет суммы; ViewContent на загрузке; «Proceed to payment»
     // (оплата ещё не подключена) -> InitiateCheckout + блок сбора email; отправка
     // email -> Lead + успех. См. шапку файла про отсутствие бэкенда для email.
     (function () {
@@ -192,22 +192,11 @@ import Head from '../components/Head.astro';
       function render() {
         var roleName = ROLE[state.role] || 'Sales Associate';
         var amt = money(state.price);
-        setText('[data-amount]', amt);
-        setText('[data-rolename]', roleName);
-        setText('[data-planname]', state.plan);
         setText('[data-linename]', roleName + ' · ' + state.plan);
         setText('[data-lineprice]', amt);
         setText('[data-total]', amt);
       }
 
-      each('[data-role]', function (b) {
-        b.addEventListener('click', function () {
-          each('[data-role]', function (x) { x.classList.remove('is-active'); });
-          b.classList.add('is-active');
-          state.role = b.getAttribute('data-role') || 'sa';
-          render();
-        });
-      });
       each('[data-plan]', function (b) {
         b.addEventListener('click', function () {
           each('[data-plan]', function (x) { x.classList.remove('is-active'); });
@@ -232,8 +221,8 @@ import Head from '../components/Head.astro';
         (window as any).ym && (window as any).ym(109780177, 'reachGoal', 'ViewContent', vy);
       } catch (err) { /* метрика ещё не загрузилась */ }
 
-      // «Continue to payment»: намерение оформить -> InitiateCheckout (один раз);
-      // оплаты пока нет -> раскрываем блок сбора email.
+      // «Proceed to payment»: намерение оформить -> InitiateCheckout (один раз);
+      // оплаты пока нет -> показываем блок «оплатить пока нельзя».
       var icSent = false;
       var cont = document.querySelector('[data-continue]') as HTMLElement | null;
       var notify = document.querySelector('[data-notify]') as HTMLElement | null;
@@ -255,37 +244,9 @@ import Head from '../components/Head.astro';
           cont!.style.display = 'none';
           notify!.hidden = false;
           try { notify!.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (err) { /* старые браузеры */ }
-          var inp = notify!.querySelector('input') as HTMLInputElement | null;
-          if (inp) { try { inp.focus(); } catch (err) { /* */ } }
         });
       }
 
-      // Отправка email: бэкенда нет - фиксируем Lead и показываем успех.
-      // TODO: завести на реальный endpoint (Formspree/Mailchimp/свой), иначе адрес
-      // никуда не сохраняется.
-      var nform = document.querySelector('[data-notify-form]') as HTMLFormElement | null;
-      if (nform) {
-        nform.addEventListener('submit', function (e) {
-          e.preventDefault();
-          var inp = nform!.querySelector('input') as HTMLInputElement | null;
-          var email = inp ? inp.value.trim() : '';
-          try {
-            var ld = { value: state.price, currency: 'USD', content_name: state.plan };
-            console.log('[Meta] fbq track Lead', ld);
-            (window as any).fbq && (window as any).fbq('track', 'Lead', ld);
-          } catch (err) { /* пиксель ещё не загрузился */ }
-          try {
-            var ly = { plan: state.plan, role: state.role, price: state.price };
-            console.log('[Yandex] ym reachGoal Lead', ly);
-            (window as any).ym && (window as any).ym(109780177, 'reachGoal', 'Lead', ly);
-          } catch (err) { /* метрика ещё не загрузилась */ }
-          nform!.hidden = true;
-          var ok = document.querySelector('[data-notify-ok]') as HTMLElement | null;
-          var okText = document.querySelector('[data-notify-ok-text]');
-          if (okText && email) { okText.textContent = "Thanks! We'll email " + email + ' when payment is available.'; }
-          if (ok) { ok.hidden = false; }
-        });
-      }
     })();
   </script>
 </body>
