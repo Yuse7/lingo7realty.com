@@ -25,6 +25,13 @@ import Head from '../components/Head.astro';
         <span class="sp__merchant">Lingo7 <b>Realty</b></span>
       </a>
 
+      <!-- Акция «только сегодня за $10»: видна лишь по чётным числам (см. promo.ts).
+           Раскрывается скриптом ниже; тогда же выбирается промо-тариф. -->
+      <div class="sp__promo" data-promo-banner hidden>
+        <span class="sp__promoFlame" aria-hidden="true">🔥</span>
+        <span>Today only - get 3 months of full access for <b>$10</b> instead of $89. Offer ends in <b data-promo-timer>00:00:00</b>.</span>
+      </div>
+
       <div class="sp__eyebrow">
         <span class="sp__prodLabel">Florida Real Estate exam prep</span>
         <span class="sp__fresh">Updated for 2026</span>
@@ -42,6 +49,14 @@ import Head from '../components/Head.astro';
 
       <div class="sp__choose">
         <div class="sp__plans">
+          <button type="button" class="sp__planRow sp__planRow--promo" data-plan="3 Months" data-price="10" data-promo-row hidden>
+            <span class="sp__planRadio"></span>
+            <span class="sp__planMain">
+              <span class="sp__planName">3 Months <em>Today only · $10</em></span>
+              <span class="sp__planMeta">Full access for 3 months - today's $10 deal</span>
+            </span>
+            <span class="sp__planPrice"><span class="sp__planWas">$89.00</span>$10.00</span>
+          </button>
           <button type="button" class="sp__planRow" data-plan="1 Week" data-price="49">
             <span class="sp__planRadio"></span>
             <span class="sp__planMain">
@@ -145,6 +160,14 @@ import Head from '../components/Head.astro';
     .sp__planPrice { margin-left: auto; padding-left: 12px; font-size: 14.5px; font-weight: 600; color: #1a1f36; align-self: center; }
     .sp__note { margin: 12px 2px 0; font-size: 12px; font-weight: 500; color: #8792a2; line-height: 1.4; }
 
+    /* Акция «today only $10» (видна только по чётным числам, см. promo.ts) */
+    .sp__promo { display: flex; align-items: center; gap: 10px; margin: 0 0 22px; padding: 12px 14px; background: rgba(52,211,153,.1); border: 1px solid rgba(5,150,105,.28); border-radius: 10px; font-size: 13.5px; font-weight: 600; line-height: 1.45; color: #1a1f36; }
+    .sp__promoFlame { font-size: 18px; line-height: 1; flex: 0 0 auto; }
+    .sp__promo b { color: #059669; }
+    .sp__promo [data-promo-timer] { color: #b45309; font-variant-numeric: tabular-nums; }
+    .sp__planRow--promo .sp__planName em { color: #fff; background: #059669; }
+    .sp__planWas { color: #8792a2; font-weight: 500; text-decoration: line-through; margin-right: 5px; font-size: 13px; }
+
     .sp__lines { border-top: 1px solid #e6e9ee; padding-top: 16px; display: flex; flex-direction: column; gap: 9px; }
     .sp__line { display: flex; align-items: baseline; justify-content: space-between; font-size: 14px; font-weight: 500; color: #4b5563; }
     .sp__line--muted { color: #8792a2; font-size: 13px; }
@@ -181,6 +204,7 @@ import Head from '../components/Head.astro';
     // Выбор тарифа обновляет суммы; ViewContent на загрузке; «Proceed to payment»
     // (оплата ещё не подключена) -> InitiateCheckout + блок сбора email; отправка
     // email -> Lead + успех. См. шапку файла про отсутствие бэкенда для email.
+    import { isPromoActive, msUntilMidnight, formatCountdown } from '../scripts/promo';
     (function () {
       var ROLE: Record<string, string> = { sa: 'Sales Associate', broker: 'Broker' };
       var state = { role: 'sa', plan: '1 Month', price: 69 };
@@ -208,6 +232,27 @@ import Head from '../components/Head.astro';
       });
 
       render();
+
+      // Акция «today only $10»: только по чётным числам (см. promo.ts). Раскрываем
+      // промо-тариф и баннер, выбираем тариф (его клик сам обновит суммы) и тикаем
+      // отсчёт до полуночи. Делаем это ДО ViewContent, чтобы аналитика поймала $10.
+      if (isPromoActive()) {
+        var promoRow = document.querySelector('[data-promo-row]') as HTMLElement | null;
+        var promoBanner = document.querySelector('[data-promo-banner]') as HTMLElement | null;
+        var promoTimer = document.querySelector('[data-promo-timer]') as HTMLElement | null;
+        // Прячем обычный тариф «3 Months» ($89): по акции эти же 3 месяца идут за $10,
+        // две строки «3 Months» рядом смотрелись бы противоречиво.
+        var regular3m = document.querySelector('.sp__planRow[data-price="89"]') as HTMLElement | null;
+        if (regular3m) { regular3m.hidden = true; }
+        if (promoRow) { promoRow.hidden = false; promoRow.click(); }
+        if (promoBanner) { promoBanner.hidden = false; }
+        (function tick() {
+          var ms = msUntilMidnight();
+          if (ms <= 0) { location.reload(); return; }
+          if (promoTimer) { promoTimer.textContent = formatCountdown(ms); }
+          setTimeout(tick, 1000);
+        })();
+      }
 
       // Просмотр прайса на загрузке (fbq/ym - синхронные очереди, событие не теряется).
       try {

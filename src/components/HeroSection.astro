@@ -63,6 +63,13 @@ import QuizReviewScreen from './screens/QuizReviewScreen.astro';
       </div>
     </div>
     <div class="hero__actions">
+      <!-- Акция «только сегодня за $10»: видна лишь по чётным числам месяца.
+           Скрыта по умолчанию, раскрывается в main.ts (см. promo.ts). -->
+      <a href="/plans/" class="hero-promo" id="heroPromo" hidden>
+        <span class="hero-promo__flame" aria-hidden="true">🔥</span>
+        <span class="hero-promo__text"><b>Today only:</b> 3 months full access for <s>$89</s> <b class="hero-promo__price">$10</b></span>
+        <span class="hero-promo__timer" id="heroPromoTimer">Ends in 00:00:00</span>
+      </a>
       <a href="/plans/" class="btn btn--primary hero__cta" data-i18n="hero.cta">See plans &amp; pricing</a>
       <p class="hero__guarantee" data-i18n="hero.guarantee">🛡️ Not for you? Get your money back in 14&nbsp;days.</p>
     </div>

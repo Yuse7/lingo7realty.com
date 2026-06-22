@@ -270,6 +270,37 @@ a { text-decoration: none; color: inherit; }
   margin: 0;
 }
 
+/* Промо-баннер «today only $10» (виден только по чётным числам, см. promo.ts) */
+.hero-promo {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  background: rgba(52, 211, 153, 0.1);
+  border: 1px solid rgba(5, 150, 105, 0.3);
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a2e;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.hero-promo[hidden] { display: none !important; }
+.hero-promo:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(5, 150, 105, 0.14); }
+.hero-promo__flame { font-size: 18px; line-height: 1; }
+.hero-promo__text s { color: #8a909a; font-weight: 500; }
+.hero-promo__price { color: #059669; font-size: 17px; }
+.hero-promo__timer {
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  font-weight: 700;
+  color: #b45309;
+  background: rgba(217, 119, 6, 0.12);
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+
 .hero__checklist {
   list-style: none;
   margin: 24px 0 0;

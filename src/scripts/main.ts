@@ -9,6 +9,7 @@
 // демо-экраны (src/components/screens/*.astro), поэтому заголовок hero «My
 // language is …» и язык в телефоне всегда показывают одно и то же.
 import { resolveLang } from './lang';
+import { isPromoActive, msUntilMidnight, formatCountdown } from './promo';
 
 // ── Login modal ──
 //    Карточка тарифа переехала на отдельную страницу /plans/ (бывшие триггеры
@@ -28,6 +29,23 @@ import { resolveLang } from './lang';
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeAll(); } });
   var loginForm = document.getElementById('loginForm');
   if (loginForm) { loginForm.addEventListener('submit', function (e) { e.preventDefault(); /* TODO: подключить авторизацию */ }); }
+})();
+
+// ── Promo banner: «today only $10», настоящее правило - только чётные числа ──
+//    По нечётным числам баннер остаётся скрытым. По чётным - раскрываем и тикаем
+//    обратный отсчёт до полуночи; на полуночи перезагружаем (день стал нечётным).
+(function () {
+  var promo = document.getElementById('heroPromo');
+  if (!promo) { return; }
+  if (!isPromoActive()) { return; }
+  promo.hidden = false;
+  var timer = document.getElementById('heroPromoTimer');
+  (function tick() {
+    var ms = msUntilMidnight();
+    if (ms <= 0) { location.reload(); return; }
+    if (timer) { timer.textContent = 'Ends in ' + formatCountdown(ms); }
+    setTimeout(tick, 1000);
+  })();
 })();
 
 // ── Burger menu ──
